@@ -4,7 +4,8 @@
   import { goto } from "$app/navigation";
   import ArrowRightIcon from "@lucide/svelte/icons/arrow-right";
   import SearchIcon from "@lucide/svelte/icons/search";
-  import { fade, fly } from "svelte/transition";
+  import { fade } from "svelte/transition";
+  import { glassPop } from "$lib/transitions";
   import { getStores } from "$lib/stores";
   import { cn } from "$lib/utils";
 
@@ -81,19 +82,20 @@
 
 {#if ui.searchOpen}
   <div
-    class="fixed inset-0 top-12 z-40 bg-black/20 backdrop-blur-md"
+    class="fixed inset-0 z-[55] bg-black/20 backdrop-blur-md"
     transition:fade={{ duration: 200 }}
     onclick={ui.closeSearch}
     role="presentation"
   ></div>
   <div
-    class="fixed inset-x-0 top-12 z-50 bg-background pb-10 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.25)]"
-    transition:fly={{ y: -16, duration: 260, opacity: 0 }}
+    class="liquid-glass fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] pb-6"
+    style="--glass-alpha: 84%"
+    transition:glassPop
     role="dialog"
     aria-modal="true"
     aria-label="ค้นหา"
   >
-    <div class="container-apple pt-8">
+    <div class="px-6 pt-6 sm:px-8">
       <label class="flex items-center gap-3">
         <SearchIcon class="size-6 shrink-0 text-muted-foreground" strokeWidth={1.75} />
         <input
