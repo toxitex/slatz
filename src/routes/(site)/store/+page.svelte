@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
   import { reveal } from "$lib/attachments";
+  import ProductCard from "$lib/components/ProductCard.svelte";
   import { getStores } from "$lib/stores";
 
   const { site, products, categories } = getStores();
@@ -30,6 +31,8 @@
     return [...map].map(([name, value]) => ({ name, ...value }));
   });
 
+  const latest = $derived(products.products.filter((p) => p.status !== "hidden").slice(0, 10));
+
   const loading = $derived(categories.loading && products.loading);
 </script>
 
@@ -47,7 +50,7 @@
   </h2>
 </section>
 
-<section class="container-wide pb-24" aria-label="หมวดหมู่">
+<section class="container-wide pb-6" aria-label="หมวดหมู่">
   {#if loading}
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {#each Array(3) as _, i (i)}
@@ -88,3 +91,22 @@
     </div>
   {/if}
 </section>
+
+{#if latest.length}
+  <section class="pt-10 pb-24" aria-labelledby="latest-heading">
+    <h2 id="latest-heading" class="container-wide display text-[24px] sm:text-[28px]">
+      ล่าสุด. <span class="text-muted-foreground">สินค้าที่คัดมาให้คุณ</span>
+    </h2>
+    <div
+      class="mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-5 px-5 pb-8 [scrollbar-width:none] sm:scroll-px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] sm:px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))]"
+    >
+      {#each latest as product (product.id)}
+        <ProductCard
+          {product}
+          buttonText={site.config.store.productButtonText}
+          class="w-[78vw] max-w-[320px] shrink-0 snap-start"
+        />
+      {/each}
+    </div>
+  </section>
+{/if}

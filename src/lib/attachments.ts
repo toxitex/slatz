@@ -23,6 +23,43 @@ export function reveal(delay = 0): Attachment<HTMLElement> {
   };
 }
 
+/** Writes the element's scroll progress through the viewport (0 → 1) to `--progress`. */
+export const scrollProgress: Attachment<HTMLElement> = (node) => {
+  if (prefersReducedMotion()) {
+    node.style.setProperty("--progress", "1");
+    return;
+  }
+  let frame = 0;
+  const update = () => {
+    frame = 0;
+    const rect = node.getBoundingClientRect();
+    const start = window.innerHeight * 0.85;
+    const end = window.innerHeight * 0.35;
+    const progress = (start - rect.top) / (start - end + rect.height);
+    node.style.setProperty("--progress", String(Math.min(1, Math.max(0, progress))));
+  };
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+  update();
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+  return () => {
+    cancelAnimationFrame(frame);
+    window.removeEventListener("scroll", schedule);
+    window.removeEventListener("resize", schedule);
+  };
+};
+
+/** Splits text into words; Thai has no spaces, so this relies on Intl.Segmenter when available. */
+export function segmentWords(text: string): string[] {
+  if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
+    const segmenter = new Intl.Segmenter("th", { granularity: "word" });
+    return [...segmenter.segment(text)].map((s) => s.segment);
+  }
+  return text.split(/(\s+)/);
+}
+
 /** Counts the numeric part of `value` up from zero once visible, keeping any prefix/suffix text. */
 export function countUp(value: string): Attachment<HTMLElement> {
   return (node) => {
