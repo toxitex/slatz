@@ -587,6 +587,19 @@ select.syncx-input option {
 .nav-links { justify-self: center; }
 .nav-actions { justify-self: end; }
 
+/* Below md the bottom MobileNav and speed dial carry navigation and account actions. */
+@media (max-width: 767px) {
+  .nav-shell {
+    display: flex;
+    justify-content: space-between;
+    height: 52px;
+    padding: 0 14px 0 12px;
+  }
+  .nav-links,
+  .nav-actions { display: none; }
+  .syncx-page { padding-bottom: 4rem; }
+}
+
 .nav-link,
 .auth-outline,
 .auth-primary,
