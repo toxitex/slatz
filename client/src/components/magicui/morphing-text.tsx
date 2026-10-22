@@ -14,7 +14,7 @@ const cooldownTime = 2.5;
 const useMorphingText = (texts: string[]) => {
   const textIndexRef = useRef(0);
   const morphRef = useRef(0);
-  const cooldownRef = useRef(0);
+  const cooldownRef = useRef(cooldownTime);
   const timeRef = useRef(new Date());
 
   const text1Ref = useRef<HTMLSpanElement>(null);
@@ -69,6 +69,9 @@ const useMorphingText = (texts: string[]) => {
 
   useEffect(() => {
     let animationFrameId: number;
+    if (text2Ref.current && !text2Ref.current.textContent) {
+      text2Ref.current.textContent = texts[textIndexRef.current % texts.length];
+    }
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);

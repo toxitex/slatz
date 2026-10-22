@@ -210,12 +210,15 @@ export function DiaTextReveal({
     stopRef.current = () => controls.stop();
   };
 
+  // Depending on raw `isInView` would let its first flip cancel a sweep started with startOnView={false}.
+  const shouldPlay = !startOnView || isInView;
+
   useEffect(() => {
     if (prefersReducedMotion) {
       sweepPos.set(SWEEP_END);
       return;
     }
-    if (startOnView && !isInView) return;
+    if (!shouldPlay) return;
     if (once && hasPlayedRef.current) return;
     hasPlayedRef.current = true;
     playRef.current();
@@ -224,7 +227,7 @@ export function DiaTextReveal({
       stopRef.current?.();
       clearTimeout(timerRef.current);
     };
-  }, [isInView, startOnView, once, prefersReducedMotion, sweepPos]);
+  }, [shouldPlay, once, prefersReducedMotion, sweepPos]);
 
   const fixedW =
     isMulti && fixedWidth && measuredWidths.length > 0
