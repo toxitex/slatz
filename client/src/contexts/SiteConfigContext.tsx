@@ -52,6 +52,10 @@ export type SiteConfig = {
   logoImageUrl: string;
   heroImageUrl: string;
   heroHeadline: string;
+  /** Extra phrases the hero headline morphs through after `heroHeadline`. */
+  heroMorphWords: string[];
+  /** Small pill shown above the headline; empty hides it. */
+  heroBadgeText: string;
   heroSubtitle: string;
   ctaText: string;
   searchPlaceholder: string;
@@ -115,6 +119,8 @@ export const defaultSiteConfig: SiteConfig = {
   logoImageUrl: "",
   heroImageUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663586379992/FfqDgriCGyFAHE6z7esQnJ/syncx-neon-ribbon-hero-SFfrtkKQ7tjNVJX2txp2nR.webp",
   heroHeadline: "SLATZ STUDIO",
+  heroMorphWords: ["ของแท้ 100%", "ส่งไวทันใจ", "ราคาคุ้มค่า"],
+  heroBadgeText: "ร้านค้าดิจิทัล · เปิดบริการ 24 ชม.",
   heroSubtitle: "แอดมินพร้อมบริการ 24 ชม.",
   ctaText: "เริ่มต้นเลย!",
   searchPlaceholder: "ค้นหาสินค้า หมวดหมู่...",
@@ -180,6 +186,9 @@ function mergeConfig(input: unknown): SiteConfig {
   return {
     ...defaultSiteConfig,
     ...saved,
+    heroMorphWords: Array.isArray(saved.heroMorphWords)
+      ? saved.heroMorphWords.filter((word): word is string => typeof word === "string")
+      : defaultSiteConfig.heroMorphWords,
     stats: {
       ...defaultSiteConfig.stats,
       ...(saved.stats ?? {}),

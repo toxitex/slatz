@@ -976,6 +976,13 @@ export default function Admin() {
           <Section id="hero" eyebrow="HERO" title="Hero / แบนเนอร์">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <Field label="ข้อความหลัก" value={config.heroHeadline} onChange={(heroHeadline) => updateConfig({ heroHeadline })} />
+              <Field
+                label="ข้อความสลับ (คั่นด้วยเครื่องหมายจุลภาค)"
+                value={config.heroMorphWords.join(", ")}
+                onChange={(value) => updateConfig({ heroMorphWords: value.split(",").map((word) => word.trimStart()) })}
+                placeholder="เช่น ของแท้ 100%, ส่งไวทันใจ"
+              />
+              <Field label="ป้ายด้านบน (Badge)" value={config.heroBadgeText} onChange={(heroBadgeText) => updateConfig({ heroBadgeText })} placeholder="เว้นว่างเพื่อซ่อน" />
               <Field label="คำอธิบาย" value={config.heroSubtitle} onChange={(heroSubtitle) => updateConfig({ heroSubtitle })} />
               <Field label="ช่องค้นหา (Placeholder)" value={config.searchPlaceholder} onChange={(searchPlaceholder) => updateConfig({ searchPlaceholder })} />
               <Field label="ลิงก์รูปแบนเนอร์" value={config.heroImageUrl} onChange={(heroImageUrl) => updateConfig({ heroImageUrl })} placeholder="https://..." />
