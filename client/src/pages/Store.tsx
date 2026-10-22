@@ -8,7 +8,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { useScrolled } from "@/hooks/useScrolled";
 import { useAuth } from "@/hooks/useAuth";
 import { UserMenu } from "@/components/UserMenu";
-import { SpotlightGlow, BorderBeam, ShinyText, GlowingCards, ExpandableSpeedDial } from "@/components/fx";
+import { SpotlightGlow, BorderBeam, ShinyText, GlowingCards, ExpandableSpeedDial, RevealFx } from "@/components/fx";
 import { LogoIcon } from "@/components/LogoIcon";
 import { SearchModal } from "@/components/SearchModal";
 import { RippleButton, RippleButtonRipples } from "@/components/animate-ui/components/buttons/ripple";
@@ -233,6 +233,7 @@ export function ProductCard({ product, buttonText }: { product: SyncXProduct; bu
 }
 
 export default function Store() {
+  const { config } = useSiteConfig();
   const { products } = useInventoryProducts();
   const { categories: dbCategories, loading: categoriesLoading } = useCategories();
 
@@ -263,17 +264,18 @@ export default function Store() {
     <>
       <TopNav />
       <main className="syncx-page">
-        <section className="max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-12 w-full flex-grow">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 mb-6 text-xs font-semibold tracking-wider uppercase text-gray-500" aria-label="Store breadcrumb">
-            <Link href="/store" className="text-gray-400 hover:text-white transition-colors duration-200 no-underline">ร้านค้า</Link>
-            <span>/</span>
-            <span className="text-white">หมวดหมู่</span>
-          </nav>
+        <section className="max-w-7xl mx-auto px-4 md:px-6 pt-28 pb-12 w-full flex-grow">
+          <RevealFx className="mb-8">
+            <nav className="flex items-center gap-2 mb-4 text-xs font-medium text-[var(--syncx-muted)]" aria-label="Store breadcrumb">
+              <Link href="/store" className="hover:text-white transition-colors duration-200 no-underline">ร้านค้า</Link>
+              <span>/</span>
+              <span className="text-white">หมวดหมู่</span>
+            </nav>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.035em] text-white">{config.store.sectionTitle}</h1>
+          </RevealFx>
 
-          {/* Category banner */}
           {!categoriesLoading && categories.length > 0 && (
-            <div className="category-banner">
+            <RevealFx delay={0.15} className="category-banner">
               {categories.map(({ name, count, imageUrl }) => (
                 <Link
                   key={name}
@@ -289,7 +291,7 @@ export default function Store() {
                   <span className="category-banner-watermark">CAT</span>
                 </Link>
               ))}
-            </div>
+            </RevealFx>
           )}
         </section>
         <Footer />
