@@ -1,0 +1,232 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: "LINE Seed Sans TH";
+  src: url("/fonts/LINESeedSansTH_W_Rg.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LINE Seed Sans TH";
+  src: url("/fonts/LINESeedSansTH_W_Bd.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/*
+ * Theme values are admin-editable (Admin → ออกแบบร้าน → สี). The site-config store writes
+ * --syncx-* on <html>; everything below derives from them so the Apple look follows the admin palette.
+ */
+:root {
+  --syncx-accent: #0071e3;
+  --syncx-button: #0071e3;
+  --syncx-bg: #f5f5f7;
+  --syncx-card: #ffffff;
+  --syncx-text: #1d1d1f;
+  --syncx-muted: #6e6e73;
+  --syncx-border: rgba(0, 0, 0, 0.08);
+
+  --radius: 1.125rem;
+
+  --background: var(--syncx-bg);
+  --foreground: var(--syncx-text);
+  --card: var(--syncx-card);
+  --card-foreground: var(--syncx-text);
+  --popover: color-mix(in srgb, var(--syncx-card) 86%, transparent);
+  --popover-foreground: var(--syncx-text);
+  --primary: var(--syncx-button);
+  --primary-foreground: #ffffff;
+  --secondary: color-mix(in srgb, var(--syncx-text) 6%, var(--syncx-card));
+  --secondary-foreground: var(--syncx-text);
+  --muted: color-mix(in srgb, var(--syncx-text) 5%, var(--syncx-card));
+  --muted-foreground: var(--syncx-muted);
+  --accent: color-mix(in srgb, var(--syncx-accent) 10%, var(--syncx-card));
+  --accent-foreground: var(--syncx-accent);
+  --destructive: #e30000;
+  --border: var(--syncx-border);
+  --input: color-mix(in srgb, var(--syncx-text) 14%, transparent);
+  --ring: color-mix(in srgb, var(--syncx-accent) 55%, transparent);
+
+  --sidebar: var(--syncx-card);
+  --sidebar-foreground: var(--syncx-text);
+  --sidebar-primary: var(--syncx-button);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--syncx-text);
+  --sidebar-border: var(--syncx-border);
+  --sidebar-ring: var(--ring);
+}
+
+@theme inline {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter Variable", "Helvetica Neue",
+    "LINE Seed Sans TH", "Noto Sans Thai", system-ui, sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Variable", "Helvetica Neue", "LINE Seed Sans TH",
+    "Noto Sans Thai", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 6px);
+  --radius-lg: calc(var(--radius) - 4px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-link: var(--syncx-accent);
+
+  --ease-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+  --shadow-float: 0 2px 6px rgba(0, 0, 0, 0.04), 0 18px 48px rgba(0, 0, 0, 0.08);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
+    font-size: 17px;
+    line-height: 1.47;
+    letter-spacing: -0.022em;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--syncx-accent) 22%, transparent);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.07;
+  }
+
+  .eyebrow {
+    @apply text-sm font-semibold text-muted-foreground;
+    letter-spacing: -0.01em;
+  }
+
+  .tile {
+    @apply rounded-3xl bg-card;
+  }
+
+  .glass {
+    background: color-mix(in srgb, var(--syncx-bg) 72%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .link {
+    @apply inline-flex items-center gap-0.5 text-link transition-opacity hover:underline;
+  }
+
+  .container-apple {
+    @apply mx-auto w-full max-w-[1068px] px-5 sm:px-6;
+  }
+
+  .container-wide {
+    @apply mx-auto w-full max-w-[1280px] px-5 sm:px-6;
+  }
+
+  /* "Apple Intelligence" sweep used on hero headlines. */
+  .text-sheen {
+    background-image: linear-gradient(
+      100deg,
+      var(--syncx-text) 0%,
+      var(--syncx-text) 38%,
+      #0a84ff 44%,
+      #bf5af2 50%,
+      #ff375f 56%,
+      #ff9f0a 62%,
+      var(--syncx-text) 68%,
+      var(--syncx-text) 100%
+    );
+    background-size: 280% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: sheen 2.6s var(--ease-apple) 0.35s forwards;
+  }
+
+  .reveal {
+    animation: reveal 0.9s var(--ease-apple) both;
+  }
+}
+
+@keyframes sheen {
+  to {
+    background-position: 0% 0;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-sheen,
+  .reveal {
+    animation: none;
+  }
+  .text-sheen {
+    color: var(--syncx-text);
+    background: none;
+  }
+}
