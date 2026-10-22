@@ -39,12 +39,12 @@
     <ChevronRightIcon class="size-3" />
     <span class="text-foreground">ร้านค้า</span>
   </nav>
-  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-    <h1 class="reveal display text-[40px] sm:text-[64px]">ร้านค้า</h1>
-    <p class="reveal max-w-xs text-[17px] leading-snug text-muted-foreground sm:text-right" style="animation-delay: 80ms">
-      วิธีที่ดีที่สุดในการเลือกซื้อ<br class="max-sm:hidden" /> {site.config.store.sectionTitle}
-    </p>
-  </div>
+  <h1 class="reveal display max-w-3xl text-[40px] sm:text-[64px]">
+    ร้านค้า. <span class="text-muted-foreground">วิธีที่ดีที่สุดในการเลือกซื้อสิ่งที่คุณชอบ</span>
+  </h1>
+  <h2 class="reveal display mt-12 text-[24px] sm:text-[28px]" style="animation-delay: 80ms">
+    {site.config.store.sectionTitle}
+  </h2>
 </section>
 
 <section class="container-wide pb-24" aria-label="หมวดหมู่">

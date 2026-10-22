@@ -5,6 +5,7 @@
   import ProductCard from "$lib/components/ProductCard.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
+  import { cn } from "$lib/utils";
 
   const { site, products, categories, ui } = getStores();
   products.ensureLoaded();
@@ -19,6 +20,7 @@
   ]);
   const latest = $derived(products.products.filter((p) => p.status !== "hidden").slice(0, 8));
   const shelf = $derived(categories.categories.filter((c) => c.isActive).slice(0, 8));
+  const showcase = $derived(latest.filter((p) => p.imageUrl).slice(0, 3));
 </script>
 
 <div class="bg-card py-2.5 text-center text-sm text-foreground/80">
@@ -53,6 +55,29 @@
         alt=""
         class="mx-auto max-h-[560px] w-full rounded-[32px] object-cover"
       />
+    </div>
+  {:else if showcase.length}
+    <div class="container-wide mt-14" {@attach reveal()}>
+      <div
+        class="relative flex h-[260px] items-end justify-center overflow-hidden rounded-[32px] bg-[radial-gradient(120%_90%_at_50%_100%,color-mix(in_srgb,var(--syncx-accent)_14%,var(--syncx-bg))_0%,var(--syncx-bg)_70%)] sm:h-[440px]"
+      >
+        {#each showcase as product, i (product.id)}
+          {@const center = i === 1 || showcase.length === 1}
+          <a
+            href={resolve(`/product/${product.id}`)}
+            class={cn(
+              "group relative -mx-6 mb-[-4%] block overflow-hidden rounded-[28px] bg-card shadow-float transition-transform duration-700 ease-apple hover:-translate-y-2 sm:-mx-10",
+              center ? "z-10 w-[58%] max-w-[420px] sm:w-[38%]" : "w-[42%] max-w-[300px] sm:w-[28%]",
+              i === 0 && showcase.length > 1 && "-rotate-6",
+              i === 2 && "rotate-6",
+            )}
+            aria-label={product.name}
+          >
+            <img src={product.imageUrl} alt="" class="aspect-[4/3] w-full object-cover" />
+            <span class="block truncate px-4 py-3 text-left text-sm font-semibold">{product.name}</span>
+          </a>
+        {/each}
+      </div>
     </div>
   {/if}
 </section>
