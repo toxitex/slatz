@@ -46,7 +46,7 @@
     <FloatingField label="รหัสผ่าน" type="password" autocomplete="current-password" revealable bind:value={password} />
 
     {#if error}<p class="text-sm text-destructive" role="alert">{error}</p>{/if}
-    {#if success}<p class="text-sm text-[#1d7a3c]" role="status">{success}</p>{/if}
+    {#if success}<p class="text-sm text-foreground" role="status">{success}</p>{/if}
 
     <Button type="submit" size="lg" class="mt-3 w-full" disabled={submitting}>
       {submitting ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}

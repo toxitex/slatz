@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import ShoppingBagIcon from "@lucide/svelte/icons/shopping-bag";
+  import { glassPointer } from "$lib/attachments";
   import { tierRange } from "$lib/stores/products.svelte";
   import type { SyncXProduct } from "$lib/types";
   import { cn, formatBaht } from "$lib/utils";
@@ -23,10 +24,11 @@
 <a
   href={resolve(`/product/${product.id}`)}
   class={cn(
-    "group flex flex-col overflow-hidden rounded-3xl bg-card transition-[transform,box-shadow] duration-500 ease-apple hover:-translate-y-1 hover:shadow-float",
+    "group spotlight border-beam border-beam-hover flex flex-col overflow-hidden rounded-3xl bg-card [--spot-color:#ffffff] transition-[translate,box-shadow] duration-500 ease-apple hover:-translate-y-1 hover:shadow-float",
     className,
   )}
   aria-label={product.name}
+  {@attach glassPointer}
 >
   <div class="relative grid aspect-[4/3] place-items-center overflow-hidden bg-muted">
     {#if product.imageUrl && !imageFailed}
@@ -48,13 +50,13 @@
   </div>
   <div class="flex flex-1 flex-col gap-1 p-5">
     {#if product.category}
-      <span class="text-[11px] font-semibold tracking-wide text-[#bf4800] uppercase">{product.category}</span>
+      <span class="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{product.category}</span>
     {/if}
     <h3 class="line-clamp-2 text-[17px] leading-snug font-semibold">{product.name}</h3>
     <div class="mt-auto flex items-end justify-between gap-2 pt-3">
       <span class="text-sm text-foreground/80">{priceLabel}</span>
       <span
-        class="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100 max-md:hidden"
+        class="translate-y-1 rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground opacity-0 transition-[opacity,translate] duration-300 ease-spring group-hover:translate-y-0 group-hover:opacity-100 max-md:hidden"
       >
         {buttonText}
       </span>

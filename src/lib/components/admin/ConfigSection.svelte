@@ -32,7 +32,7 @@
     <ImageRow label="โลโก้" bind:value={site.config.logoImageUrl} />
   </SettingsGroup>
 {:else if section === "colors"}
-  <SettingsGroup title="สีธีม" description="สีทั้งหมดใช้กับหน้าร้านทันที ค่าเริ่มต้นคือโทนสว่างแบบ Apple">
+  <SettingsGroup title="สีธีม" description="สีทั้งหมดใช้กับหน้าร้านทันที ค่าเริ่มต้นคือโทนขาว เทา ดำ แบบ Apple">
     {#snippet actions()}
       <Button
         variant="ghost"
@@ -57,6 +57,12 @@
 {:else if section === "hero"}
   <SettingsGroup title="Hero / แบนเนอร์" description="ส่วนบนสุดของหน้าแรก">
     <TextRow label="ข้อความหลัก" bind:value={site.config.heroHeadline} />
+    <TextRow
+      label="ข้อความสลับ (Morph)"
+      hint="คั่นด้วยจุลภาค เว้นว่างเพื่อปิด"
+      bind:value={site.config.heroMorphWords}
+      placeholder="ของแท้ 100%, ได้ของทันที"
+    />
     <TextRow label="คำอธิบาย" bind:value={site.config.heroSubtitle} />
     <TextRow label="ช่องค้นหา (Placeholder)" bind:value={site.config.searchPlaceholder} />
   </SettingsGroup>

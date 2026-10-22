@@ -43,6 +43,8 @@ export type SiteConfig = {
   heroImageUrl: string;
   heroHeadline: string;
   heroSubtitle: string;
+  /** Comma-separated phrases the hero headline morphs through after `heroHeadline`. */
+  heroMorphWords: string;
   ctaText: string;
   searchPlaceholder: string;
   announcementTitle: string;

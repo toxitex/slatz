@@ -27,27 +27,27 @@ export type SectionItem = {
 export const sectionGroups: { title: string; items: SectionItem[] }[] = [
   {
     title: "ภาพรวมระบบ",
-    items: [{ key: "stats", label: "ตัวเลขสถิติ", icon: BarChart3Icon, color: "#5e5ce6" }],
+    items: [{ key: "stats", label: "ตัวเลขสถิติ", icon: BarChart3Icon, color: "#1d1d1f" }],
   },
   {
     title: "จัดการร้านค้า",
     items: [
-      { key: "products", label: "สินค้า", icon: ShoppingBagIcon, color: "#ff9f0a" },
-      { key: "categories", label: "หมวดหมู่สินค้า", icon: LayoutGridIcon, color: "#30b0c7" },
-      { key: "coupons", label: "คูปองส่วนลด", icon: TicketIcon, color: "#ff375f" },
-      { key: "orders", label: "ประวัติคำสั่งซื้อ", icon: HistoryIcon, color: "#34c759" },
-      { key: "users", label: "จัดการลูกค้า", icon: UsersIcon, color: "#0a84ff" },
-      { key: "store-config", label: "ข้อความหน้าร้าน", icon: StoreIcon, color: "#8e8e93" },
+      { key: "products", label: "สินค้า", icon: ShoppingBagIcon, color: "#3a3a3c" },
+      { key: "categories", label: "หมวดหมู่สินค้า", icon: LayoutGridIcon, color: "#48484a" },
+      { key: "coupons", label: "คูปองส่วนลด", icon: TicketIcon, color: "#636366" },
+      { key: "orders", label: "ประวัติคำสั่งซื้อ", icon: HistoryIcon, color: "#8e8e93" },
+      { key: "users", label: "จัดการลูกค้า", icon: UsersIcon, color: "#1d1d1f" },
+      { key: "store-config", label: "ข้อความหน้าร้าน", icon: StoreIcon, color: "#3a3a3c" },
     ],
   },
   {
     title: "ตกแต่งร้าน",
     items: [
-      { key: "branding", label: "ข้อมูลแบรนด์", icon: SparklesIcon, color: "#bf5af2" },
-      { key: "colors", label: "สีธีม", icon: PaletteIcon, color: "#ff2d55" },
-      { key: "hero", label: "แบนเนอร์หน้าแรก", icon: ImageIcon, color: "#64d2ff" },
-      { key: "announcement", label: "ประกาศบนเว็บ", icon: MegaphoneIcon, color: "#ff9500" },
-      { key: "footer", label: "ฟุตเตอร์", icon: PanelBottomIcon, color: "#636366" },
+      { key: "branding", label: "ข้อมูลแบรนด์", icon: SparklesIcon, color: "#48484a" },
+      { key: "colors", label: "สีธีม", icon: PaletteIcon, color: "#636366" },
+      { key: "hero", label: "แบนเนอร์หน้าแรก", icon: ImageIcon, color: "#8e8e93" },
+      { key: "announcement", label: "ประกาศบนเว็บ", icon: MegaphoneIcon, color: "#1d1d1f" },
+      { key: "footer", label: "ฟุตเตอร์", icon: PanelBottomIcon, color: "#3a3a3c" },
     ],
   },
   {

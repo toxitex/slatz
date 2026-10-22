@@ -7,7 +7,7 @@
 
 <div class="flex min-h-dvh flex-col">
   <TopNav />
-  <main class="flex flex-1 flex-col pt-12">
+  <main class="flex flex-1 flex-col pt-[72px]">
     {@render children()}
   </main>
   <Footer />

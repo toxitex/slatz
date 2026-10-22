@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
-  import { reveal } from "$lib/attachments";
+  import { glassPointer, reveal } from "$lib/attachments";
   import ProductCard from "$lib/components/ProductCard.svelte";
   import { getStores } from "$lib/stores";
 
@@ -62,11 +62,12 @@
       {#each tiles as tile, i (tile.name)}
         <a
           href={resolve(`/category/${encodeURIComponent(tile.name)}`)}
-          class="group relative flex aspect-[5/4] flex-col overflow-hidden rounded-3xl bg-card p-7 transition-shadow duration-500 ease-apple hover:shadow-float"
+          class="group spotlight border-beam border-beam-hover relative flex aspect-[5/4] flex-col overflow-hidden rounded-3xl bg-card p-7 [--spot-color:#ffffff] transition-shadow duration-500 ease-apple hover:shadow-float"
           {@attach reveal(i * 60)}
+          {@attach glassPointer}
         >
           <div class="relative z-10">
-            <p class="text-xs font-semibold tracking-wide text-[#bf4800] uppercase">{tile.count} สินค้า</p>
+            <p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{tile.count} สินค้า</p>
             <h2 class="display mt-1 text-[28px]">{tile.name}</h2>
             <span class="link mt-2 text-sm">เลือกซื้อ<ChevronRightIcon class="size-3.5" /></span>
           </div>

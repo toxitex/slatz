@@ -24,6 +24,7 @@
   import { isConfigSection, sectionGroups, sectionItems, type SectionKey } from "$lib/components/admin/sections";
   import UsersSection from "$lib/components/admin/UsersSection.svelte";
   import FloatingField from "$lib/components/FloatingField.svelte";
+  import Grainient from "$lib/components/fx/Grainient.svelte";
   import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
@@ -127,8 +128,19 @@
 </svelte:head>
 
 {#if !authorized}
-  <main class="grid min-h-dvh place-items-center bg-background px-5">
-    <section class="reveal w-full max-w-[400px] text-center" aria-label="Admin access required">
+  <main class="relative grid min-h-dvh place-items-center overflow-hidden bg-background px-5">
+    <Grainient
+      class="!absolute inset-0"
+      colors={["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
+      angle={160}
+      speed={0.45}
+      silk={0.7}
+      grainAmount={0.05}
+    />
+    <section
+      class="liquid-glass reveal relative w-full max-w-[420px] rounded-[32px] px-6 py-10 text-center [--glass-alpha:58%] [--glass-blur:30px] sm:px-10"
+      aria-label="Admin access required"
+    >
       <span class="mx-auto grid size-16 place-items-center rounded-[18px] bg-foreground text-background shadow-float">
         <LockIcon class="size-7" strokeWidth={1.75} />
       </span>
@@ -162,7 +174,7 @@
         <div class="min-w-0">
           <p class="truncate text-[13px] font-semibold">{site.config.siteName}</p>
           <p class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span class={cn("size-1.5 rounded-full", products.databaseMode ? "bg-[#34c759]" : "bg-[#ff9f0a]")}></span>
+            <span class={cn("size-1.5 rounded-full", products.databaseMode ? "bg-foreground" : "bg-muted-foreground/40")}></span>
             {products.loading ? "กำลังโหลดข้อมูล..." : products.databaseMode ? "SQLite: ออนไลน์" : "SQLite: ออฟไลน์"}
           </p>
         </div>

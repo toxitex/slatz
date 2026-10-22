@@ -33,7 +33,7 @@
             <code class="font-mono">{topup.code}</code> · {new Date(topup.used_at).toLocaleString("th-TH")}
           </p>
         </div>
-        <span class="shrink-0 text-[17px] font-semibold text-[#1d7a3c] tabular-nums">+{formatBaht(topup.amount)}</span>
+        <span class="shrink-0 text-[17px] font-semibold text-foreground tabular-nums">+{formatBaht(topup.amount)}</span>
       </li>
     {/each}
   </ul>

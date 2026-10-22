@@ -13,6 +13,7 @@
   import { toast } from "svelte-sonner";
   import { slide } from "svelte/transition";
   import { api, errorMessage } from "$lib/api";
+  import { glassPointer } from "$lib/attachments";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { getStores } from "$lib/stores";
@@ -125,12 +126,17 @@
     <Button href={resolve("/store")} size="lg" class="mt-8">กลับไปยังร้านค้า</Button>
   </section>
 {:else}
-  <div class="glass sticky top-12 z-30 border-b border-border">
-    <div class="container-wide flex h-13 items-center justify-between gap-4 py-2">
-      <p class="truncate text-[19px] font-semibold tracking-tight">{product.name}</p>
-      <span class="shrink-0 text-xs text-muted-foreground max-sm:hidden">
-        {range ? (range.min === range.max ? formatBaht(range.min) : `${formatBaht(range.min)} – ${formatBaht(range.max)}`) : product.price}
-      </span>
+  <div class="sticky top-[68px] z-30 px-3">
+    <div class="liquid-glass mx-auto flex h-11 max-w-[880px] items-center justify-between gap-4 rounded-full pr-1.5 pl-5" {@attach glassPointer}>
+      <p class="truncate text-[15px] font-semibold tracking-tight">{product.name}</p>
+      <div class="flex shrink-0 items-center gap-3">
+        <span class="text-xs text-muted-foreground max-sm:hidden">
+          {range ? (range.min === range.max ? formatBaht(range.min) : `${formatBaht(range.min)} – ${formatBaht(range.max)}`) : product.price}
+        </span>
+        <Button size="sm" class="h-8 px-4" onclick={() => document.getElementById("checkout")?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+          ซื้อ
+        </Button>
+      </div>
     </div>
   </div>
 
@@ -144,21 +150,21 @@
     </nav>
 
     <article class="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
-      <div class="lg:sticky lg:top-32 lg:self-start">
-        <div class="grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card">
+      <div class="lg:sticky lg:top-36 lg:self-start">
+        <div class="spotlight group grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card [--spot-color:#ffffff]" {@attach glassPointer}>
           {#if product.imageUrl}
-            <img src={product.imageUrl} alt={product.name} class="size-full object-cover" />
+            <img src={product.imageUrl} alt={product.name} class="size-full object-cover transition-transform duration-[1200ms] ease-apple group-hover:scale-[1.03]" />
           {:else}
             <ShoppingBagIcon class="size-16 text-muted-foreground/40" strokeWidth={1} />
           {/if}
         </div>
         <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
           <div class="tile flex items-center gap-3 p-4">
-            <ZapIcon class="size-5 shrink-0 text-[#bf4800]" strokeWidth={1.75} />
+            <ZapIcon class="size-5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
             <span>ได้รับสินค้าทันทีหลังชำระเงิน</span>
           </div>
           <div class="tile flex items-center gap-3 p-4">
-            <ShieldCheckIcon class="size-5 shrink-0 text-[#1d9a4b]" strokeWidth={1.75} />
+            <ShieldCheckIcon class="size-5 shrink-0 text-foreground" strokeWidth={1.75} />
             <span>ปลอดภัย ตรวจสอบได้</span>
           </div>
         </div>
@@ -166,13 +172,13 @@
 
       <div class="flex flex-col gap-8">
         <header>
-          <p class="text-sm font-semibold text-[#bf4800]">{product.category || "ทั่วไป"}</p>
+          <p class="text-sm font-semibold text-muted-foreground">{product.category || "ทั่วไป"}</p>
           <h1 class="display mt-1 text-[36px] sm:text-[48px]">ซื้อ {product.name}</h1>
           <div class="mt-3 flex flex-wrap gap-2 text-xs">
             <span
               class={cn(
                 "rounded-full px-2.5 py-1",
-                product.status === "active" ? "bg-[#e3f5e8] text-[#1d7a3c]" : "bg-[#fdecec] text-[#c4271c]",
+                product.status === "active" ? "bg-foreground text-background" : "bg-secondary text-muted-foreground",
               )}
             >
               {product.status === "active" ? "เปิดขาย" : "หมดชั่วคราว"}
@@ -272,7 +278,7 @@
               {/if}
             </div>
             {#if appliedCoupon}
-              <p class="mt-2 flex items-center gap-1 text-xs text-[#1d7a3c]" transition:slide={{ duration: 200 }}>
+              <p class="mt-2 flex items-center gap-1 text-xs text-foreground" transition:slide={{ duration: 200 }}>
                 <CheckIcon class="size-3.5" /> ใช้โค้ด <strong>{appliedCoupon.code}</strong> ลด
                 {appliedCoupon.discountType === "percent" ? `${appliedCoupon.discountValue}%` : formatBaht(appliedCoupon.discountValue)}
               </p>
@@ -280,7 +286,7 @@
           </div>
         </section>
 
-        <section class="tile p-6">
+        <section id="checkout" class="tile border-beam p-6 [--beam-duration:8s]">
           <div class="flex items-end justify-between gap-4">
             <div>
               <p class="text-xs font-semibold text-muted-foreground">ยอดชำระสุทธิ</p>
@@ -292,7 +298,7 @@
               </p>
             </div>
             {#if discount > 0}
-              <span class="rounded-full bg-[#e3f5e8] px-2.5 py-1 text-xs text-[#1d7a3c]">ส่วนลด −{formatBaht(discount)}</span>
+              <span class="rounded-full bg-foreground px-2.5 py-1 text-xs text-background">ส่วนลด −{formatBaht(discount)}</span>
             {/if}
           </div>
           <Button
@@ -335,7 +341,7 @@
   <Dialog.Content class="sm:max-w-md">
     {#if order}
       <div class="flex flex-col items-center pt-2 text-center">
-        <span class="grid size-14 place-items-center rounded-full bg-[#e3f5e8] text-[#1d7a3c]">
+        <span class="grid size-14 place-items-center rounded-full bg-foreground text-background">
           <CheckIcon class="size-7" strokeWidth={2.5} />
         </span>
         <Dialog.Title class="display mt-4 text-[28px]">ทำรายการสำเร็จ</Dialog.Title>

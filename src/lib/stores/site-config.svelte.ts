@@ -5,9 +5,9 @@ import type { SiteConfig, SyncXProduct } from "$lib/types";
 const STORAGE_KEY = "syncx-site-config-v1";
 
 export const appleTheme: SiteConfig["theme"] = {
-  accentColor: "#0071e3",
+  accentColor: "#1d1d1f",
   backgroundColor: "#f5f5f7",
-  buttonColor: "#0071e3",
+  buttonColor: "#1d1d1f",
   cardColor: "#ffffff",
   textColor: "#1d1d1f",
   mutedTextColor: "#6e6e73",
@@ -22,6 +22,7 @@ export const defaultSiteConfig: SiteConfig = {
   heroImageUrl: "",
   heroHeadline: "SLATZ STUDIO",
   heroSubtitle: "แอดมินพร้อมบริการ 24 ชม.",
+  heroMorphWords: "ของแท้ 100%, ได้ของทันที, บริการ 24 ชม.",
   ctaText: "เริ่มต้นเลย!",
   searchPlaceholder: "ค้นหาสินค้า หมวดหมู่...",
   announcementTitle: "ยินดีต้อนรับ",
@@ -57,6 +58,23 @@ export const defaultSiteConfig: SiteConfig = {
   products: [],
 };
 
+/** Previous built-in palettes; saved configs still on one of these get the current default. */
+const legacyThemes = [
+  { accentColor: "#e60039", backgroundColor: "#050506", buttonColor: "#e60039" },
+  { accentColor: "#0071e3", backgroundColor: "#f5f5f7", buttonColor: "#0071e3" },
+];
+
+function upgradeTheme(theme: Partial<SiteConfig["theme"]> | undefined): Partial<SiteConfig["theme"]> {
+  if (!theme) return {};
+  const legacy = legacyThemes.some(
+    (t) =>
+      t.accentColor === theme.accentColor?.toLowerCase() &&
+      t.backgroundColor === theme.backgroundColor?.toLowerCase() &&
+      t.buttonColor === theme.buttonColor?.toLowerCase(),
+  );
+  return legacy ? {} : theme;
+}
+
 export function createProductDraft(): SyncXProduct {
   return {
     id: `product-${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -78,7 +96,7 @@ export function mergeConfig(input: unknown): SiteConfig {
     ...defaultSiteConfig,
     ...saved,
     stats: { ...defaultSiteConfig.stats, ...(saved.stats ?? {}) },
-    theme: { ...defaultSiteConfig.theme, ...(saved.theme ?? {}) },
+    theme: { ...defaultSiteConfig.theme, ...upgradeTheme(saved.theme) },
     footer: { ...defaultSiteConfig.footer, ...(saved.footer ?? {}) },
     store: { ...defaultSiteConfig.store, ...(saved.store ?? {}) },
     products: Array.isArray(saved.products)

@@ -7,7 +7,7 @@
 
 <span
   class={cn(
-    "grid shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-[#a1c4fd] to-[#5e9bff] font-semibold text-white",
+    "grid shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-[#c7c7cc] to-[#48484a] font-semibold text-white",
     className,
   )}
 >
