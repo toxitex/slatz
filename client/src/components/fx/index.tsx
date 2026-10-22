@@ -5,7 +5,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useInView, useMotionValue, useReducedMotion, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { Search, X, Command, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -273,6 +273,34 @@ export function CountUp({
     <span ref={ref} className={className}>
       {display}
     </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* RevealFx — Magic Portfolio / Once UI style blur-and-rise entrance   */
+/* ------------------------------------------------------------------ */
+export function RevealFx({
+  children,
+  delay = 0,
+  translateY = 8,
+  className,
+}: {
+  children: ReactNode;
+  /** Seconds before the reveal starts; stagger siblings by ~0.15s. */
+  delay?: number;
+  translateY?: number;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      className={className}
+      initial={reduce ? false : { opacity: 0, y: translateY, filter: "blur(8px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
