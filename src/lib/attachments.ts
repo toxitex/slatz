@@ -23,6 +23,30 @@ export function reveal(delay = 0): Attachment<HTMLElement> {
   };
 }
 
+/** Tracks the pointer over an element as `--mx` / `--my` for glass and spotlight highlights. */
+export const glassPointer: Attachment<HTMLElement> = (node) => {
+  if (window.matchMedia("(hover: none)").matches) return;
+  let frame = 0;
+  let x = 0;
+  let y = 0;
+  const apply = () => {
+    frame = 0;
+    const rect = node.getBoundingClientRect();
+    node.style.setProperty("--mx", `${x - rect.left}px`);
+    node.style.setProperty("--my", `${y - rect.top}px`);
+  };
+  const onmove = (event: PointerEvent) => {
+    x = event.clientX;
+    y = event.clientY;
+    if (!frame) frame = requestAnimationFrame(apply);
+  };
+  node.addEventListener("pointermove", onmove, { passive: true });
+  return () => {
+    cancelAnimationFrame(frame);
+    node.removeEventListener("pointermove", onmove);
+  };
+};
+
 /** Writes the element's scroll progress through the viewport (0 → 1) to `--progress`. */
 export const scrollProgress: Attachment<HTMLElement> = (node) => {
   if (prefersReducedMotion()) {

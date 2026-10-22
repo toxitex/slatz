@@ -13,10 +13,10 @@
 	theme="light"
 	position="top-center"
 	class="toaster group"
-	style="--normal-bg: var(--color-popover); --normal-text: var(--color-popover-foreground); --normal-border: var(--color-border);"
+	style="--normal-bg: color-mix(in srgb, var(--syncx-card) 70%, transparent); --normal-text: var(--color-popover-foreground); --normal-border: rgba(255, 255, 255, 0.6); --border-radius: 20px;"
 	toastOptions={{
 		classes: {
-			toast: "cn-toast",
+			toast: "cn-toast backdrop-blur-xl backdrop-saturate-150 shadow-float",
 		},
 	}}
 	{...restProps}
