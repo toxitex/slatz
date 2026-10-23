@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useSiteConfig, type Category } from "@/contexts/SiteConfigContext";
 import { api, isApiConfigured } from "@/lib/api";
+import { broadcast, onSync } from "@/lib/sync";
 
 /**
  * Design philosophy reminder: Cyber-Noir Thai Commerce.
@@ -90,6 +91,10 @@ export function useCategories() {
     void refresh();
   }, [refresh]);
 
+  useEffect(() => onSync((message) => {
+    if (message.type === "categories") void refresh();
+  }), [refresh]);
+
   const persistLocal = useCallback((next: Category[]) => {
     setCategories(next);
     writeLocal(next);
@@ -109,6 +114,7 @@ export function useCategories() {
         is_active: draft.isActive,
       });
       const created = toCategory(row);
+      broadcast({ type: "categories" });
       setCategories((current) => [...current, created]);
       toast("เพิ่มหมวดหมู่แล้ว");
       return created;
@@ -141,6 +147,7 @@ export function useCategories() {
     if (!Object.keys(dbPatch).length) return true;
     try {
       await api.patch(`/api/categories/${categoryId}`, dbPatch);
+      broadcast({ type: "categories" });
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -167,6 +174,7 @@ export function useCategories() {
     setCategories((current) => current.filter((cat) => cat.id !== categoryId));
     try {
       await api.delete(`/api/categories/${categoryId}`);
+      broadcast({ type: "categories" });
       toast("ลบหมวดหมู่แล้ว");
       return true;
     } catch (err) {
