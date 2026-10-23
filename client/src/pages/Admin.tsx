@@ -209,17 +209,15 @@ function Shell({ onLock, dark, onToggleTheme }: { onLock: () => void; dark: bool
                         onClick={() => select(entry.key)}
                         aria-current={selected ? "page" : undefined}
                         className={cn(
-                          "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left transition-colors max-md:rounded-none max-md:py-2.5",
-                          selected ? "md:bg-foreground md:text-background" : "hover:bg-sidebar-accent",
+                          "flex w-full items-center gap-2.5 rounded-[10px] px-2 py-1 text-left transition-colors max-md:rounded-none max-md:px-3 max-md:py-2.5",
+                          selected ? "bg-foreground/[0.08] font-medium" : "hover:bg-foreground/[0.045]",
                         )}
                       >
                         <span
-                          className={cn(
-                            "grid size-6 shrink-0 place-items-center rounded-[7px]",
-                            selected ? "bg-background/15 md:text-background" : "bg-foreground/[0.08] text-foreground",
-                          )}
+                          className="grid size-[22px] shrink-0 place-items-center rounded-[6px] text-white shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.12)]"
+                          style={{ background: entry.color, color: entry.color === "#ffd60a" ? "#3a2e00" : "#fff" }}
                         >
-                          <Icon className="size-3.5" strokeWidth={2} />
+                          <Icon className="size-3.5" strokeWidth={2.25} />
                         </span>
                         <span className="flex-1 truncate">{entry.label}</span>
                         <ChevronRight className="size-4 text-muted-foreground/60 md:hidden" />
