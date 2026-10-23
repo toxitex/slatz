@@ -109,4 +109,10 @@ temp/
 .webdev/
 
 # Manus version file (auto-generated, not part of source)
-client/public/__manus__/version.json
+.svelte-kit/
+
+# Local API data (SQLite, site config)
+data/
+
+# Admin uploads (served by the API)
+public/uploads/
