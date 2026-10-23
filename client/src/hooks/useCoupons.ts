@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { type Coupon } from "@/contexts/SiteConfigContext";
 import { api, isApiConfigured } from "@/lib/api";
+import { broadcast, onSync } from "@/lib/sync";
 
 /**
  * Design philosophy reminder: Cyber-Noir Thai Commerce.
@@ -89,6 +90,10 @@ export function useCoupons() {
     void refresh();
   }, [refresh]);
 
+  useEffect(() => onSync((message) => {
+    if (message.type === "coupons") void refresh();
+  }), [refresh]);
+
   const persistLocal = useCallback((next: Coupon[]) => {
     setCoupons(next);
     writeLocalCoupons(next);
@@ -108,6 +113,7 @@ export function useCoupons() {
         active: draft.active,
       });
       const created = toCoupon(row);
+      broadcast({ type: "coupons" });
       setCoupons((current) => [created, ...current]);
       return created;
     } catch (err) {
@@ -131,6 +137,7 @@ export function useCoupons() {
     if (!Object.keys(databasePatch).length) return true;
     try {
       await api.patch(`/api/coupons/${couponId}`, databasePatch);
+      broadcast({ type: "coupons" });
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -149,6 +156,7 @@ export function useCoupons() {
     setCoupons((current) => current.filter((coupon) => coupon.id !== couponId));
     try {
       await api.delete(`/api/coupons/${couponId}`);
+      broadcast({ type: "coupons" });
       return true;
     } catch (err) {
       setCoupons(previous);

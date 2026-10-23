@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useSiteConfig, type ProductStatus, type ProductTier, type SyncXProduct } from "@/contexts/SiteConfigContext";
 import { api, isApiConfigured } from "@/lib/api";
+import { broadcast, onSync } from "@/lib/sync";
 
 /**
  * Design philosophy reminder: Cyber-Noir Thai Commerce.
@@ -156,6 +157,10 @@ export function useInventoryProducts() {
     void refreshProducts();
   }, [refreshProducts]);
 
+  useEffect(() => onSync((message) => {
+    if (message.type === "products") void refreshProducts();
+  }), [refreshProducts]);
+
   const addProduct = useCallback(async (initialCategory?: string) => {
     const draft = createFallbackProduct();
     if (initialCategory) {
@@ -170,6 +175,7 @@ export function useInventoryProducts() {
     try {
       const row = await api.post<ProductRow>("/api/products", toInsert(draft, products.length + 1));
       const created = toProduct(row);
+      broadcast({ type: "products" });
       setDatabaseProducts((current) => [created, ...current]);
       toast("เพิ่มสินค้าแล้ว");
       return created;
@@ -192,6 +198,7 @@ export function useInventoryProducts() {
 
     try {
       await api.patch(`/api/products/${productId}`, databasePatch);
+      broadcast({ type: "products" });
       return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -211,6 +218,7 @@ export function useInventoryProducts() {
     setDatabaseProducts((current) => current.filter((product) => product.id !== productId));
     try {
       await api.delete(`/api/products/${productId}`);
+      broadcast({ type: "products" });
       toast("ลบสินค้าแล้ว");
       return true;
     } catch (err) {

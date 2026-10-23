@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { api } from "@/lib/api";
+import { broadcast, onSync } from "@/lib/sync";
 
 /**
  * Design philosophy reminder: Cyber-Noir Thai Commerce.
@@ -96,8 +97,14 @@ export type SiteConfig = {
   products: SyncXProduct[];
 };
 
+export type SaveState = "idle" | "saving" | "saved" | "error";
+
 type SiteConfigContextValue = {
   config: SiteConfig;
+  saveState: SaveState;
+  saveError: string | null;
+  savedAt: Date | null;
+  retrySave: () => void;
   updateConfig: (patch: Partial<SiteConfig>) => void;
   updateSection: <K extends keyof SiteConfig>(section: K, value: SiteConfig[K]) => void;
   updateProduct: (productId: string, patch: Partial<SyncXProduct>) => void;
@@ -210,12 +217,10 @@ async function fetchServerConfig(): Promise<SiteConfig | null> {
 }
 
 async function saveServerConfig(config: SiteConfig): Promise<void> {
-  try {
-    await api.post("/api/config", config);
-  } catch {
-    // silent — localStorage is the fallback
-  }
+  await api.post("/api/config", config);
 }
+
+const isAdminTab = () => typeof window !== "undefined" && window.sessionStorage.getItem("syncx-admin-access") === "granted";
 
 function loadConfig(): SiteConfig {
   if (typeof window === "undefined") return defaultSiteConfig;
@@ -251,15 +256,46 @@ const SiteConfigContext = createContext<SiteConfigContextValue | undefined>(unde
 
 export function SiteConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<SiteConfig>(() => loadConfig());
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  // Config that arrived from the server or another tab doesn't need to be written back.
+  const skipSave = useRef(true);
+
+  const persist = useCallback(async (next: SiteConfig) => {
+    if (!isAdminTab()) return;
+    setSaveState("saving");
+    try {
+      await saveServerConfig(next);
+      setSaveState("saved");
+      setSaveError(null);
+      setSavedAt(new Date());
+      broadcast({ type: "config", config: next });
+    } catch (err) {
+      setSaveState("error");
+      setSaveError(err instanceof Error ? err.message : String(err));
+    }
+  }, []);
+
+  useEffect(
+    () =>
+      onSync((message) => {
+        if (message.type !== "config") return;
+        skipSave.current = true;
+        setConfig(mergeConfig(message.config));
+      }),
+    [],
+  );
 
   // On mount: prefer server config, fall back to localStorage
   useEffect(() => {
     fetchServerConfig().then((serverConfig) => {
       if (serverConfig) {
+        skipSave.current = true;
         setConfig(serverConfig);
       } else {
-        // If server config is not set (e.g., first run), save current config (local) to server
-        saveServerConfig(config);
+        // First run: seed the server with the local config.
+        void persist(config);
       }
     });
   }, []);
@@ -276,13 +312,19 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
       link.href = faviconUrl;
     });
 
+    if (skipSave.current) {
+      skipSave.current = false;
+      return;
+    }
     // Debounce server save by 500ms to avoid database locks and API spamming
     const timeoutId = setTimeout(() => {
-      saveServerConfig(config);
+      void persist(config);
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [config]);
+  }, [config, persist]);
+
+  const retrySave = useCallback(() => void persist(config), [config, persist]);
 
   const updateConfig = useCallback((patch: Partial<SiteConfig>) => {
     setConfig((current) => mergeConfig({ ...current, ...patch }));
@@ -324,8 +366,22 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ config, updateConfig, updateSection, updateProduct, addProduct, deleteProduct, resetConfig, exportConfig, importConfig }),
-    [addProduct, config, deleteProduct, exportConfig, importConfig, resetConfig, updateConfig, updateProduct, updateSection],
+    () => ({
+      config,
+      saveState,
+      saveError,
+      savedAt,
+      retrySave,
+      updateConfig,
+      updateSection,
+      updateProduct,
+      addProduct,
+      deleteProduct,
+      resetConfig,
+      exportConfig,
+      importConfig,
+    }),
+    [addProduct, config, deleteProduct, exportConfig, importConfig, resetConfig, retrySave, saveError, saveState, savedAt, updateConfig, updateProduct, updateSection],
   );
 
   return <SiteConfigContext.Provider value={value}>{children}</SiteConfigContext.Provider>;
