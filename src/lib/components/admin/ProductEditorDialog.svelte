@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
+  import ExternalLinkIcon from "@lucide/svelte/icons/external-link";
   import PlusIcon from "@lucide/svelte/icons/plus";
   import ShoppingBagIcon from "@lucide/svelte/icons/shopping-bag";
   import { untrack } from "svelte";
@@ -93,7 +95,12 @@
           <ShoppingBagIcon class="size-4 text-muted-foreground" />
           แก้ไขสินค้า: {draft.name}
         </Dialog.Title>
-        <Dialog.Description class="text-xs">แก้ไขข้อมูล รายละเอียด ตัวเลือกราคา และสต็อกสินค้า — บันทึกอัตโนมัติ</Dialog.Description>
+        <Dialog.Description class="flex flex-wrap items-center gap-x-2 text-xs">
+          แก้ไขข้อมูล รายละเอียด ตัวเลือกราคา และสต็อกสินค้า — บันทึกอัตโนมัติ
+          <a href={resolve(`/product/${draft.id}`)} target="_blank" rel="noopener" class="inline-flex items-center gap-0.5 text-link hover:underline">
+            ดูบนหน้าร้าน<ExternalLinkIcon class="size-3" />
+          </a>
+        </Dialog.Description>
       </Dialog.Header>
 
       <form class="flex flex-col gap-6 px-6 pb-6" onchange={commit} onsubmit={(e) => e.preventDefault()}>

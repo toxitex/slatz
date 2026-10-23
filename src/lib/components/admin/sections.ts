@@ -2,6 +2,7 @@ import BarChart3Icon from "@lucide/svelte/icons/chart-column";
 import DatabaseIcon from "@lucide/svelte/icons/database";
 import HistoryIcon from "@lucide/svelte/icons/history";
 import ImageIcon from "@lucide/svelte/icons/image";
+import LayoutDashboardIcon from "@lucide/svelte/icons/layout-dashboard";
 import LayoutGridIcon from "@lucide/svelte/icons/layout-grid";
 import MegaphoneIcon from "@lucide/svelte/icons/megaphone";
 import PaletteIcon from "@lucide/svelte/icons/palette";
@@ -11,10 +12,20 @@ import SparklesIcon from "@lucide/svelte/icons/sparkles";
 import StoreIcon from "@lucide/svelte/icons/store";
 import TicketIcon from "@lucide/svelte/icons/ticket";
 import UsersIcon from "@lucide/svelte/icons/users";
+import WalletIcon from "@lucide/svelte/icons/wallet";
 import type { Component } from "svelte";
 
 export type ConfigSectionKey = "branding" | "colors" | "hero" | "announcement" | "stats" | "store-config" | "footer";
-export type SectionKey = ConfigSectionKey | "products" | "categories" | "coupons" | "orders" | "users" | "backup";
+export type SectionKey =
+  | ConfigSectionKey
+  | "overview"
+  | "products"
+  | "categories"
+  | "coupons"
+  | "vouchers"
+  | "orders"
+  | "users"
+  | "backup";
 
 export type SectionItem = {
   key: SectionKey;
@@ -27,7 +38,10 @@ export type SectionItem = {
 export const sectionGroups: { title: string; items: SectionItem[] }[] = [
   {
     title: "ภาพรวมระบบ",
-    items: [{ key: "stats", label: "ตัวเลขสถิติ", icon: BarChart3Icon, color: "#1d1d1f" }],
+    items: [
+      { key: "overview", label: "แดชบอร์ด", icon: LayoutDashboardIcon, color: "#1d1d1f" },
+      { key: "stats", label: "ตัวเลขหน้าแรก", icon: BarChart3Icon, color: "#3a3a3c" },
+    ],
   },
   {
     title: "จัดการร้านค้า",
@@ -35,6 +49,7 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
       { key: "products", label: "สินค้า", icon: ShoppingBagIcon, color: "#3a3a3c" },
       { key: "categories", label: "หมวดหมู่สินค้า", icon: LayoutGridIcon, color: "#48484a" },
       { key: "coupons", label: "คูปองส่วนลด", icon: TicketIcon, color: "#636366" },
+      { key: "vouchers", label: "บัตรเติมเงิน", icon: WalletIcon, color: "#1d1d1f" },
       { key: "orders", label: "ประวัติคำสั่งซื้อ", icon: HistoryIcon, color: "#8e8e93" },
       { key: "users", label: "จัดการลูกค้า", icon: UsersIcon, color: "#1d1d1f" },
       { key: "store-config", label: "ข้อความหน้าร้าน", icon: StoreIcon, color: "#3a3a3c" },

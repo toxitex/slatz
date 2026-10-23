@@ -360,6 +360,17 @@
     animation-delay: calc(var(--i, 0) * 35ms + 60ms);
   }
 
+  .bar-grow {
+    transform-origin: bottom;
+    animation: bar-grow 0.8s var(--ease-spring) both;
+    animation-delay: calc(var(--i, 0) * 30ms);
+  }
+
+  .bar-fill {
+    transform-origin: left;
+    animation: bar-fill 1s var(--ease-apple) both;
+  }
+
   .float-y {
     animation: float-y 7s ease-in-out infinite;
     animation-delay: var(--float-delay, 0s);
@@ -385,6 +396,18 @@
 @keyframes beam {
   to {
     --beam-angle: 360deg;
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes bar-fill {
+  from {
+    transform: scaleX(0);
   }
 }
 
@@ -448,6 +471,17 @@
   .reveal,
   .border-beam::after,
   .stagger-in > *,
+  .bar-grow {
+    transform-origin: bottom;
+    animation: bar-grow 0.8s var(--ease-spring) both;
+    animation-delay: calc(var(--i, 0) * 30ms);
+  }
+
+  .bar-fill {
+    transform-origin: left;
+    animation: bar-fill 1s var(--ease-apple) both;
+  }
+
   .float-y {
     animation: float-y 7s ease-in-out infinite;
     animation-delay: var(--float-delay, 0s);

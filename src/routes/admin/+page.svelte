@@ -7,22 +7,29 @@
   import RefreshCwIcon from "@lucide/svelte/icons/refresh-cw";
   import SearchIcon from "@lucide/svelte/icons/search";
   import { toast } from "svelte-sonner";
+  import CheckIcon from "@lucide/svelte/icons/check";
+  import CircleAlertIcon from "@lucide/svelte/icons/circle-alert";
+  import ExternalLinkIcon from "@lucide/svelte/icons/external-link";
+  import LoaderCircleIcon from "@lucide/svelte/icons/loader-circle";
   import {
-    ADMIN_ACCESS_CODE,
+    getAdminCode,
     getAdminSection,
     grantAdmin,
     isAdminGranted,
     revokeAdmin,
     setAdminSection,
+    verifyAdminCode,
   } from "$lib/admin-access";
   import BackupSection from "$lib/components/admin/BackupSection.svelte";
   import CategoriesSection from "$lib/components/admin/CategoriesSection.svelte";
   import ConfigSection from "$lib/components/admin/ConfigSection.svelte";
   import CouponsSection from "$lib/components/admin/CouponsSection.svelte";
   import OrdersSection from "$lib/components/admin/OrdersSection.svelte";
+  import OverviewSection from "$lib/components/admin/OverviewSection.svelte";
   import ProductsSection from "$lib/components/admin/ProductsSection.svelte";
   import { isConfigSection, sectionGroups, sectionItems, type SectionKey } from "$lib/components/admin/sections";
   import UsersSection from "$lib/components/admin/UsersSection.svelte";
+  import VouchersSection from "$lib/components/admin/VouchersSection.svelte";
   import FloatingField from "$lib/components/FloatingField.svelte";
   import Grainient from "$lib/components/fx/Grainient.svelte";
   import LogoIcon from "$lib/components/LogoIcon.svelte";
@@ -34,6 +41,7 @@
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");
+  let verifying = $state(false);
   let filter = $state("");
   let mobileDetail = $state(false);
   let active = $state<SectionKey>(initialSection());
@@ -41,12 +49,23 @@
   let productsSection = $state<ProductsSection>();
   let usersSection = $state<UsersSection>();
   let ordersSection = $state<OrdersSection>();
+  let overviewSection = $state<OverviewSection>();
+  let vouchersSection = $state<VouchersSection>();
 
-  if (isAdminGranted()) loadAdminData();
+  if (isAdminGranted()) {
+    loadAdminData();
+    // The stored code may have been rotated on the server since this tab unlocked.
+    void verifyAdminCode(getAdminCode() ?? "").then((result) => {
+      if (result !== "invalid") return;
+      revokeAdmin();
+      authorized = false;
+      toast.error("รหัสแอดมินถูกเปลี่ยน กรุณาเข้าสู่ระบบอีกครั้ง");
+    });
+  }
 
   function initialSection(): SectionKey {
     const saved = getAdminSection();
-    return sectionItems.find((item) => item.key === saved)?.key ?? "branding";
+    return sectionItems.find((item) => item.key === saved)?.key ?? "overview";
   }
 
   function loadAdminData() {
@@ -72,8 +91,10 @@
         return `${categories.categories.length} หมวด`;
       case "coupons":
         return `${coupons.coupons.length} โค้ด`;
+      case "overview":
+        return "ข้อมูลจริงจากฐานข้อมูล";
       default:
-        return "บันทึกอัตโนมัติ";
+        return "แก้ไขแล้วแสดงบนหน้าร้านทันที";
     }
   });
 
@@ -83,11 +104,15 @@
     setAdminSection(key);
   }
 
-  function onsubmit(event: SubmitEvent) {
+  async function onsubmit(event: SubmitEvent) {
     event.preventDefault();
     const code = accessCode.trim();
-    if (code !== ADMIN_ACCESS_CODE) {
-      toast("รหัสแอดมินไม่ถูกต้อง");
+    if (!code) return;
+    verifying = true;
+    const result = await verifyAdminCode(code);
+    verifying = false;
+    if (result !== "ok") {
+      toast.error(result === "invalid" ? "รหัสแอดมินไม่ถูกต้อง" : "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองใหม่");
       return;
     }
     grantAdmin(code);
@@ -109,6 +134,8 @@
     else if (active === "coupons") await coupons.refresh();
     else if (active === "users") await usersSection?.refresh();
     else if (active === "orders") await ordersSection?.refresh();
+    else if (active === "overview") await Promise.all([overviewSection?.refresh(), products.refresh()]);
+    else if (active === "vouchers") await vouchersSection?.refresh();
   }
 
   async function addToActive() {
@@ -117,11 +144,29 @@
     else if (active === "coupons") await coupons.add();
   }
 
-  const canRefresh = $derived(["products", "categories", "coupons", "users", "orders"].includes(active));
+  const canRefresh = $derived(
+    ["overview", "products", "categories", "coupons", "vouchers", "users", "orders"].includes(active),
+  );
   const addLabel = $derived(
     active === "products" ? "เพิ่มสินค้า" : active === "categories" ? "เพิ่มหมวดหมู่" : active === "coupons" ? "เพิ่มคูปอง" : null,
   );
 </script>
+
+{#snippet saveStatus()}
+  <span class="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground" aria-live="polite">
+    {#if site.saveState === "pending" || site.saveState === "saving"}
+      <LoaderCircleIcon class="size-3.5 animate-spin" />กำลังบันทึก...
+    {:else if site.saveState === "saved"}
+      <CheckIcon class="size-3.5 text-foreground" />บันทึกแล้ว · อัปเดตหน้าร้าน
+    {:else if site.saveState === "error"}
+      <CircleAlertIcon class="size-3.5 text-destructive" />
+      <span class="text-destructive" title={site.saveError ?? undefined}>บันทึกไม่สำเร็จ</span>
+      <button type="button" class="text-link hover:underline" onclick={() => site.retrySave()}>ลองอีกครั้ง</button>
+    {:else}
+      บันทึกอัตโนมัติ
+    {/if}
+  </span>
+{/snippet}
 
 <svelte:head>
   <title>แอดมิน · {site.config.siteName}</title>
@@ -150,7 +195,9 @@
       </p>
       <form class="mt-8 flex flex-col gap-3 text-left" {onsubmit}>
         <FloatingField label="รหัสแอดมิน" type="password" autocomplete="current-password" bind:value={accessCode} />
-        <Button type="submit" size="lg" class="w-full">เข้าสู่แดชบอร์ด</Button>
+        <Button type="submit" size="lg" class="w-full" disabled={verifying}>
+          {verifying ? "กำลังตรวจสอบ..." : "เข้าสู่แดชบอร์ด"}
+        </Button>
       </form>
       <a href={resolve("/")} class="link mt-6 text-sm">กลับหน้าร้าน<ChevronRightIcon class="size-3.5" /></a>
     </section>
@@ -213,7 +260,9 @@
       </nav>
 
       <div class="flex items-center gap-2 border-t border-border p-3">
-        <Button href={resolve("/store")} variant="secondary" size="sm" class="flex-1">ดูร้านค้า</Button>
+        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1">
+          หน้าร้าน<ExternalLinkIcon />
+        </Button>
         <Button variant="secondary" size="sm" class="flex-1" onclick={lock}><LockIcon />ล็อก</Button>
       </div>
     </aside>
@@ -231,6 +280,9 @@
           <h1 class="truncate text-[15px] font-semibold">{activeItem.label}</h1>
           <p class="truncate text-[11px] text-muted-foreground max-md:hidden">{subtitle}</p>
         </div>
+        {#if isConfigSection(active)}
+          {@render saveStatus()}
+        {/if}
         {#if canRefresh}
           <Button variant="ghost" size="icon-sm" aria-label="โหลดใหม่" onclick={refreshActive}><RefreshCwIcon /></Button>
         {/if}
@@ -241,7 +293,9 @@
 
       <div class="flex-1 overflow-y-auto">
         <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
-          {#if isConfigSection(active)}
+          {#if active === "overview"}
+            <OverviewSection bind:this={overviewSection} onnavigate={select} />
+          {:else if isConfigSection(active)}
             <ConfigSection section={active} />
           {:else if active === "products"}
             <ProductsSection bind:this={productsSection} />
@@ -249,6 +303,8 @@
             <CategoriesSection />
           {:else if active === "coupons"}
             <CouponsSection />
+          {:else if active === "vouchers"}
+            <VouchersSection bind:this={vouchersSection} />
           {:else if active === "users"}
             <UsersSection bind:this={usersSection} />
           {:else if active === "orders"}

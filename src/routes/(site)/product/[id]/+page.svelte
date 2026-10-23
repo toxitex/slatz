@@ -48,9 +48,12 @@
   const range = $derived(tierRange(tiers));
   const stock = $derived(totalStock(tiers));
 
+  const unavailable = $derived(product?.status === "out_of_stock");
   const buyLabel = $derived(
     buying
       ? "กำลังดำเนินการ..."
+      : unavailable
+        ? "สินค้าหมดชั่วคราว"
       : !selectedTier
         ? "กรุณาเลือกตัวเลือก"
         : selectedTier.stock <= 0
@@ -304,7 +307,7 @@
           <Button
             size="lg"
             class="mt-5 w-full"
-            disabled={buying || !selectedTier || selectedTier.stock <= 0}
+            disabled={buying || unavailable || !selectedTier || selectedTier.stock <= 0}
             onclick={buy}
           >
             {buyLabel}

@@ -8,7 +8,8 @@
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
   import { tierRange } from "$lib/stores/products.svelte";
-  import type { SyncXProduct } from "$lib/types";
+  import { api } from "$lib/api";
+  import type { PublicStats, SyncXProduct } from "$lib/types";
   import { cn, formatBaht } from "$lib/utils";
 
   const { site, products, categories, ui } = getStores();
@@ -16,12 +17,22 @@
   categories.ensureLoaded();
 
   const config = $derived(site.config);
-  const stats = $derived([
-    { label: config.stats.usersLabel, value: config.stats.users, unit: config.stats.usersUnit },
-    { label: config.stats.productsLabel, value: config.stats.products, unit: config.stats.productsUnit },
-    { label: config.stats.stockLabel, value: config.stats.stock, unit: config.stats.stockUnit },
-    { label: config.stats.soldLabel, value: config.stats.sold, unit: config.stats.soldUnit },
-  ]);
+  let liveStats = $state<PublicStats | null>(null);
+  api
+    .get<PublicStats>("/api/stats")
+    .then((data) => (liveStats = data))
+    .catch(() => (liveStats = null));
+
+  const stats = $derived.by(() => {
+    const live = config.stats.live && liveStats;
+    const value = (key: keyof PublicStats) => (live ? liveStats![key].toLocaleString("en-US") : config.stats[key]);
+    return [
+      { label: config.stats.usersLabel, value: value("users"), unit: config.stats.usersUnit },
+      { label: config.stats.productsLabel, value: value("products"), unit: config.stats.productsUnit },
+      { label: config.stats.stockLabel, value: value("stock"), unit: config.stats.stockUnit },
+      { label: config.stats.soldLabel, value: value("sold"), unit: config.stats.soldUnit },
+    ];
+  });
   const visible = $derived(products.products.filter((p) => p.status !== "hidden"));
   const featured = $derived(visible.slice(0, 2));
   const tiles = $derived(visible.slice(2, 6));
