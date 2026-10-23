@@ -1,4 +1,5 @@
-import { api } from "$lib/api";
+import { api, errorMessage } from "$lib/api";
+import { broadcast, onSync } from "$lib/sync";
 import { isAdminGranted } from "$lib/admin-access";
 import type { SiteConfig, SyncXProduct } from "$lib/types";
 
@@ -28,6 +29,7 @@ export const defaultSiteConfig: SiteConfig = {
   announcementTitle: "ยินดีต้อนรับ",
   announcementBody: "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
   stats: {
+    live: true,
     users: "112",
     products: "100",
     stock: "100",
@@ -137,8 +139,19 @@ function applyTheme(theme: SiteConfig["theme"]) {
  */
 export class SiteConfigStore {
   config = $state<SiteConfig>(loadLocal());
+  saveState = $state<"idle" | "pending" | "saving" | "saved" | "error">("idle");
+  saveError = $state<string | null>(null);
+  savedAt = $state<Date | null>(null);
   #saveTimer: ReturnType<typeof setTimeout> | undefined;
   #skipNextSave = true;
+
+  constructor() {
+    onSync((message) => {
+      if (message.type !== "config") return;
+      this.#skipNextSave = true;
+      this.config = mergeConfig(message.config);
+    });
+  }
 
   async load() {
     let server: SiteConfig | null = null;
@@ -168,17 +181,31 @@ export class SiteConfigStore {
       this.#skipNextSave = false;
       return;
     }
+    if (!isAdminGranted()) return;
+    this.saveState = "pending";
     clearTimeout(this.#saveTimer);
     this.#saveTimer = setTimeout(() => void this.#save(), 500);
   }
 
+  /** Persists to the server; storefront tabs pick the change up through the sync channel. */
   async #save() {
     if (!isAdminGranted()) return;
+    const snapshot = $state.snapshot(this.config) as SiteConfig;
+    this.saveState = "saving";
     try {
-      await api.post("/api/config", $state.snapshot(this.config));
-    } catch {
-      // localStorage remains the fallback copy
+      await api.post("/api/config", snapshot);
+      this.saveState = "saved";
+      this.saveError = null;
+      this.savedAt = new Date();
+      broadcast({ type: "config", config: snapshot });
+    } catch (err) {
+      this.saveState = "error";
+      this.saveError = errorMessage(err);
     }
+  }
+
+  retrySave() {
+    void this.#save();
   }
 
   update(patch: Partial<SiteConfig>) {

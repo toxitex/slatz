@@ -50,6 +50,8 @@ export type SiteConfig = {
   announcementTitle: string;
   announcementBody: string;
   stats: {
+    /** Show real numbers from /api/stats instead of the manual values below. */
+    live: boolean;
     users: string;
     products: string;
     stock: string;
@@ -116,4 +118,32 @@ export type AdminUser = {
   created_at: string;
   order_count?: number;
   total_spent?: number;
+};
+
+export type PublicStats = { users: number; products: number; stock: number; sold: number };
+
+export type AdminStats = {
+  totals: PublicStats & {
+    newUsers7d: number;
+    orders: number;
+    revenue: number;
+    revenueToday: number;
+    topupCredited: number;
+    vouchersAvailable: number;
+    vouchersAvailableValue: number;
+  };
+  sales: { day: string; orders: number; revenue: number }[];
+  topProducts: { productId: string; productName: string; quantity: number; revenue: number }[];
+  lowStock: { productId: string; productName: string; tierLabel: string; stock: number }[];
+  recentOrders: (Order & { user_name?: string })[];
+};
+
+export type Voucher = {
+  id: string;
+  code: string;
+  amount: number;
+  is_used: boolean;
+  used_at: string | null;
+  created_at: string;
+  used_by_email: string | null;
 };
