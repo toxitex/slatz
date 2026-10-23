@@ -1184,3 +1184,93 @@ select.syncx-input option {
   .search-modal-footer { justify-content: center; }
 }
 
+
+/*
+ * Admin dashboard theme. AdminShell adds `admin-theme` (and optionally `admin-dark`) to <html> while it is
+ * mounted, so portaled Radix content (dialogs, selects, menus) picks up the same tokens. The storefront theme
+ * is untouched.
+ */
+html.admin-theme {
+  color-scheme: light;
+  background: #f5f5f7;
+  scrollbar-width: auto;
+  --radius: 0.85rem;
+  --background: #f5f5f7;
+  --foreground: #1d1d1f;
+  --card: #ffffff;
+  --card-foreground: #1d1d1f;
+  --popover: rgba(255, 255, 255, 0.9);
+  --popover-foreground: #1d1d1f;
+  --primary: #1d1d1f;
+  --primary-foreground: #ffffff;
+  --secondary: #efeff1;
+  --secondary-foreground: #1d1d1f;
+  --muted: #efeff1;
+  --muted-foreground: #6e6e73;
+  --accent: #e9e9ec;
+  --accent-foreground: #1d1d1f;
+  --destructive: #d70015;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.14);
+  --ring: rgba(0, 0, 0, 0.3);
+  --sidebar: rgba(246, 246, 248, 0.82);
+  --sidebar-foreground: #1d1d1f;
+  --sidebar-accent: rgba(0, 0, 0, 0.05);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --chart-1: #1d1d1f;
+  --chart-2: #8e8e93;
+}
+
+html.admin-theme.admin-dark {
+  color-scheme: dark;
+  background: #0b0b0c;
+  --background: #0b0b0c;
+  --foreground: #f5f5f7;
+  --card: #1c1c1e;
+  --card-foreground: #f5f5f7;
+  --popover: rgba(38, 38, 40, 0.9);
+  --popover-foreground: #f5f5f7;
+  --primary: #f5f5f7;
+  --primary-foreground: #1d1d1f;
+  --secondary: #2c2c2e;
+  --secondary-foreground: #f5f5f7;
+  --muted: #2c2c2e;
+  --muted-foreground: #98989d;
+  --accent: #3a3a3c;
+  --accent-foreground: #f5f5f7;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: rgba(255, 255, 255, 0.35);
+  --sidebar: rgba(28, 28, 30, 0.82);
+  --sidebar-foreground: #f5f5f7;
+  --sidebar-accent: rgba(255, 255, 255, 0.07);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --chart-1: #f5f5f7;
+  --chart-2: #636366;
+}
+
+html.admin-theme body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "LINESeedThai", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+@keyframes admin-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.admin-rise > * {
+  animation: admin-rise 0.45s cubic-bezier(0.28, 0.11, 0.32, 1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-rise > * {
+    animation: none;
+  }
+}
