@@ -25,6 +25,9 @@
   const revenue = $derived(orders.reduce((sum, o) => sum + (o.total ?? 0), 0));
 </script>
 
+<p class="px-1 text-[13px] leading-relaxed text-muted-foreground">
+  รายการนี้คือคำสั่งซื้อที่ลูกค้าเห็นในหน้าคำสั่งซื้อ รวมคีย์ที่ระบบออกให้หลังชำระเงิน
+</p>
 {#if error}
   <p class="rounded-2xl bg-card px-4 py-3 text-[13px] text-destructive">{error}</p>
 {/if}

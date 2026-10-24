@@ -47,6 +47,9 @@
     "w-full rounded-md bg-transparent px-1.5 py-1 outline-none hover:bg-secondary focus:bg-secondary";
 </script>
 
+<p class="px-1 text-[13px] leading-relaxed text-muted-foreground">
+  ชื่อและยอดเงินที่แก้ที่นี่คือชื่อกับยอดคงเหลือในบัญชีของลูกค้า
+</p>
 {#if error}
   <p class="rounded-2xl bg-card px-4 py-3 text-[13px] text-destructive">{error}</p>
 {/if}

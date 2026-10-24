@@ -35,6 +35,9 @@
   }
 </script>
 
+<p class="px-1 text-[13px] leading-relaxed text-muted-foreground">
+  สินค้าที่เปิดขายโชว์บนหน้าแรก หน้าร้าน และหน้าหมวด หมดชั่วคราวยังเห็นแต่ซื้อไม่ได้ ซ่อนจากหน้าร้านแล้วลิงก์สินค้าจะเปิดไม่เจอ
+</p>
 {#if products.loading}
   <div class="h-64 animate-pulse rounded-2xl bg-card"></div>
 {:else if groups.length}

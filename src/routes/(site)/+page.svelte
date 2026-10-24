@@ -49,7 +49,7 @@
       href={resolve(`/product/${product.id}`)}
       class={cn("h-10 px-5 text-[15px]", dark && "bg-white text-black hover:bg-white/85")}
     >
-      เรียนรู้เพิ่มเติม
+      {config.store.learnMoreText}
     </Button>
     <Button
       href={resolve(`/product/${product.id}`)}
@@ -59,7 +59,7 @@
         dark && "border-white/70 text-white hover:bg-white hover:text-black",
       )}
     >
-      ซื้อ
+      {config.store.buyText}
     </Button>
   </div>
 {/snippet}
@@ -126,7 +126,7 @@
         onclick={ui.openSearch}
         {@attach glassPointer}
       >
-        ค้นหาสินค้า<ChevronRightIcon class="size-4" />
+        {config.searchButtonText}<ChevronRightIcon class="size-4" />
       </button>
     </div>
   </div>
@@ -212,7 +212,7 @@
 
 {#if shelf.length}
   <section class="container-wide pt-20" aria-label="หมวดหมู่">
-    <h2 class="display mb-8 text-center text-[28px] sm:text-[40px]" {@attach reveal()}>เลือกซื้อตามหมวดหมู่</h2>
+    <h2 class="display mb-8 text-center text-[28px] sm:text-[40px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
     <div class="flex gap-6 overflow-x-auto pb-2 [scrollbar-width:none] sm:justify-center">
       {#each shelf as category, i (category.id)}
         <a
@@ -234,20 +234,26 @@
   </section>
 {/if}
 
-<!-- Words light up as the statement scrolls through the viewport. -->
-<section class="container-apple py-24 sm:py-32" aria-labelledby="announcement-heading" {@attach scrollProgress}>
-  <p id="announcement-heading" class="eyebrow mb-4">{config.announcementTitle}</p>
-  <p class="display text-[32px] leading-[1.15] sm:text-[56px]" aria-label={config.announcementBody}>
-    {#each words as word, i (i)}
-      <span
-        aria-hidden="true"
-        class="transition-opacity duration-150"
-        style:opacity={`clamp(0.18, calc((var(--progress, 0) - ${i / words.length}) * ${words.length / 3} + 0.18), 1)`}
-      >{word}</span>
-    {/each}
-  </p>
-  <a href={resolve("/store")} class="link mt-8 text-[19px]">ไปที่ร้านค้า<ChevronRightIcon class="size-4" /></a>
-</section>
+<!-- Words light up as the statement scrolls through the viewport. Hidden when the announcement body is empty. -->
+{#if config.announcementBody.trim()}
+  <section class="container-apple py-24 sm:py-32" aria-labelledby="announcement-heading" {@attach scrollProgress}>
+    {#if config.announcementTitle.trim()}
+      <p id="announcement-heading" class="eyebrow mb-4">{config.announcementTitle}</p>
+    {/if}
+    <p class="display text-[32px] leading-[1.15] sm:text-[56px]" aria-label={config.announcementBody}>
+      {#each words as word, i (i)}
+        <span
+          aria-hidden="true"
+          class="transition-opacity duration-150"
+          style:opacity={`clamp(0.18, calc((var(--progress, 0) - ${i / words.length}) * ${words.length / 3} + 0.18), 1)`}
+        >{word}</span>
+      {/each}
+    </p>
+    {#if config.announcementLink.trim()}
+      <a href={resolve("/store")} class="link mt-8 text-[19px]">{config.announcementLink}<ChevronRightIcon class="size-4" /></a>
+    {/if}
+  </section>
+{/if}
 
 <section
   class="bg-black bg-[radial-gradient(70%_90%_at_50%_0%,#2c2c2e_0%,#000_70%)] py-20 text-[#f5f5f7] sm:py-28"
@@ -255,7 +261,7 @@
 >
   <div class="container-wide">
     <h2 id="stats-heading" class="display text-center text-[32px] sm:text-[48px]" {@attach reveal()}>
-      ตัวเลขที่ลูกค้าไว้วางใจ
+      {config.stats.heading}
     </h2>
     <div class="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {#each stats as stat, i (stat.label)}

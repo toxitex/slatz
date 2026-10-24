@@ -40,7 +40,7 @@
   }
 </script>
 
-<SettingsGroup title="สำรองและกู้คืนการตั้งค่า" description="ส่งออก/นำเข้าการตั้งค่าร้านทั้งหมดเป็น JSON">
+<SettingsGroup title="สำรองและกู้คืนการตั้งค่า" description="ข้อความ สี โลโก้ และตัวเลขบนหน้าร้าน ทั้งก้อนนี้เป็น JSON คำสั่งซื้อ ลูกค้า และสินค้าในฐานข้อมูลไม่อยู่ในไฟล์นี้">
   <div class="flex flex-col gap-3 p-4">
     <div class="flex flex-wrap gap-2">
       <Button variant="secondary" onclick={exportConfig}><DownloadIcon />{copied ? "คัดลอกแล้ว" : "ส่งออก JSON"}</Button>

@@ -13,6 +13,9 @@
     "w-full max-w-sm rounded-md bg-transparent px-1 py-1 text-right text-muted-foreground outline-none focus:bg-secondary focus:text-left focus:text-foreground";
 </script>
 
+<p class="px-1 text-[13px] leading-relaxed text-muted-foreground">
+  หมวดที่เปิดแสดงจะเรียงตามลำดับบนหน้าแรก หน้าร้าน และเมนูร้านค้า รูปแบนเนอร์คือรูปบนการ์ดหมวด ปิดแสดงแล้วหมวดนั้นหายจากหน้าร้าน แต่สินค้าในหมวดยังอยู่
+</p>
 {#each categories.categories as category (category.id)}
   <SettingsGroup title={category.name || "หมวดหมู่ไม่มีชื่อ"}>
     {#snippet actions()}

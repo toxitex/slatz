@@ -23,6 +23,10 @@ function toCategory(row: CategoryRow): Category {
   };
 }
 
+function ordered(list: Category[]): Category[] {
+  return [...list].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, "th"));
+}
+
 function readLocal(): Category[] {
   try {
     const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "[]");
@@ -55,7 +59,7 @@ export class CategoriesStore {
     this.error = null;
     try {
       const rows = await api.get<CategoryRow[]>("/api/categories");
-      this.categories = rows.map(toCategory);
+      this.categories = ordered(rows.map(toCategory));
       this.databaseMode = true;
     } catch (err) {
       this.databaseMode = false;
@@ -66,8 +70,8 @@ export class CategoriesStore {
   }
 
   #persistLocal(next: Category[]) {
-    this.categories = next;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    this.categories = ordered(next);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.categories));
   }
 
   async add() {
@@ -90,7 +94,7 @@ export class CategoriesStore {
         is_active: draft.isActive,
       });
       const created = toCategory(row);
-      this.categories = [...this.categories, created];
+      this.categories = ordered([...this.categories, created]);
       toast("เพิ่มหมวดหมู่แล้ว");
       return created;
     } catch (err) {
@@ -102,7 +106,7 @@ export class CategoriesStore {
 
   async update(categoryId: string, patch: Partial<Category>) {
     const existing = this.categories.find((cat) => cat.id === categoryId);
-    const next = this.categories.map((cat) => (cat.id === categoryId ? { ...cat, ...patch } : cat));
+    const next = ordered(this.categories.map((cat) => (cat.id === categoryId ? { ...cat, ...patch } : cat)));
     if (!this.databaseMode) {
       if (existing && patch.name !== undefined && patch.name !== existing.name) {
         this.#products.renameCategoryLocally(existing.name, patch.name);

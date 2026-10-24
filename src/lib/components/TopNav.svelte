@@ -293,7 +293,7 @@
                     ui.openSearch();
                   }}
                 >
-                  ค้นหาสินค้า
+                  {site.config.searchButtonText}
                 </button>
               </li>
               {#each quickLinks as link, i (link.href)}

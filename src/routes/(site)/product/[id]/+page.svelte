@@ -21,7 +21,7 @@
   import type { Coupon, Order } from "$lib/types";
   import { cn, formatBaht } from "$lib/utils";
 
-  const { products, coupons, auth } = getStores();
+  const { site, products, coupons, auth } = getStores();
   products.ensureLoaded();
   coupons.ensureLoaded();
 
@@ -33,7 +33,10 @@
   let buying = $state(false);
   let order = $state<Order | null>(null);
 
-  const product = $derived(products.products.find((p) => p.id === page.params.id) ?? null);
+  const product = $derived.by(() => {
+    const found = products.products.find((p) => p.id === page.params.id) ?? null;
+    return found && found.status !== "hidden" ? found : null;
+  });
   const tiers = $derived(product?.tiers ?? []);
   const defaultTierId = $derived((tiers.find((t) => t.stock > 0) ?? tiers[0])?.id ?? null);
   const selectedTier = $derived(tiers.find((t) => t.id === (pickedTierId ?? defaultTierId)) ?? null);
@@ -55,7 +58,7 @@
         ? "กรุณาเลือกตัวเลือก"
         : selectedTier.stock <= 0
           ? "สินค้าตัวเลือกนี้หมด"
-          : "ซื้อเลย",
+          : site.config.store.checkoutText,
   );
 
   function applyCoupon() {
@@ -134,7 +137,7 @@
           {range ? (range.min === range.max ? formatBaht(range.min) : `${formatBaht(range.min)} – ${formatBaht(range.max)}`) : product.price}
         </span>
         <Button size="sm" class="h-8 px-4" onclick={() => document.getElementById("checkout")?.scrollIntoView({ behavior: "smooth", block: "center" })}>
-          ซื้อ
+          {site.config.store.buyText}
         </Button>
       </div>
     </div>
@@ -173,7 +176,7 @@
       <div class="flex flex-col gap-8">
         <header>
           <p class="text-sm font-semibold text-muted-foreground">{product.category || "ทั่วไป"}</p>
-          <h1 class="display mt-1 text-[36px] sm:text-[48px]">ซื้อ {product.name}</h1>
+          <h1 class="display mt-1 text-[36px] sm:text-[48px]">{site.config.store.buyText} {product.name}</h1>
           <div class="mt-3 flex flex-wrap gap-2 text-xs">
             <span
               class={cn(

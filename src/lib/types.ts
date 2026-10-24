@@ -47,9 +47,14 @@ export type SiteConfig = {
   heroMorphWords: string;
   ctaText: string;
   searchPlaceholder: string;
+  /** Label on the hero and store-menu search buttons. */
+  searchButtonText: string;
   announcementTitle: string;
   announcementBody: string;
+  /** Link under the home announcement. Empty hides the link. */
+  announcementLink: string;
   stats: {
+    heading: string;
     users: string;
     products: string;
     stock: string;
@@ -79,11 +84,21 @@ export type SiteConfig = {
     lineUrl: string;
     facebookUrl: string;
     instagramUrl: string;
+    rights: string;
+    country: string;
   };
   store: {
+    headline: string;
+    headlineAccent: string;
     sectionTitle: string;
+    categoryTitle: string;
+    latestTitle: string;
+    latestAccent: string;
     emptyStateText: string;
     productButtonText: string;
+    learnMoreText: string;
+    buyText: string;
+    checkoutText: string;
   };
   products: SyncXProduct[];
 };

@@ -63,8 +63,8 @@
     </div>
 
     <div class="mt-8 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:justify-between">
-      <p>Copyright © {new Date().getFullYear()} {site.config.siteName}. สงวนลิขสิทธิ์</p>
-      <p>ประเทศไทย</p>
+      <p>Copyright © {new Date().getFullYear()} {site.config.siteName}. {site.config.footer.rights}</p>
+      {#if site.config.footer.country}<p>{site.config.footer.country}</p>{/if}
     </div>
   </div>
 </footer>
