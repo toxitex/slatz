@@ -219,7 +219,7 @@
           {/if}
         </span>
         <div class="min-w-0">
-          <p class="truncate text-[13px] font-semibold">{site.config.siteName}</p>
+          <p class="truncate text-[14px] font-semibold">{site.config.siteName}</p>
           <p class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span class={cn("size-1.5 rounded-full", products.databaseMode ? "bg-foreground" : "bg-muted-foreground/40")}></span>
             {products.loading ? "กำลังโหลดข้อมูล..." : products.databaseMode ? "SQLite: ออนไลน์" : "SQLite: ออฟไลน์"}
@@ -234,15 +234,15 @@
 
       <nav class="flex-1 overflow-y-auto px-2 pb-4" aria-label="หัวข้อการตั้งค่า">
         {#each visibleGroups as group (group.title)}
-          <p class="px-2.5 pt-4 pb-1 text-[11px] font-semibold text-muted-foreground">{group.title}</p>
+          <p class="px-2.5 pt-4 pb-1 text-[12px] font-semibold text-muted-foreground">{group.title}</p>
           <ul class="max-md:divide-y max-md:divide-border max-md:overflow-hidden max-md:rounded-xl max-md:bg-card">
             {#each group.items as item (item.key)}
               <li>
                 <button
                   type="button"
                   class={cn(
-                    "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left transition-colors max-md:rounded-none max-md:py-2.5",
-                    item.key === active ? "md:bg-primary md:text-primary-foreground" : "hover:bg-foreground/[0.05]",
+                    "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[14px] transition-colors max-md:rounded-none max-md:py-2.5",
+                    item.key === active ? "md:bg-primary md:font-medium md:text-primary-foreground" : "hover:bg-foreground/[0.05]",
                   )}
                   aria-current={item.key === active ? "page" : undefined}
                   onclick={() => select(item.key)}

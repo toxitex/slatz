@@ -221,7 +221,7 @@
             </a>
             <a
               href={resolve("/register")}
-              class="shine rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground transition-transform active:scale-95"
+              class="shine rounded-full bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-transform active:scale-95"
             >
               สมัครสมาชิก
             </a>
