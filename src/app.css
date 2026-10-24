@@ -1,12 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
-@import "@fontsource-variable/inter";
-
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Thai glyphs only, so Latin text still falls through to SF Pro / Inter. Variable 100–700 means
+ * Thai glyphs only. Latin text uses SF Pro (Apple), then Helvetica. Variable 100–700 means
  * font-medium and font-semibold render true weights instead of snapping to regular or bold.
  */
 @font-face {
@@ -64,11 +62,10 @@
 
 @theme inline {
   --font-sans:
-    "SLATZ Thai", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter Variable",
-    "Helvetica Neue", system-ui, sans-serif;
+    "SLATZ Thai", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display:
-    "SLATZ Thai", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Variable", "Helvetica Neue",
-    system-ui, sans-serif;
+    "SLATZ Thai", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica,
+    Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
 
   --radius-sm: calc(var(--radius) - 8px);
