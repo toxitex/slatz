@@ -122,7 +122,7 @@
       <Button href={resolve("/store")} size="lg" class="px-7">{config.ctaText}</Button>
       <button
         type="button"
-        class="liquid-glass inline-flex h-12 items-center gap-1.5 rounded-full px-6 text-[17px] transition-transform active:scale-95"
+        class="liquid-glass inline-flex h-12 items-center gap-1.5 rounded-full px-6 text-[17px] font-medium transition-transform active:scale-95"
         onclick={ui.openSearch}
         {@attach glassPointer}
       >
