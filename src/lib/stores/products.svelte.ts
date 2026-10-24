@@ -14,6 +14,7 @@ type ProductRow = {
   tiers?: unknown;
   status?: string | null;
   total_sold?: number | null;
+  sort_order?: number | null;
 };
 
 export type ProductPatch = Partial<SyncXProduct> & { stock?: number; isActive?: boolean; sortOrder?: number };
@@ -45,6 +46,7 @@ function toProduct(row: ProductRow): SyncXProduct {
     tiers: normalizeTiers(row.tiers),
     status: normalizeStatus(row.status),
     totalSold: typeof row.total_sold === "number" ? row.total_sold : 0,
+    sortOrder: typeof row.sort_order === "number" ? row.sort_order : 0,
   };
 }
 

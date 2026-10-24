@@ -17,6 +17,7 @@ export type SyncXProduct = {
   tiers?: ProductTier[];
   status?: ProductStatus;
   totalSold?: number;
+  sortOrder?: number;
 };
 
 export type Coupon = {

@@ -16,7 +16,11 @@
 
   const name = $derived(page.params.name ?? "");
   const category = $derived(categories.categories.find((c) => c.name === name));
-  const inCategory = $derived(products.products.filter((p) => p.category === name && p.status !== "hidden"));
+  const inCategory = $derived(
+    products.products
+      .filter((p) => p.category === name && p.status !== "hidden")
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)),
+  );
   const filtered = $derived.by(() => {
     const q = query.trim().toLowerCase();
     if (!q) return inCategory;

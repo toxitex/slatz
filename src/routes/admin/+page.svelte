@@ -20,6 +20,7 @@
   import ConfigSection from "$lib/components/admin/ConfigSection.svelte";
   import CouponsSection from "$lib/components/admin/CouponsSection.svelte";
   import OrdersSection from "$lib/components/admin/OrdersSection.svelte";
+  import OverviewSection from "$lib/components/admin/OverviewSection.svelte";
   import ProductsSection from "$lib/components/admin/ProductsSection.svelte";
   import { isConfigSection, sectionGroups, sectionItems, type SectionKey } from "$lib/components/admin/sections";
   import UsersSection from "$lib/components/admin/UsersSection.svelte";
@@ -41,12 +42,13 @@
   let productsSection = $state<ProductsSection>();
   let usersSection = $state<UsersSection>();
   let ordersSection = $state<OrdersSection>();
+  let overviewSection = $state<OverviewSection>();
 
   if (isAdminGranted()) loadAdminData();
 
   function initialSection(): SectionKey {
     const saved = getAdminSection();
-    return sectionItems.find((item) => item.key === saved)?.key ?? "branding";
+    return sectionItems.find((item) => item.key === saved)?.key ?? "overview";
   }
 
   function loadAdminData() {
@@ -66,8 +68,10 @@
 
   const subtitle = $derived.by(() => {
     switch (active) {
+      case "overview":
+        return "จากคำสั่งซื้อจริง";
       case "products":
-        return `${products.products.length} รายการ`;
+        return `${products.products.length} รายการ · ลากเพื่อจัดหมวด`;
       case "categories":
         return `${categories.categories.length} หมวด`;
       case "coupons":
@@ -104,7 +108,8 @@
   }
 
   async function refreshActive() {
-    if (active === "products") await products.refresh();
+    if (active === "overview") await overviewSection?.refresh();
+    else if (active === "products") await products.refresh();
     else if (active === "categories") await categories.refresh();
     else if (active === "coupons") await coupons.refresh();
     else if (active === "users") await usersSection?.refresh();
@@ -117,7 +122,7 @@
     else if (active === "coupons") await coupons.add();
   }
 
-  const canRefresh = $derived(["products", "categories", "coupons", "users", "orders"].includes(active));
+  const canRefresh = $derived(["overview", "products", "categories", "coupons", "users", "orders"].includes(active));
   const addLabel = $derived(
     active === "products" ? "เพิ่มสินค้า" : active === "categories" ? "เพิ่มหมวดหมู่" : active === "coupons" ? "เพิ่มคูปอง" : null,
   );
@@ -238,8 +243,15 @@
       </header>
 
       <div class="flex-1 overflow-y-auto">
-        <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
-          {#if isConfigSection(active)}
+        <div
+          class={cn(
+            "mx-auto flex w-full flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8",
+            active === "products" ? "max-w-none" : active === "overview" ? "max-w-5xl" : "max-w-3xl",
+          )}
+        >
+          {#if active === "overview"}
+            <OverviewSection bind:this={overviewSection} />
+          {:else if isConfigSection(active)}
             <ConfigSection section={active} />
           {:else if active === "products"}
             <ProductsSection bind:this={productsSection} />

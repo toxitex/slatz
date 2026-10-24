@@ -99,6 +99,7 @@ export function createProductDraft(): SyncXProduct {
     tiers: [],
     status: "active",
     totalSold: 0,
+    sortOrder: 0,
   };
 }
 

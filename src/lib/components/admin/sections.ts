@@ -14,7 +14,7 @@ import UsersIcon from "@lucide/svelte/icons/users";
 import type { Component } from "svelte";
 
 export type ConfigSectionKey = "branding" | "colors" | "hero" | "announcement" | "stats" | "store-config" | "footer";
-export type SectionKey = ConfigSectionKey | "products" | "categories" | "coupons" | "orders" | "users" | "backup";
+export type SectionKey = ConfigSectionKey | "overview" | "products" | "categories" | "coupons" | "orders" | "users" | "backup";
 
 export type SectionItem = {
   key: SectionKey;
@@ -27,7 +27,7 @@ export type SectionItem = {
 export const sectionGroups: { title: string; items: SectionItem[] }[] = [
   {
     title: "ภาพรวมระบบ",
-    items: [{ key: "stats", label: "ตัวเลขสถิติ", icon: BarChart3Icon, color: "#1d1d1f" }],
+    items: [{ key: "overview", label: "ภาพรวม", icon: BarChart3Icon, color: "#1d1d1f" }],
   },
   {
     title: "จัดการร้านค้า",
@@ -47,6 +47,7 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
       { key: "colors", label: "สีธีม", icon: PaletteIcon, color: "#636366" },
       { key: "hero", label: "แบนเนอร์หน้าแรก", icon: ImageIcon, color: "#8e8e93" },
       { key: "announcement", label: "ประกาศบนเว็บ", icon: MegaphoneIcon, color: "#1d1d1f" },
+      { key: "stats", label: "ตัวเลขบนหน้าแรก", icon: BarChart3Icon, color: "#48484a" },
       { key: "footer", label: "ฟุตเตอร์", icon: PanelBottomIcon, color: "#3a3a3c" },
     ],
   },
