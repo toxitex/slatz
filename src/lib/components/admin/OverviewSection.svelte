@@ -36,9 +36,9 @@
   const model = $derived(buildOverview(orders));
 
   const line = $derived.by(() => {
-    const width = 680;
-    const height = 240;
-    const pad = { l: 44, r: 20, t: 36, b: 28 };
+    const width = 720;
+    const height = 280;
+    const pad = { l: 64, r: 28, t: 24, b: 36 };
     const max = Math.max(1, ...model.series);
     const innerW = width - pad.l - pad.r;
     const innerH = height - pad.t - pad.b;
@@ -48,8 +48,17 @@
       return { x, y, value, index };
     });
     const path = coords.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
-    const grid = [0, 0.5, 1].map((step) => pad.t + innerH - step * innerH);
-    return { width, height, pad, max, coords, path, grid, innerH };
+    const base = pad.t + innerH;
+    const area =
+      coords.length > 0
+        ? `${path} L${coords[coords.length - 1].x.toFixed(1)},${base} L${coords[0].x.toFixed(1)},${base} Z`
+        : "";
+    const grid = [0, 0.5, 1].map((step) => ({
+      y: pad.t + innerH - step * innerH,
+      label: step === 0 ? "฿0" : formatBaht(Math.round(max * step)),
+    }));
+    const months = model.weeks.flatMap((week, index) => (week.label ? [{ index, label: week.label }] : []));
+    return { width, height, pad, coords, path, area, grid, months, base };
   });
 
   const figures = $derived([
@@ -64,7 +73,7 @@
 {/if}
 
 <section class="rounded-3xl bg-[#0b0b0c] px-5 py-6 text-[#f5f5f7] sm:px-7 sm:py-7">
-  <h2 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[34px]">
+  <h2 class="display text-[28px] font-bold leading-tight sm:text-[34px]">
     {#if model.current > 0}{model.current} วันติด{/if}
     {#if model.current === 0}ออเดอร์ {OVERVIEW_WEEKS} สัปดาห์ล่าสุด{/if}
   </h2>
@@ -72,27 +81,26 @@
     แต่ละช่องคือหนึ่งวัน นับจากคำสั่งซื้อจริง ช่องสว่างคือวันที่มีออเดอร์มากกว่า
   </p>
 
-  <div class="mt-8 overflow-x-auto">
-    <div class="flex min-w-max gap-2">
-      <div class="flex w-4 flex-col gap-[3px] pt-5 text-[10px] text-[#86868b]">
-        {#each ROW_LABELS as label, index (index)}
-          <span class="grid h-[11px] place-items-center">{label}</span>
+  <div class="mt-8 overflow-x-auto" aria-label="ออเดอร์รายวัน 26 สัปดาห์">
+    <div
+      class="mx-auto grid w-max gap-[4px]"
+      style:grid-template-columns="18px repeat({model.weeks.length}, 16px)"
+    >
+      <span></span>
+      {#each model.weeks as week, weekIndex (weekIndex)}
+        <span class="truncate text-[10px] text-[#86868b]">{week.label}</span>
+      {/each}
+      {#each ROW_LABELS as label, day (day)}
+        <span class="grid size-4 place-items-center text-[10px] leading-none text-[#86868b]">{label}</span>
+        {#each model.weeks as week, weekIndex (`${day}-${weekIndex}`)}
+          {@const cell = week.days[day]}
+          <span
+            class="size-4 rounded-[3px]"
+            style:background={cell.future ? "#161617" : shade(cell.count)}
+            title={cell.future ? "" : `${cell.key}: ${cell.count} ออเดอร์`}
+          ></span>
         {/each}
-      </div>
-      <div class="flex gap-[3px]" aria-label="ออเดอร์รายวัน 26 สัปดาห์">
-        {#each model.weeks as week, weekIndex (weekIndex)}
-          <div class="flex flex-col gap-[3px]">
-            <span class="h-5 text-[10px] text-[#86868b]">{week.label}</span>
-            {#each week.days as day (day.key)}
-              <span
-                class="size-[11px] rounded-[2px]"
-                style:background={day.future ? "transparent" : shade(day.count)}
-                title={day.future ? "" : `${day.key}: ${day.count} ออเดอร์`}
-              ></span>
-            {/each}
-          </div>
-        {/each}
-      </div>
+      {/each}
     </div>
     <div class="mt-4 flex items-center justify-between gap-4 text-[11px] text-[#86868b]">
       <p class="flex items-center gap-1.5">
@@ -114,7 +122,7 @@
 <div class="grid gap-3 sm:grid-cols-3">
   {#each figures as figure (figure.label)}
     <section class="rounded-3xl bg-[#0b0b0c] px-5 py-5 text-[#f5f5f7]">
-      <p class="text-[32px] font-semibold tracking-tight tabular-nums">{figure.value}</p>
+      <p class="display text-[32px] font-bold tabular-nums">{figure.value}</p>
       <p class="mt-1 text-[14px]">{figure.label}</p>
       <p class="text-[12px] text-[#86868b]">{figure.note}</p>
     </section>
@@ -122,26 +130,41 @@
 </div>
 
 <section class="rounded-3xl bg-[#0b0b0c] px-5 py-6 text-[#f5f5f7] sm:px-7">
-  <h2 class="text-center text-[26px] font-semibold tracking-tight sm:text-[32px]">ยอดขายสะสม</h2>
+  <h2 class="display text-center text-[26px] font-bold sm:text-[32px]">ยอดขายสะสม</h2>
   <p class="mx-auto mt-2 max-w-lg text-center text-[14px] leading-relaxed text-[#86868b]">
     รวมจากออเดอร์ในช่วงเดียวกับตารางด้านบน จุดบนเส้นคือครั้งแรกที่ยอดถึงหลักพัน
   </p>
-  <svg viewBox="0 0 {line.width} {line.height}" class="mt-4 w-full" role="img" aria-label="กราฟยอดขายสะสม">
-    {#each line.grid as y, index (index)}
-      <line x1={line.pad.l} x2={line.width - line.pad.r} {y} y2={y} stroke="#2c2c2e" stroke-width="1" />
-      <text x={line.pad.l - 8} y={y + 4} fill="#86868b" font-size="11" text-anchor="end">
-        {formatBaht(Math.round((line.max * index) / (line.grid.length - 1)))}
-      </text>
+  <svg viewBox="0 0 {line.width} {line.height}" class="mt-2 w-full" role="img" aria-label="กราฟยอดขายสะสม">
+    <defs>
+      <linearGradient id="sales-fill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f5f5f7" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="#f5f5f7" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    {#each line.grid as row, index (index)}
+      <line x1={line.pad.l} x2={line.width - line.pad.r} y1={row.y} y2={row.y} stroke="#2c2c2e" stroke-width="1" />
+      <text x="4" y={row.y + 4} fill="#86868b" font-size="12">{row.label}</text>
     {/each}
+    <path d={line.area} fill="url(#sales-fill)" />
     <path d={line.path} fill="none" stroke="#f5f5f7" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
-    {#each model.milestones as mark (mark.amount)}
+    {#each line.months as month (month.index)}
+      <text x={line.coords[month.index].x} y={line.height - 8} fill="#86868b" font-size="11" text-anchor="middle">{month.label}</text>
+    {/each}
+    {#each model.milestones as mark, markIndex (mark.amount)}
       {@const point = line.coords[mark.index]}
-      <circle cx={point.x} cy={point.y} r="4" fill="#0b0b0c" stroke="#f5f5f7" stroke-width="2" />
-      <text x={point.x} y={point.y - 10} fill="#f5f5f7" font-size="11" text-anchor="middle">{formatBaht(mark.amount)}</text>
+      {@const nearEnd = point.x > line.width - line.pad.r - 48}
+      <circle cx={point.x} cy={point.y} r="4.5" fill="#0b0b0c" stroke="#f5f5f7" stroke-width="2" />
+      <text
+        x={nearEnd ? point.x - 8 : point.x + 8}
+        y={point.y - 8 - (markIndex % 2) * 12}
+        fill="#f5f5f7"
+        font-size="12"
+        text-anchor={nearEnd ? "end" : "start"}
+      >{formatBaht(mark.amount)}</text>
     {/each}
     {#if line.coords.length}
       {@const last = line.coords[line.coords.length - 1]}
-      <circle cx={last.x} cy={last.y} r="4" fill="#f5f5f7" />
+      <circle cx={last.x} cy={last.y} r="4.5" fill="#f5f5f7" />
     {/if}
   </svg>
 </section>

@@ -200,12 +200,17 @@
                   type="button"
                   class={cn(
                     "flex w-full items-center gap-2.5 px-3 py-2 text-left text-[14px] transition-colors",
-                    item.key === active ? "bg-foreground/[0.06] font-medium" : "hover:bg-foreground/[0.03]",
+                    item.key === active
+                      ? "bg-[color-mix(in_srgb,var(--syncx-accent)_14%,transparent)] font-medium text-[var(--syncx-accent)]"
+                      : "hover:bg-foreground/[0.03]",
                   )}
                   aria-current={item.key === active ? "page" : undefined}
                   onclick={() => select(item.key)}
                 >
-                  <item.icon class="size-4 shrink-0 text-foreground/70" strokeWidth={1.75} />
+                  <item.icon
+                    class={cn("size-4 shrink-0", item.key === active ? "text-current" : "text-foreground/70")}
+                    strokeWidth={1.75}
+                  />
                   <span class="flex-1 truncate">{item.label}</span>
                   <ChevronRightIcon class="size-4 text-muted-foreground/50 md:hidden" />
                 </button>
@@ -221,7 +226,7 @@
       </div>
     </aside>
 
-    <main class={cn("flex min-w-0 flex-1 flex-col", !mobileDetail && "max-md:hidden")}>
+    <main class={cn("flex min-w-0 flex-1 flex-col border-l border-border", !mobileDetail && "max-md:hidden")}>
       <header class="glass sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
         <button
           type="button"
@@ -231,7 +236,7 @@
           <ChevronLeftIcon class="size-5" />การตั้งค่า
         </button>
         <div class="min-w-0 flex-1 max-md:text-center">
-          <h1 class="truncate text-[15px] font-semibold">{activeItem.label}</h1>
+          <h1 class="truncate text-[15px] font-bold">{activeItem.label}</h1>
           <p class="truncate text-[11px] text-muted-foreground max-md:hidden">{subtitle}</p>
         </div>
         {#if canRefresh}
@@ -246,7 +251,9 @@
         <div
           class={cn(
             "mx-auto flex w-full flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8",
-            active === "products" ? "max-w-none" : active === "overview" ? "max-w-5xl" : "max-w-3xl",
+            active === "products" || active === "overview" || active === "orders" || active === "users"
+              ? "max-w-none"
+              : "max-w-3xl",
           )}
         >
           {#if active === "overview"}

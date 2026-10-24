@@ -36,11 +36,11 @@
   <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
     <div class="rounded-2xl bg-card p-4">
       <p class="text-[11px] text-muted-foreground">คำสั่งซื้อทั้งหมด</p>
-      <p class="mt-1 text-[22px] font-semibold tabular-nums">{orders.length}</p>
+      <p class="mt-1 text-[22px] font-bold tabular-nums">{orders.length}</p>
     </div>
     <div class="rounded-2xl bg-card p-4">
       <p class="text-[11px] text-muted-foreground">ยอดขายรวม</p>
-      <p class="mt-1 text-[22px] font-semibold tabular-nums">{formatBaht(revenue)}</p>
+      <p class="mt-1 text-[22px] font-bold tabular-nums">{formatBaht(revenue)}</p>
     </div>
   </div>
 {/if}

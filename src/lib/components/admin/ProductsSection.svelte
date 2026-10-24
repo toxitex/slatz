@@ -81,12 +81,12 @@
   ลากการ์ดไปหมวดอื่นเพื่อย้าย หรือลากขึ้นลงเพื่อเรียงบนหน้าร้าน คลิกการ์ดเพื่อแก้ราคา สต็อก และรูป
 </p>
 
-<div class="flex gap-3 overflow-x-auto pb-2">
+<div class="flex min-h-[calc(100dvh-11rem)] items-stretch gap-3 overflow-x-auto pb-2">
   {#each columns as column (column.key)}
-    <section class="flex w-[270px] shrink-0 flex-col rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)] {column.active ? '' : 'opacity-60'}">
+    <section class="flex w-[280px] shrink-0 flex-col rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)] {column.active ? '' : 'opacity-60'}">
       <header class="flex items-center gap-2 px-3 pt-3 pb-2">
         <div class="min-w-0 flex-1">
-          <h3 class="truncate text-[14px] font-semibold">{column.name || "ไม่มีหมวด"}</h3>
+          <h3 class="truncate text-[14px] font-bold">{column.name || "ไม่มีหมวด"}</h3>
           <p class="text-[11px] text-muted-foreground">{column.items.length} ชิ้น{column.active ? "" : " · ซ่อนจากหน้าร้าน"}</p>
         </div>
         {#if column.key !== NONE}
@@ -134,7 +134,7 @@
 
   <button
     type="button"
-    class="flex h-28 w-[270px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-dashed border-border text-[13px] text-muted-foreground hover:bg-card"
+    class="flex w-[280px] shrink-0 items-center justify-center gap-2 self-start rounded-2xl border border-dashed border-border py-10 text-[13px] text-muted-foreground hover:bg-card"
     onclick={() => categories.add()}
   >
     <PlusIcon class="size-4" />

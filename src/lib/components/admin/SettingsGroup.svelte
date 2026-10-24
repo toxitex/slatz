@@ -15,7 +15,7 @@
   {#if title || actions}
     <div class="flex items-end justify-between gap-3 px-1">
       <div>
-        {#if title}<h3 class="text-[13px] font-semibold">{title}</h3>{/if}
+        {#if title}<h3 class="text-[13px] font-bold">{title}</h3>{/if}
         {#if description}<p class="text-xs text-muted-foreground">{description}</p>{/if}
       </div>
       {#if actions}<div class="flex items-center gap-2">{@render actions()}</div>{/if}
