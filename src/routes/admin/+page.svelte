@@ -232,7 +232,7 @@
         </div>
       </div>
 
-      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-card px-3 text-muted-foreground shadow-[0_0_0_0.5px_rgba(0,0,0,0.08)]">
+      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-card px-3 text-muted-foreground shadow-[0_0_0_0.5px_var(--syncx-border)]">
         <SearchIcon class="size-3.5" />
         <input bind:value={filter} placeholder="ค้นหา" class="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground" />
       </label>
@@ -240,7 +240,7 @@
       <nav class="min-h-0 flex-1 overflow-y-auto px-4 pb-4" aria-label="หัวข้อการตั้งค่า">
         {#each visibleGroups as group (group.title)}
           <p class="px-3 pt-4 pb-1.5 text-[12px] font-medium text-muted-foreground">{group.title}</p>
-          <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_rgba(0,0,0,0.08)]">
+          <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
             {#each group.items as item (item.key)}
               <li>
                 <button

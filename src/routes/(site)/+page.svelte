@@ -247,7 +247,7 @@
 {#if shelf.length}
   <section class="container-wide pt-20" aria-label="หมวดหมู่">
     <h2 class="display mb-8 text-center text-[24px] sm:text-[32px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
-    <div class="flex gap-6 overflow-x-auto pb-2 [scrollbar-width:none] sm:justify-center">
+    <div class="no-scrollbar flex gap-6 overflow-x-auto pb-2 sm:justify-center">
       {#each shelf as category, i (category.id)}
         <a
           href={resolve(`/category/${encodeURIComponent(category.name)}`)}

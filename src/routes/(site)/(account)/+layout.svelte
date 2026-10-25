@@ -39,7 +39,7 @@
       </div>
     </header>
 
-    <nav class="mt-10 flex items-center gap-6 overflow-x-auto border-b border-border text-sm [scrollbar-width:none]" aria-label="บัญชี">
+    <nav class="no-scrollbar mt-10 flex items-center gap-6 overflow-x-auto border-b border-border text-sm" aria-label="บัญชี">
       {#each accountLinks as link (link.href)}
         {@const active = page.url.pathname.startsWith(link.href)}
         <a

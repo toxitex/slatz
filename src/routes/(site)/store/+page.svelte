@@ -105,7 +105,7 @@
       {site.config.store.latestTitle} <span class="text-muted-foreground">{site.config.store.latestAccent}</span>
     </h2>
     <div
-      class="mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-5 px-5 pb-8 [scrollbar-width:none] sm:scroll-px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] sm:px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))]"
+      class="no-scrollbar mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-5 px-5 pb-8 sm:scroll-px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] sm:px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))]"
     >
       {#each latest as product (product.id)}
         <ProductCard
