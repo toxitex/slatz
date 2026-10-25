@@ -159,6 +159,13 @@
 {:else if section === "store-config"}
   <SettingsGroup title="หน้าร้าน" description="หัวข้อใหญ่และหัวข้อกลุ่มสินค้าอยู่บนหน้าร้าน แถวล่าสุดอยู่ใต้กลุ่มสินค้า">
     <TextRow label="หัวข้อใหญ่" bind:value={site.config.store.headline} />
+    <SettingsRow label="ขนาดหัวข้อหน้าร้าน" hint="หน้าร้านและหน้าหมวดหมู่">
+      <select bind:value={site.config.home.titleSize} aria-label="ขนาดหัวข้อหน้าร้าน" class={choiceClass}>
+        <option value="sm">เล็ก</option>
+        <option value="md">กลาง</option>
+        <option value="lg">ใหญ่</option>
+      </select>
+    </SettingsRow>
     <TextRow label="คำต่อท้ายหัวข้อ" hint="ตัวอักษรสีจางต่อจากหัวข้อ" bind:value={site.config.store.headlineAccent} />
     <TextRow label="หัวข้อกลุ่มสินค้า" bind:value={site.config.store.sectionTitle} />
     <TextRow label="หัวข้อสินค้าล่าสุด" bind:value={site.config.store.latestTitle} />

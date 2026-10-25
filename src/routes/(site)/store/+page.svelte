@@ -4,8 +4,14 @@
   import { glassPointer, reveal } from "$lib/attachments";
   import ProductCard from "$lib/components/ProductCard.svelte";
   import { getStores } from "$lib/stores";
+  import { cn } from "$lib/utils";
 
   const { site, products, categories } = getStores();
+  const titleType = $derived(
+    { sm: "text-[28px] sm:text-[36px]", md: "text-[32px] sm:text-[40px]", lg: "text-[36px] sm:text-[48px]" }[
+      site.config.home.titleSize
+    ],
+  );
   products.ensureLoaded();
   categories.ensureLoaded();
 
@@ -42,7 +48,7 @@
     <ChevronRightIcon class="size-3" />
     <span class="text-foreground">ร้านค้า</span>
   </nav>
-  <h1 class="reveal display max-w-3xl text-[32px] sm:text-[44px]">
+  <h1 class={cn("reveal display max-w-3xl", titleType)}>
     {site.config.store.headline} <span class="text-muted-foreground">{site.config.store.headlineAccent}</span>
   </h1>
   <h2 class="reveal display mt-12 text-[24px] sm:text-[28px]" style="animation-delay: 80ms">

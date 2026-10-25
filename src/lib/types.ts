@@ -61,6 +61,8 @@ export type SiteConfig = {
     statementAlign: "left" | "center";
     statementSize: "sm" | "md" | "lg";
     statementSpace: "tight" | "normal" | "roomy";
+    /** Store and category page titles. */
+    titleSize: "sm" | "md" | "lg";
   };
   stats: {
     heading: string;

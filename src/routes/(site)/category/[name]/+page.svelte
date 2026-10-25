@@ -7,8 +7,14 @@
   import { reveal } from "$lib/attachments";
   import ProductCard from "$lib/components/ProductCard.svelte";
   import { getStores } from "$lib/stores";
+  import { cn } from "$lib/utils";
 
   const { site, products, categories } = getStores();
+  const titleType = $derived(
+    { sm: "text-[28px] sm:text-[36px]", md: "text-[32px] sm:text-[40px]", lg: "text-[36px] sm:text-[48px]" }[
+      site.config.home.titleSize
+    ],
+  );
   products.ensureLoaded();
   categories.ensureLoaded();
 
@@ -37,7 +43,7 @@
   </nav>
   <header class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
     <div>
-      <h1 class="reveal display text-[32px] sm:text-[44px]">{name}</h1>
+      <h1 class={cn("reveal display", titleType)}>{name}</h1>
       <p class="mt-1 text-[17px] text-muted-foreground">{inCategory.length} สินค้าในหมวดหมู่นี้</p>
     </div>
     <label class="flex h-11 w-full items-center gap-2 rounded-full bg-card px-4 text-sm md:max-w-xs">

@@ -107,7 +107,7 @@
   {/if}
 {/snippet}
 
-<section class={cn("relative -mt-[72px] overflow-hidden pt-[72px] pb-16 sm:pb-24", heroCentered ? "text-center" : "text-left")}>
+<section class={cn("relative -mt-[72px] overflow-hidden pt-[72px] pb-12 sm:pb-16", heroCentered ? "text-center" : "text-left")}>
   <Grainient
     class="!absolute inset-0"
     colors={darkTheme

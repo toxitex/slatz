@@ -49,6 +49,7 @@ export const defaultSiteConfig: SiteConfig = {
     statementAlign: "left",
     statementSize: "md",
     statementSpace: "normal",
+    titleSize: "md",
   },
   stats: {
     heading: "ตัวเลขที่ลูกค้าไว้วางใจ",
