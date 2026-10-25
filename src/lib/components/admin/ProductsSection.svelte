@@ -81,7 +81,7 @@
   ลากการ์ดไปหมวดอื่นเพื่อย้าย หรือลากขึ้นลงเพื่อเรียงบนหน้าร้าน คลิกการ์ดเพื่อแก้ราคา สต็อก และรูป
 </p>
 
-<div class="flex min-h-[calc(100dvh-11rem)] items-stretch gap-3 overflow-x-auto pb-2">
+<div class="flex items-start gap-3 overflow-x-auto pb-2">
   {#each columns as column (column.key)}
     <section class="flex w-[280px] shrink-0 flex-col rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)] {column.active ? '' : 'opacity-60'}">
       <header class="flex items-center gap-2 px-3 pt-3 pb-2">
@@ -101,7 +101,7 @@
         {/if}
       </header>
       <div
-        class="flex min-h-36 flex-1 flex-col gap-2 px-2 pb-2"
+        class="flex min-h-24 flex-col gap-2 px-2 pb-2"
         use:dndzone={{ items: column.items, type: "catalog", flipDurationMs: 180, dropTargetStyle: { outline: "none" } }}
         onconsider={(event) => consider(column.key, event)}
         onfinalize={(event) => finalize(column.key, event)}
