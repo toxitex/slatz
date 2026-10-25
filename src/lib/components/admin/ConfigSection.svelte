@@ -6,7 +6,6 @@
   import { Switch } from "$lib/components/ui/switch";
   import type { PublicStats } from "$lib/types";
   import { getStores } from "$lib/stores";
-  import { appleTheme, blackTheme } from "$lib/stores/site-config.svelte";
   import ColorRow from "./ColorRow.svelte";
   import ImageRow from "./ImageRow.svelte";
   import SettingsGroup from "./SettingsGroup.svelte";
@@ -37,29 +36,30 @@
     <ImageRow label="โลโก้" bind:value={site.config.logoImageUrl} />
   </SettingsGroup>
 {:else if section === "colors"}
-  <SettingsGroup title="สีธีม" description="สีทั้งหมดใช้กับหน้าร้านและแดชบอร์ดทันที ธีมดำคือพื้นหลังดำ การ์ดเทาเข้ม และปุ่มขาว">
+  <SettingsGroup title="โหมดแสดงผล" description="สลับทั้งเว็บระหว่างธีมสว่างกับธีมมืด พื้นหลัง การ์ด กระจก ฮีโร่ และปุ่มเปลี่ยนตามโหมด">
+    <SettingsRow label="ธีมมืด">
+      <Switch
+        checked={site.config.theme.mode === "dark"}
+        onCheckedChange={(checked) => {
+          site.setMode(checked ? "dark" : "light");
+          toast(checked ? "ใช้ธีมมืดแล้ว" : "ใช้ธีมสว่างแล้ว");
+        }}
+        aria-label="ธีมมืด"
+      />
+    </SettingsRow>
+  </SettingsGroup>
+  <SettingsGroup title="สีของธีมสว่าง" description="ใช้เมื่อปิดธีมมืด ธีมมืดมีพื้นหลังดำและการ์ดของตัวเอง">
     {#snippet actions()}
       <Button
         variant="ghost"
         size="sm"
         class="text-link"
         onclick={() => {
-          site.setTheme(blackTheme);
-          toast("ใช้ธีมดำแล้ว");
+          site.resetTheme();
+          toast("รีเซ็ตสีธีมสว่างแล้ว");
         }}
       >
-        ธีมดำ
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        class="text-link"
-        onclick={() => {
-          site.setTheme(appleTheme);
-          toast("ใช้ธีมสว่างแล้ว");
-        }}
-      >
-        <RotateCcwIcon />ธีมสว่าง
+        <RotateCcwIcon />รีเซ็ตสี
       </Button>
     {/snippet}
     <ColorRow label="Accent" hint="ลิงก์และไฮไลต์" bind:value={site.config.theme.accentColor} />

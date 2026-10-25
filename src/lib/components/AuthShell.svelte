@@ -2,7 +2,6 @@
   import type { Snippet } from "svelte";
   import { glassPointer } from "$lib/attachments";
   import { getStores } from "$lib/stores";
-  import { isDarkColor } from "$lib/utils";
   import Grainient from "./fx/Grainient.svelte";
   import LogoIcon from "./LogoIcon.svelte";
 
@@ -10,7 +9,7 @@
     $props();
 
   const { site } = getStores();
-  const darkTheme = $derived(isDarkColor(site.config.theme.backgroundColor));
+  const darkTheme = $derived(site.config.theme.mode === "dark");
 </script>
 
 <section class="relative -mt-[72px] flex flex-1 flex-col items-center overflow-hidden px-4 pt-[120px] pb-16 sm:pb-24">

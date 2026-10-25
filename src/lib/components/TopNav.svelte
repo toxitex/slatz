@@ -4,7 +4,9 @@
   import { page } from "$app/state";
   import type { Pathname } from "$app/types";
   import ArrowUpRightIcon from "@lucide/svelte/icons/arrow-up-right";
+  import MoonIcon from "@lucide/svelte/icons/moon";
   import SearchIcon from "@lucide/svelte/icons/search";
+  import SunIcon from "@lucide/svelte/icons/sun";
   import { toast } from "svelte-sonner";
   import { fade } from "svelte/transition";
   import { isAdminGranted } from "$lib/admin-access";
@@ -18,6 +20,7 @@
   import UserMenu from "./UserMenu.svelte";
 
   const { site, auth, ui, products, categories } = getStores();
+  const darkTheme = $derived(site.config.theme.mode === "dark");
 
   let menuOpen = $state(false);
   let flyout = $state(false);
@@ -200,6 +203,19 @@
       </div>
 
       <div class="flex items-center gap-1">
+        <button
+          type="button"
+          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
+          aria-pressed={darkTheme}
+          aria-label={darkTheme ? "สลับเป็นธีมสว่าง" : "สลับเป็นธีมมืด"}
+          onclick={() => site.toggleMode()}
+        >
+          {#if darkTheme}
+            <SunIcon class="size-[17px]" strokeWidth={1.75} />
+          {:else}
+            <MoonIcon class="size-[17px]" strokeWidth={1.75} />
+          {/if}
+        </button>
         <button
           type="button"
           class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"

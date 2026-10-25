@@ -72,6 +72,8 @@ export type SiteConfig = {
     soldUnit: string;
   };
   theme: {
+    /** Light keeps the saved palette. Dark swaps the whole surface system. */
+    mode: "light" | "dark";
     accentColor: string;
     backgroundColor: string;
     buttonColor: string;

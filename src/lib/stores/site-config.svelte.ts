@@ -5,8 +5,10 @@ import type { SiteConfig, SyncXProduct } from "$lib/types";
 import { isDarkColor } from "$lib/utils";
 
 const STORAGE_KEY = "syncx-site-config-v1";
+const MODE_KEY = "syncx-theme-mode";
 
 export const appleTheme: SiteConfig["theme"] = {
+  mode: "light",
   accentColor: "#1d1d1f",
   backgroundColor: "#f5f5f7",
   buttonColor: "#1d1d1f",
@@ -16,7 +18,7 @@ export const appleTheme: SiteConfig["theme"] = {
   borderColor: "rgba(0, 0, 0, 0.08)",
 };
 
-export const blackTheme: SiteConfig["theme"] = {
+const darkSurfaces = {
   accentColor: "#f5f5f7",
   backgroundColor: "#000000",
   buttonColor: "#f5f5f7",
@@ -57,7 +59,7 @@ export const defaultSiteConfig: SiteConfig = {
     soldLabel: "ขายแล้ว",
     soldUnit: "ชิ้น",
   },
-  theme: blackTheme,
+  theme: { ...appleTheme, mode: "dark" },
   footer: {
     brandText: "SLATZ - ร้านค้าออนไลน์ที่คุณไว้วางใจ",
     contactEmail: "contact@slatz.xyz",
@@ -90,15 +92,20 @@ const legacyThemes = [
   { accentColor: "#0071e3", backgroundColor: "#f5f5f7", buttonColor: "#0071e3" },
 ];
 
-function upgradeTheme(theme: Partial<SiteConfig["theme"]> | undefined): Partial<SiteConfig["theme"]> {
-  if (!theme) return {};
+function upgradeTheme(theme: Partial<SiteConfig["theme"]> | undefined): SiteConfig["theme"] {
+  if (!theme) return { ...appleTheme, mode: "dark" };
   const legacy = legacyThemes.some(
     (t) =>
       t.accentColor === theme.accentColor?.toLowerCase() &&
       t.backgroundColor === theme.backgroundColor?.toLowerCase() &&
       t.buttonColor === theme.buttonColor?.toLowerCase(),
   );
-  return legacy ? {} : theme;
+  const saved = legacy ? {} : theme;
+  const background = saved.backgroundColor?.toLowerCase();
+  const paintedDark = background === "#000000" || background === "#0b0b0c";
+  const mode = saved.mode === "light" || saved.mode === "dark" ? saved.mode : paintedDark ? "dark" : "light";
+  const colors = !saved.mode && paintedDark ? appleTheme : { ...appleTheme, ...saved };
+  return { ...colors, mode };
 }
 
 export function createProductDraft(): SyncXProduct {
@@ -123,7 +130,7 @@ export function mergeConfig(input: unknown): SiteConfig {
     ...defaultSiteConfig,
     ...saved,
     stats: { ...defaultSiteConfig.stats, ...(saved.stats ?? {}) },
-    theme: { ...defaultSiteConfig.theme, ...upgradeTheme(saved.theme) },
+    theme: upgradeTheme(saved.theme),
     footer: { ...defaultSiteConfig.footer, ...(saved.footer ?? {}) },
     store: { ...defaultSiteConfig.store, ...(saved.store ?? {}) },
     products: Array.isArray(saved.products)
@@ -147,18 +154,21 @@ function loadLocal(): SiteConfig {
 
 function applyTheme(theme: SiteConfig["theme"]) {
   const root = document.documentElement;
-  const onButton = isDarkColor(theme.buttonColor) ? "#ffffff" : "#0b0b0c";
-  root.dataset.theme = isDarkColor(theme.backgroundColor) ? "dark" : "light";
-  root.style.setProperty("--syncx-accent", theme.accentColor);
-  root.style.setProperty("--syncx-button", theme.buttonColor);
-  root.style.setProperty("--syncx-bg", theme.backgroundColor);
-  root.style.setProperty("--syncx-card", theme.cardColor);
-  root.style.setProperty("--syncx-text", theme.textColor);
-  root.style.setProperty("--syncx-muted", theme.mutedTextColor);
-  root.style.setProperty("--syncx-border", theme.borderColor);
+  const dark = theme.mode === "dark";
+  const palette = dark ? { ...theme, ...darkSurfaces } : theme;
+  const keepAccent = dark && !isDarkColor(theme.accentColor) && theme.accentColor.toLowerCase() !== "#f5f5f7";
+  const onButton = isDarkColor(palette.buttonColor) ? "#ffffff" : "#0b0b0c";
+  root.dataset.theme = dark ? "dark" : "light";
+  root.style.setProperty("--syncx-accent", keepAccent ? theme.accentColor : palette.accentColor);
+  root.style.setProperty("--syncx-button", palette.buttonColor);
+  root.style.setProperty("--syncx-bg", palette.backgroundColor);
+  root.style.setProperty("--syncx-card", palette.cardColor);
+  root.style.setProperty("--syncx-text", palette.textColor);
+  root.style.setProperty("--syncx-muted", palette.mutedTextColor);
+  root.style.setProperty("--syncx-border", palette.borderColor);
   root.style.setProperty("--primary-foreground", onButton);
   root.style.setProperty("--sidebar-primary-foreground", onButton);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme.backgroundColor);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", palette.backgroundColor);
 }
 
 /**
@@ -193,6 +203,8 @@ export class SiteConfigStore {
     if (server) {
       this.#skipNextSave = true;
       this.config = server;
+      const pref = localStorage.getItem(MODE_KEY);
+      if (pref === "light" || pref === "dark") this.config.theme.mode = pref;
     } else if (isAdminGranted()) {
       void this.#save();
     }
@@ -245,12 +257,17 @@ export class SiteConfigStore {
     this.config = mergeConfig(null);
   }
 
-  setTheme(theme: SiteConfig["theme"]) {
-    this.config.theme = { ...theme };
+  setMode(mode: SiteConfig["theme"]["mode"]) {
+    this.config.theme.mode = mode;
+    localStorage.setItem(MODE_KEY, mode);
+  }
+
+  toggleMode() {
+    this.setMode(this.config.theme.mode === "dark" ? "light" : "dark");
   }
 
   resetTheme() {
-    this.setTheme(appleTheme);
+    this.config.theme = { ...appleTheme, mode: this.config.theme.mode };
   }
 
   export() {

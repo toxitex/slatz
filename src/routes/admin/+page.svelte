@@ -35,10 +35,10 @@
   import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
-  import { cn, isDarkColor } from "$lib/utils";
+  import { cn } from "$lib/utils";
 
   const { site, products, categories, coupons } = getStores();
-  const darkTheme = $derived(isDarkColor(site.config.theme.backgroundColor));
+  const darkTheme = $derived(site.config.theme.mode === "dark");
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");

@@ -10,14 +10,14 @@
   import { tierRange } from "$lib/stores/products.svelte";
   import { api } from "$lib/api";
   import type { PublicStats, SyncXProduct } from "$lib/types";
-  import { cn, formatBaht, isDarkColor } from "$lib/utils";
+  import { cn, formatBaht } from "$lib/utils";
 
   const { site, products, categories, ui } = getStores();
   products.ensureLoaded();
   categories.ensureLoaded();
 
   const config = $derived(site.config);
-  const darkTheme = $derived(isDarkColor(config.theme.backgroundColor));
+  const darkTheme = $derived(config.theme.mode === "dark");
   let liveStats = $state<PublicStats | null>(null);
   api
     .get<PublicStats>("/api/stats")
@@ -102,7 +102,9 @@
     stir={0.8}
   />
   <div
-    class="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(255,255,255,0.82),rgba(255,255,255,0)_75%),linear-gradient(to_bottom,transparent_70%,var(--syncx-bg))]"
+    class={darkTheme
+      ? "pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(0,0,0,0.2),rgba(0,0,0,0.78)),linear-gradient(to_bottom,transparent_62%,var(--syncx-bg))]"
+      : "pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(255,255,255,0.82),rgba(255,255,255,0)_75%),linear-gradient(to_bottom,transparent_70%,var(--syncx-bg))]"}
   ></div>
 
   <div class="relative container-apple pt-12 sm:pt-16">
