@@ -38,6 +38,7 @@
   import { cn } from "$lib/utils";
 
   const { site, products, categories, coupons } = getStores();
+  const darkTheme = $derived(site.config.theme.mode === "dark");
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");
@@ -85,8 +86,10 @@
 
   const subtitle = $derived.by(() => {
     switch (active) {
+      case "overview":
+        return "จากคำสั่งซื้อจริง";
       case "products":
-        return `${products.products.length} รายการ`;
+        return `${products.products.length} รายการ · ลากเพื่อจัดหมวด`;
       case "categories":
         return `${categories.categories.length} หมวด`;
       case "coupons":
@@ -129,12 +132,12 @@
   }
 
   async function refreshActive() {
-    if (active === "products") await products.refresh();
+    if (active === "overview") await Promise.all([overviewSection?.refresh(), products.refresh()]);
+    else if (active === "products") await products.refresh();
     else if (active === "categories") await categories.refresh();
     else if (active === "coupons") await coupons.refresh();
     else if (active === "users") await usersSection?.refresh();
     else if (active === "orders") await ordersSection?.refresh();
-    else if (active === "overview") await Promise.all([overviewSection?.refresh(), products.refresh()]);
     else if (active === "vouchers") await vouchersSection?.refresh();
   }
 
@@ -176,7 +179,9 @@
   <main class="relative grid min-h-dvh place-items-center overflow-hidden bg-background px-5">
     <Grainient
       class="!absolute inset-0"
-      colors={["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
+      colors={darkTheme
+        ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
+        : ["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
       angle={160}
       speed={0.45}
       silk={0.7}
@@ -206,11 +211,11 @@
   <div class="flex h-dvh bg-background text-[13px]">
     <aside
       class={cn(
-        "flex w-full shrink-0 flex-col border-r border-border bg-sidebar/70 backdrop-blur-xl md:w-[260px]",
+        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden bg-background md:w-[280px]",
         mobileDetail && "max-md:hidden",
       )}
     >
-      <div class="flex items-center gap-2.5 px-4 pt-5 pb-3">
+      <div class="flex items-center gap-2.5 px-5 pt-5 pb-3">
         <span class="grid size-8 place-items-center overflow-hidden rounded-[9px] bg-foreground text-background">
           {#if site.config.logoImageUrl}
             <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
@@ -219,7 +224,7 @@
           {/if}
         </span>
         <div class="min-w-0">
-          <p class="truncate text-[13px] font-semibold">{site.config.siteName}</p>
+          <p class="truncate text-[14px] font-semibold">{site.config.siteName}</p>
           <p class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span class={cn("size-1.5 rounded-full", products.databaseMode ? "bg-foreground" : "bg-muted-foreground/40")}></span>
             {products.loading ? "กำลังโหลดข้อมูล..." : products.databaseMode ? "SQLite: ออนไลน์" : "SQLite: ออฟไลน์"}
@@ -227,31 +232,34 @@
         </div>
       </div>
 
-      <label class="mx-3 mb-2 flex h-8 items-center gap-1.5 rounded-lg bg-foreground/[0.06] px-2.5 text-muted-foreground">
+      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-card px-3 text-muted-foreground shadow-[0_0_0_0.5px_var(--syncx-border)]">
         <SearchIcon class="size-3.5" />
-        <input bind:value={filter} placeholder="ค้นหา" class="w-full bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground" />
+        <input bind:value={filter} placeholder="ค้นหา" class="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground" />
       </label>
 
-      <nav class="flex-1 overflow-y-auto px-2 pb-4" aria-label="หัวข้อการตั้งค่า">
+      <nav class="min-h-0 flex-1 overflow-y-auto px-4 pb-4" aria-label="หัวข้อการตั้งค่า">
         {#each visibleGroups as group (group.title)}
-          <p class="px-2.5 pt-4 pb-1 text-[11px] font-semibold text-muted-foreground">{group.title}</p>
-          <ul class="max-md:divide-y max-md:divide-border max-md:overflow-hidden max-md:rounded-xl max-md:bg-card">
+          <p class="px-3 pt-4 pb-1.5 text-[12px] font-medium text-muted-foreground">{group.title}</p>
+          <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
             {#each group.items as item (item.key)}
               <li>
                 <button
                   type="button"
                   class={cn(
-                    "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left transition-colors max-md:rounded-none max-md:py-2.5",
-                    item.key === active ? "md:bg-primary md:text-primary-foreground" : "hover:bg-foreground/[0.05]",
+                    "flex w-full items-center gap-2.5 px-3 py-2 text-left text-[14px] transition-colors",
+                    item.key === active
+                      ? "bg-[color-mix(in_srgb,var(--syncx-accent)_14%,transparent)] font-medium text-[var(--syncx-accent)]"
+                      : "hover:bg-foreground/[0.03]",
                   )}
                   aria-current={item.key === active ? "page" : undefined}
                   onclick={() => select(item.key)}
                 >
-                  <span class="grid size-6 shrink-0 place-items-center rounded-[7px] text-white" style:background={item.color}>
-                    <item.icon class="size-3.5" strokeWidth={2} />
-                  </span>
+                  <item.icon
+                    class={cn("size-4 shrink-0", item.key === active ? "text-current" : "text-foreground/70")}
+                    strokeWidth={1.75}
+                  />
                   <span class="flex-1 truncate">{item.label}</span>
-                  <ChevronRightIcon class="size-4 text-muted-foreground/60 md:hidden" />
+                  <ChevronRightIcon class="size-4 text-muted-foreground/50 md:hidden" />
                 </button>
               </li>
             {/each}
@@ -259,15 +267,15 @@
         {/each}
       </nav>
 
-      <div class="flex items-center gap-2 border-t border-border p-3">
-        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1">
+      <div class="flex items-center gap-2 px-4 pt-2 pb-4">
+        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1 bg-card">
           หน้าร้าน<ExternalLinkIcon />
         </Button>
-        <Button variant="secondary" size="sm" class="flex-1" onclick={lock}><LockIcon />ล็อก</Button>
+        <Button variant="secondary" size="sm" class="flex-1 bg-card" onclick={lock}><LockIcon />ล็อก</Button>
       </div>
     </aside>
 
-    <main class={cn("flex min-w-0 flex-1 flex-col", !mobileDetail && "max-md:hidden")}>
+    <main class={cn("flex min-w-0 flex-1 flex-col border-l border-border", !mobileDetail && "max-md:hidden")}>
       <header class="glass sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
         <button
           type="button"
@@ -277,7 +285,7 @@
           <ChevronLeftIcon class="size-5" />การตั้งค่า
         </button>
         <div class="min-w-0 flex-1 max-md:text-center">
-          <h1 class="truncate text-[15px] font-semibold">{activeItem.label}</h1>
+          <h1 class="truncate text-[15px] font-bold">{activeItem.label}</h1>
           <p class="truncate text-[11px] text-muted-foreground max-md:hidden">{subtitle}</p>
         </div>
         {#if isConfigSection(active)}
@@ -292,7 +300,14 @@
       </header>
 
       <div class="flex-1 overflow-y-auto">
-        <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+        <div
+          class={cn(
+            "mx-auto flex w-full flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8",
+            active === "products" || active === "overview" || active === "orders" || active === "users"
+              ? "max-w-none"
+              : "max-w-3xl",
+          )}
+        >
           {#if active === "overview"}
             <OverviewSection bind:this={overviewSection} onnavigate={select} />
           {:else if isConfigSection(active)}

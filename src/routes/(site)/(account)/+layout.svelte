@@ -29,17 +29,17 @@
       <div class="flex items-center gap-4">
         <Avatar user={auth.user} class="size-16 text-2xl" />
         <div>
-          <h1 class="display text-[32px] sm:text-[40px]">สวัสดี, {auth.user.displayName}</h1>
+          <h1 class="display text-[28px] sm:text-[32px]">สวัสดี, {auth.user.displayName}</h1>
           <p class="text-[15px] text-muted-foreground">{auth.user.email}</p>
         </div>
       </div>
       <div class="sm:text-right">
         <p class="text-xs text-muted-foreground">ยอดเงินคงเหลือ</p>
-        <p class="display text-[28px] tabular-nums">{formatBaht(auth.user.balance)}</p>
+        <p class="display text-[24px] tabular-nums">{formatBaht(auth.user.balance)}</p>
       </div>
     </header>
 
-    <nav class="mt-10 flex items-center gap-6 overflow-x-auto border-b border-border text-sm [scrollbar-width:none]" aria-label="บัญชี">
+    <nav class="no-scrollbar mt-10 flex items-center gap-6 overflow-x-auto border-b border-border text-sm" aria-label="บัญชี">
       {#each accountLinks as link (link.href)}
         {@const active = page.url.pathname.startsWith(link.href)}
         <a

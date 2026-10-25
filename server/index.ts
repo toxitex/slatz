@@ -12,6 +12,27 @@ import { requireAdmin } from "./auth.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Vite reads .env.local for the dashboard. Load the same files here so the admin
+// password the form checks is the password the API accepts.
+const envFromProcess = new Set(Object.keys(process.env));
+for (const name of [".env", ".env.local"]) {
+  const file = path.resolve(__dirname, "..", name);
+  if (!fs.existsSync(file)) continue;
+  for (const line of fs.readFileSync(file, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq < 1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    if (envFromProcess.has(key)) continue;
+    let value = trimmed.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
 const DATA_DIR = path.resolve(__dirname, "..", "data");
 const CONFIG_FILE = path.join(DATA_DIR, "site-config.json");
 const UPLOADS_DIR = path.resolve(__dirname, "..", "public", "uploads");

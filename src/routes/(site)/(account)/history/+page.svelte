@@ -17,7 +17,7 @@
 </script>
 
 <div class="flex items-end justify-between gap-4">
-  <h2 class="display text-[28px]">ประวัติเติมเงิน <span class="text-muted-foreground">({topups.length})</span></h2>
+  <h2 class="text-[22px] font-semibold">ประวัติเติมเงิน <span class="text-muted-foreground">({topups.length})</span></h2>
   <p class="text-sm text-muted-foreground">รวมเติมทั้งหมด <strong class="text-foreground tabular-nums">{formatBaht(totalCredited)}</strong></p>
 </div>
 

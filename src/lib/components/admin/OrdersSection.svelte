@@ -25,6 +25,9 @@
   const revenue = $derived(orders.reduce((sum, o) => sum + (o.total ?? 0), 0));
 </script>
 
+<p class="px-1 text-[13px] leading-relaxed text-muted-foreground">
+  รายการนี้คือคำสั่งซื้อที่ลูกค้าเห็นในหน้าคำสั่งซื้อ รวมคีย์ที่ระบบออกให้หลังชำระเงิน
+</p>
 {#if error}
   <p class="rounded-2xl bg-card px-4 py-3 text-[13px] text-destructive">{error}</p>
 {/if}
@@ -33,11 +36,11 @@
   <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
     <div class="rounded-2xl bg-card p-4">
       <p class="text-[11px] text-muted-foreground">คำสั่งซื้อทั้งหมด</p>
-      <p class="mt-1 text-[22px] font-semibold tabular-nums">{orders.length}</p>
+      <p class="mt-1 text-[22px] font-bold tabular-nums">{orders.length}</p>
     </div>
     <div class="rounded-2xl bg-card p-4">
       <p class="text-[11px] text-muted-foreground">ยอดขายรวม</p>
-      <p class="mt-1 text-[22px] font-semibold tabular-nums">{formatBaht(revenue)}</p>
+      <p class="mt-1 text-[22px] font-bold tabular-nums">{formatBaht(revenue)}</p>
     </div>
   </div>
 {/if}

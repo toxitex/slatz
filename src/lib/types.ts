@@ -17,6 +17,7 @@ export type SyncXProduct = {
   tiers?: ProductTier[];
   status?: ProductStatus;
   totalSold?: number;
+  sortOrder?: number;
 };
 
 export type Coupon = {
@@ -47,9 +48,24 @@ export type SiteConfig = {
   heroMorphWords: string;
   ctaText: string;
   searchPlaceholder: string;
+  /** Label on the hero and store-menu search buttons. */
+  searchButtonText: string;
   announcementTitle: string;
   announcementBody: string;
+  /** Link under the home announcement. Empty hides the link. */
+  announcementLink: string;
+  /** Layout of the homepage hero and the big statement. Edited in the dashboard. */
+  home: {
+    heroAlign: "left" | "center";
+    heroSize: "sm" | "md" | "lg";
+    statementAlign: "left" | "center";
+    statementSize: "sm" | "md" | "lg";
+    statementSpace: "tight" | "normal" | "roomy";
+    /** Store and category page titles. */
+    titleSize: "sm" | "md" | "lg";
+  };
   stats: {
+    heading: string;
     /** Show real numbers from /api/stats instead of the manual values below. */
     live: boolean;
     users: string;
@@ -66,6 +82,8 @@ export type SiteConfig = {
     soldUnit: string;
   };
   theme: {
+    /** Light keeps the saved palette. Dark swaps the whole surface system. */
+    mode: "light" | "dark";
     accentColor: string;
     backgroundColor: string;
     buttonColor: string;
@@ -81,11 +99,21 @@ export type SiteConfig = {
     lineUrl: string;
     facebookUrl: string;
     instagramUrl: string;
+    rights: string;
+    country: string;
   };
   store: {
+    headline: string;
+    headlineAccent: string;
     sectionTitle: string;
+    categoryTitle: string;
+    latestTitle: string;
+    latestAccent: string;
     emptyStateText: string;
     productButtonText: string;
+    learnMoreText: string;
+    buyText: string;
+    checkoutText: string;
   };
   products: SyncXProduct[];
 };

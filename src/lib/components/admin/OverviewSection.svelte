@@ -5,6 +5,7 @@
   import { getStores } from "$lib/stores";
   import type { AdminStats } from "$lib/types";
   import { cn, formatBaht } from "$lib/utils";
+  import SalesChart from "./SalesChart.svelte";
   import type { SectionKey } from "./sections";
 
   let { onnavigate }: { onnavigate: (key: SectionKey) => void } = $props();
@@ -15,9 +16,11 @@
   let loading = $state(true);
   let error = $state<string | null>(null);
   let hovered = $state<number | null>(null);
+  let salesChart = $state<SalesChart>();
 
   export async function refresh() {
     loading = true;
+    void salesChart?.refresh();
     try {
       stats = await api.get<AdminStats>("/api/admin/stats");
       error = null;
@@ -80,6 +83,8 @@
     return date.toLocaleDateString("th-TH", { day: "numeric", month: "short" });
   }
 </script>
+
+<SalesChart bind:this={salesChart} />
 
 {#if error && !stats}
   <div class="rounded-2xl bg-card p-6 text-[13px]">

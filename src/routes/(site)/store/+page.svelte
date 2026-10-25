@@ -4,8 +4,14 @@
   import { glassPointer, reveal } from "$lib/attachments";
   import ProductCard from "$lib/components/ProductCard.svelte";
   import { getStores } from "$lib/stores";
+  import { cn } from "$lib/utils";
 
   const { site, products, categories } = getStores();
+  const titleType = $derived(
+    { sm: "text-[28px] sm:text-[36px]", md: "text-[32px] sm:text-[40px]", lg: "text-[36px] sm:text-[48px]" }[
+      site.config.home.titleSize
+    ],
+  );
   products.ensureLoaded();
   categories.ensureLoaded();
 
@@ -14,7 +20,7 @@
       return categories.categories
         .filter((cat) => cat.isActive)
         .map((cat) => {
-          const inCategory = products.products.filter((p) => p.category === cat.name);
+          const inCategory = products.products.filter((p) => p.category === cat.name && p.status !== "hidden");
           return {
             name: cat.name,
             imageUrl: cat.imageUrl || inCategory.find((p) => p.imageUrl)?.imageUrl || "",
@@ -22,13 +28,13 @@
           };
         });
     }
-    const map = new Map<string, { count: number; imageUrl: string }>();
+    const grouped: Record<string, { count: number; imageUrl: string }> = {};
     for (const p of products.products) {
-      if (!p.category) continue;
-      const current = map.get(p.category);
-      map.set(p.category, { count: (current?.count ?? 0) + 1, imageUrl: current?.imageUrl || p.imageUrl || "" });
+      if (!p.category || p.status === "hidden") continue;
+      const current = grouped[p.category];
+      grouped[p.category] = { count: (current?.count ?? 0) + 1, imageUrl: current?.imageUrl || p.imageUrl || "" };
     }
-    return [...map].map(([name, value]) => ({ name, ...value }));
+    return Object.entries(grouped).map(([name, value]) => ({ name, ...value }));
   });
 
   const latest = $derived(products.products.filter((p) => p.status !== "hidden").slice(0, 10));
@@ -42,8 +48,8 @@
     <ChevronRightIcon class="size-3" />
     <span class="text-foreground">ร้านค้า</span>
   </nav>
-  <h1 class="reveal display max-w-3xl text-[40px] sm:text-[64px]">
-    ร้านค้า. <span class="text-muted-foreground">วิธีที่ดีที่สุดในการเลือกซื้อสิ่งที่คุณชอบ</span>
+  <h1 class={cn("reveal display max-w-3xl", titleType)}>
+    {site.config.store.headline} <span class="text-muted-foreground">{site.config.store.headlineAccent}</span>
   </h1>
   <h2 class="reveal display mt-12 text-[24px] sm:text-[28px]" style="animation-delay: 80ms">
     {site.config.store.sectionTitle}
@@ -96,10 +102,10 @@
 {#if latest.length}
   <section class="pt-10 pb-24" aria-labelledby="latest-heading">
     <h2 id="latest-heading" class="container-wide display text-[24px] sm:text-[28px]">
-      ล่าสุด. <span class="text-muted-foreground">สินค้าที่คัดมาให้คุณ</span>
+      {site.config.store.latestTitle} <span class="text-muted-foreground">{site.config.store.latestAccent}</span>
     </h2>
     <div
-      class="mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-5 px-5 pb-8 [scrollbar-width:none] sm:scroll-px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] sm:px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))]"
+      class="no-scrollbar mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-5 px-5 pb-8 sm:scroll-px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] sm:px-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))]"
     >
       {#each latest as product (product.id)}
         <ProductCard

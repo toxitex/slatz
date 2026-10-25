@@ -38,10 +38,7 @@ export type SectionItem = {
 export const sectionGroups: { title: string; items: SectionItem[] }[] = [
   {
     title: "ภาพรวมระบบ",
-    items: [
-      { key: "overview", label: "แดชบอร์ด", icon: LayoutDashboardIcon, color: "#1d1d1f" },
-      { key: "stats", label: "ตัวเลขหน้าแรก", icon: BarChart3Icon, color: "#3a3a3c" },
-    ],
+    items: [{ key: "overview", label: "ภาพรวม", icon: LayoutDashboardIcon, color: "#1d1d1f" }],
   },
   {
     title: "จัดการร้านค้า",
@@ -62,6 +59,7 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
       { key: "colors", label: "สีธีม", icon: PaletteIcon, color: "#636366" },
       { key: "hero", label: "แบนเนอร์หน้าแรก", icon: ImageIcon, color: "#8e8e93" },
       { key: "announcement", label: "ประกาศบนเว็บ", icon: MegaphoneIcon, color: "#1d1d1f" },
+      { key: "stats", label: "ตัวเลขบนหน้าแรก", icon: BarChart3Icon, color: "#48484a" },
       { key: "footer", label: "ฟุตเตอร์", icon: PanelBottomIcon, color: "#3a3a3c" },
     ],
   },

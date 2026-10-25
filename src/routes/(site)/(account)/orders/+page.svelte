@@ -24,7 +24,7 @@
 </script>
 
 <div class="flex items-end justify-between gap-4">
-  <h2 class="display text-[28px]">คำสั่งซื้อ <span class="text-muted-foreground">({orders.length})</span></h2>
+  <h2 class="text-[22px] font-semibold">คำสั่งซื้อ <span class="text-muted-foreground">({orders.length})</span></h2>
   <p class="text-sm text-muted-foreground">รวมยอดทั้งหมด <strong class="text-foreground tabular-nums">{formatBaht(totalSpent)}</strong></p>
 </div>
 

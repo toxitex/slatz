@@ -103,7 +103,7 @@
           bind:value={query}
           oninput={() => (activeIndex = 0)}
           placeholder={site.config.searchPlaceholder}
-          class="display w-full bg-transparent text-2xl text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-[32px]"
+          class="w-full bg-transparent text-xl text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-2xl"
         />
       </label>
 

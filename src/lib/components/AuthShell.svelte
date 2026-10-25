@@ -9,12 +9,15 @@
     $props();
 
   const { site } = getStores();
+  const darkTheme = $derived(site.config.theme.mode === "dark");
 </script>
 
 <section class="relative -mt-[72px] flex flex-1 flex-col items-center overflow-hidden px-4 pt-[120px] pb-16 sm:pb-24">
   <Grainient
     class="!absolute inset-0"
-    colors={["#ffffff", "#ededf0", "#c7c7cc", "#8e8e93", "#48484a"]}
+    colors={darkTheme
+      ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
+      : ["#ffffff", "#ededf0", "#c7c7cc", "#8e8e93", "#48484a"]}
     angle={200}
     speed={0.4}
     silk={0.6}

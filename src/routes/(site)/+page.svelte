@@ -17,6 +17,7 @@
   categories.ensureLoaded();
 
   const config = $derived(site.config);
+  const darkTheme = $derived(config.theme.mode === "dark");
   let liveStats = $state<PublicStats | null>(null);
   api
     .get<PublicStats>("/api/stats")
@@ -43,6 +44,27 @@
   const headlinePhrases = $derived(
     [config.heroHeadline, ...(config.heroMorphWords ?? "").split(",")].map((t) => t.trim()).filter(Boolean),
   );
+  const heroCentered = $derived(config.home.heroAlign !== "left");
+  const heroType = $derived(
+    { sm: "text-[clamp(28px,5vw,40px)]", md: "text-[clamp(32px,6vw,56px)]", lg: "text-[clamp(36px,7vw,72px)]" }[
+      config.home.heroSize
+    ],
+  );
+  const heroSub = $derived(
+    { sm: "text-[17px] sm:text-[21px]", md: "text-[19px] sm:text-[24px]", lg: "text-[21px] sm:text-[28px]" }[
+      config.home.heroSize
+    ],
+  );
+  const statementType = $derived(
+    {
+      sm: "text-[22px] leading-snug sm:text-[32px]",
+      md: "text-[26px] leading-[1.2] sm:text-[40px]",
+      lg: "text-[28px] leading-[1.2] sm:text-[44px]",
+    }[config.home.statementSize],
+  );
+  const statementSpace = $derived(
+    { tight: "py-10 sm:py-14", normal: "py-16 sm:py-20", roomy: "py-24 sm:py-32" }[config.home.statementSpace],
+  );
 
   function tagline(product: SyncXProduct) {
     return product.description.split("\n").find((line) => line.trim()) || product.category;
@@ -60,7 +82,7 @@
       href={resolve(`/product/${product.id}`)}
       class={cn("h-10 px-5 text-[15px]", dark && "bg-white text-black hover:bg-white/85")}
     >
-      เรียนรู้เพิ่มเติม
+      {config.store.learnMoreText}
     </Button>
     <Button
       href={resolve(`/product/${product.id}`)}
@@ -70,7 +92,7 @@
         dark && "border-white/70 text-white hover:bg-white hover:text-black",
       )}
     >
-      ซื้อ
+      {config.store.buyText}
     </Button>
   </div>
 {/snippet}
@@ -85,10 +107,12 @@
   {/if}
 {/snippet}
 
-<section class="relative -mt-[72px] overflow-hidden pt-[72px] pb-16 text-center sm:pb-24">
+<section class={cn("relative -mt-[72px] overflow-hidden pt-[72px] pb-12 sm:pb-16", heroCentered ? "text-center" : "text-left")}>
   <Grainient
     class="!absolute inset-0"
-    colors={["#ffffff", "#f3f3f5", "#dcdce0", "#aeaeb2", "#6e6e73"]}
+    colors={darkTheme
+      ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
+      : ["#ffffff", "#f3f3f5", "#dcdce0", "#aeaeb2", "#6e6e73"]}
     angle={125}
     speed={0.55}
     flow={1.1}
@@ -99,7 +123,9 @@
     stir={0.8}
   />
   <div
-    class="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(255,255,255,0.82),rgba(255,255,255,0)_75%),linear-gradient(to_bottom,transparent_70%,var(--syncx-bg))]"
+    class={darkTheme
+      ? "pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(0,0,0,0.2),rgba(0,0,0,0.78)),linear-gradient(to_bottom,transparent_62%,var(--syncx-bg))]"
+      : "pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(255,255,255,0.82),rgba(255,255,255,0)_75%),linear-gradient(to_bottom,transparent_70%,var(--syncx-bg))]"}
   ></div>
 
   <div class="relative container-apple pt-12 sm:pt-16">
@@ -118,26 +144,23 @@
     </p>
     <h1 class="reveal display mx-auto mt-2 max-w-5xl" style="animation-delay: 120ms">
       {#if headlinePhrases.length > 1}
-        <MorphingText
-          texts={headlinePhrases}
-          class="h-[1.15em] text-[clamp(36px,9.5vw,88px)] leading-[1.1] whitespace-nowrap"
-        />
+        <MorphingText texts={headlinePhrases} class={cn("min-h-[1.15em] leading-[1.1] whitespace-normal", heroType)} />
       {:else}
-        <span class="text-sheen text-[clamp(40px,9.5vw,88px)]">{config.heroHeadline}</span>
+        <span class={cn("text-sheen leading-[1.1]", heroType)}>{config.heroHeadline}</span>
       {/if}
     </h1>
-    <p class="mx-auto mt-5 max-w-2xl text-[21px] leading-snug text-muted-foreground sm:text-[28px]">
+    <p class={cn("mt-5 max-w-2xl leading-snug text-muted-foreground", heroSub, heroCentered && "mx-auto")}>
       {#each subtitleWords as word, i (i)}<span class="blur-word whitespace-pre" style="--i: {i}">{word}</span>{/each}
     </p>
-    <div class="reveal mt-9 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 380ms">
+    <div class={cn("reveal mt-9 flex flex-wrap items-center gap-3", heroCentered ? "justify-center" : "justify-start")} style="animation-delay: 380ms">
       <Button href={resolve("/store")} size="lg" class="px-7">{config.ctaText}</Button>
       <button
         type="button"
-        class="liquid-glass inline-flex h-12 items-center gap-1.5 rounded-full px-6 text-[17px] transition-transform active:scale-95"
+        class="liquid-glass inline-flex h-12 items-center gap-1.5 rounded-full px-6 text-[17px] font-medium transition-transform active:scale-95"
         onclick={ui.openSearch}
         {@attach glassPointer}
       >
-        ค้นหาสินค้า<ChevronRightIcon class="size-4" />
+        {config.searchButtonText}<ChevronRightIcon class="size-4" />
       </button>
     </div>
   </div>
@@ -179,8 +202,8 @@
     aria-label={product.name}
   >
     <div class="container-apple" {@attach reveal()}>
-      <h2 class="display text-[40px] sm:text-[56px]">{product.name}</h2>
-      <p class={cn("mt-1 text-[21px] sm:text-[28px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
+      <h2 class="display text-[32px] sm:text-[44px]">{product.name}</h2>
+      <p class={cn("mt-1 text-[17px] sm:text-[21px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
       <p class={cn("mt-1 text-sm", dark ? "text-[#86868b]" : "text-muted-foreground")}>{priceLine(product)}</p>
       {@render links(product, dark)}
     </div>
@@ -207,7 +230,7 @@
         {@attach reveal((i % 2) * 80)}
         {@attach glassPointer}
       >
-        <h3 class="display px-6 text-[32px] sm:text-[40px]">{product.name}</h3>
+        <h3 class="display px-6 text-[28px] sm:text-[32px]">{product.name}</h3>
         <p class={cn("mt-1 px-6 text-[19px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
         {@render links(product, dark)}
         <div class="mt-8 flex flex-1 items-end justify-center px-10">
@@ -223,8 +246,8 @@
 
 {#if shelf.length}
   <section class="container-wide pt-20" aria-label="หมวดหมู่">
-    <h2 class="display mb-8 text-center text-[28px] sm:text-[40px]" {@attach reveal()}>เลือกซื้อตามหมวดหมู่</h2>
-    <div class="flex gap-6 overflow-x-auto pb-2 [scrollbar-width:none] sm:justify-center">
+    <h2 class="display mb-8 text-center text-[24px] sm:text-[32px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
+    <div class="no-scrollbar flex gap-6 overflow-x-auto pb-2 sm:justify-center">
       {#each shelf as category, i (category.id)}
         <a
           href={resolve(`/category/${encodeURIComponent(category.name)}`)}
@@ -245,28 +268,43 @@
   </section>
 {/if}
 
-<!-- Words light up as the statement scrolls through the viewport. -->
-<section class="container-apple py-24 sm:py-32" aria-labelledby="announcement-heading" {@attach scrollProgress}>
-  <p id="announcement-heading" class="eyebrow mb-4">{config.announcementTitle}</p>
-  <p class="display text-[32px] leading-[1.15] sm:text-[56px]" aria-label={config.announcementBody}>
-    {#each words as word, i (i)}
-      <span
-        aria-hidden="true"
-        class="transition-opacity duration-150"
-        style:opacity={`clamp(0.18, calc((var(--progress, 0) - ${i / words.length}) * ${words.length / 3} + 0.18), 1)`}
-      >{word}</span>
-    {/each}
-  </p>
-  <a href={resolve("/store")} class="link mt-8 text-[19px]">ไปที่ร้านค้า<ChevronRightIcon class="size-4" /></a>
-</section>
+<!-- Words light up as the statement scrolls through the viewport. Hidden when the announcement body is empty. -->
+{#if config.announcementBody.trim()}
+  <section
+    class={cn("container-apple", statementSpace, config.home.statementAlign === "center" && "text-center")}
+    aria-labelledby="announcement-heading"
+    {@attach scrollProgress}
+  >
+    {#if config.announcementTitle.trim()}
+      <p id="announcement-heading" class="eyebrow mb-4">{config.announcementTitle}</p>
+    {/if}
+    <p class={cn("display", statementType)} aria-label={config.announcementBody}>
+      {#each words as word, i (i)}
+        <span
+          aria-hidden="true"
+          class="transition-opacity duration-150"
+          style:opacity={`clamp(0.18, calc((var(--progress, 0) - ${i / words.length}) * ${words.length / 3} + 0.18), 1)`}
+        >{word}</span>
+      {/each}
+    </p>
+    {#if config.announcementLink.trim()}
+      <a href={resolve("/store")} class="link mt-8 text-[19px]">{config.announcementLink}<ChevronRightIcon class="size-4" /></a>
+    {/if}
+  </section>
+{/if}
 
 <section
-  class="bg-black bg-[radial-gradient(70%_90%_at_50%_0%,#2c2c2e_0%,#000_70%)] py-20 text-[#f5f5f7] sm:py-28"
+  class={cn(
+    "py-20 sm:py-28",
+    darkTheme
+      ? "bg-card text-foreground"
+      : "bg-black bg-[radial-gradient(70%_90%_at_50%_0%,#2c2c2e_0%,#000_70%)] text-[#f5f5f7]",
+  )}
   aria-labelledby="stats-heading"
 >
   <div class="container-wide">
-    <h2 id="stats-heading" class="display text-center text-[32px] sm:text-[48px]" {@attach reveal()}>
-      ตัวเลขที่ลูกค้าไว้วางใจ
+    <h2 id="stats-heading" class="display text-center text-[28px] sm:text-[40px]" {@attach reveal()}>
+      {config.stats.heading}
     </h2>
     <div class="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {#each stats as stat, i (stat.label)}
@@ -278,7 +316,7 @@
         >
           <p class="flex items-baseline justify-center gap-1.5">
             <strong
-              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[48px] text-transparent tabular-nums sm:text-[72px]"
+              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[36px] text-transparent tabular-nums sm:text-[48px]"
               {@attach countUp(stat.value)}
             ></strong>
             {#if stat.unit}<span class="text-[17px] text-[#86868b]">{stat.unit}</span>{/if}

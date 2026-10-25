@@ -4,7 +4,9 @@
   import { page } from "$app/state";
   import type { Pathname } from "$app/types";
   import ArrowUpRightIcon from "@lucide/svelte/icons/arrow-up-right";
+  import MoonIcon from "@lucide/svelte/icons/moon";
   import SearchIcon from "@lucide/svelte/icons/search";
+  import SunIcon from "@lucide/svelte/icons/sun";
   import { toast } from "svelte-sonner";
   import { fade } from "svelte/transition";
   import { isAdminGranted } from "$lib/admin-access";
@@ -18,6 +20,7 @@
   import UserMenu from "./UserMenu.svelte";
 
   const { site, auth, ui, products, categories } = getStores();
+  const darkTheme = $derived(site.config.theme.mode === "dark");
 
   let menuOpen = $state(false);
   let flyout = $state(false);
@@ -203,6 +206,19 @@
         <button
           type="button"
           class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
+          aria-pressed={darkTheme}
+          aria-label={darkTheme ? "สลับเป็นธีมสว่าง" : "สลับเป็นธีมมืด"}
+          onclick={() => site.toggleMode()}
+        >
+          {#if darkTheme}
+            <SunIcon class="size-[17px]" strokeWidth={1.75} />
+          {:else}
+            <MoonIcon class="size-[17px]" strokeWidth={1.75} />
+          {/if}
+        </button>
+        <button
+          type="button"
+          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
           aria-label="ค้นหา"
           onclick={ui.openSearch}
         >
@@ -221,7 +237,7 @@
             </a>
             <a
               href={resolve("/register")}
-              class="shine rounded-full bg-primary px-4 py-2 text-[13px] text-primary-foreground transition-transform active:scale-95"
+              class="shine rounded-full bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-transform active:scale-95"
             >
               สมัครสมาชิก
             </a>
@@ -263,7 +279,7 @@
             <p class="mb-3 text-xs text-muted-foreground">เลือกซื้อ</p>
             <ul class="stagger-in space-y-1">
               <li style="--i: 0">
-                <a href={resolve("/store")} class="group display inline-flex items-center gap-1 text-2xl">
+                <a href={resolve("/store")} class="group inline-flex items-center gap-1 text-[17px] font-semibold">
                   ดูทั้งหมด
                   <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                 </a>
@@ -272,7 +288,7 @@
                 <li style="--i: {i + 1}">
                   <a
                     href={resolve(`/category/${encodeURIComponent(category.name)}`)}
-                    class="group display inline-flex items-center gap-1 text-2xl text-foreground/85 hover:text-foreground"
+                    class="group inline-flex items-center gap-1 text-[17px] font-semibold text-foreground/85 hover:text-foreground"
                   >
                     {category.name}
                     <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
@@ -293,7 +309,7 @@
                     ui.openSearch();
                   }}
                 >
-                  ค้นหาสินค้า
+                  {site.config.searchButtonText}
                 </button>
               </li>
               {#each quickLinks as link, i (link.href)}
@@ -340,7 +356,7 @@
               <li style="--i: {i}">
                 <a
                   href={resolve(link.href)}
-                  class="display block py-1.5 text-[26px] text-foreground/85 active:scale-[0.98] active:text-foreground"
+                  class="block py-1.5 text-[22px] font-semibold text-foreground/85 active:scale-[0.98] active:text-foreground"
                 >
                   {link.label}
                 </a>

@@ -1,22 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
-@import "@fontsource-variable/inter";
-
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Thai glyphs only. Latin text uses SF Pro (Apple), then Helvetica. Variable 100–700 means
+ * font-medium and font-semibold render true weights instead of snapping to regular or bold.
+ */
 @font-face {
-  font-family: "LINE Seed Sans TH";
-  src: url("/fonts/LINESeedSansTH_W_Rg.woff") format("woff");
-  font-weight: 400;
+  font-family: "SLATZ Thai";
+  src: url("../node_modules/@fontsource-variable/anuphan/files/anuphan-thai-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 700;
+  font-style: normal;
   font-display: swap;
-}
-
-@font-face {
-  font-family: "LINE Seed Sans TH";
-  src: url("/fonts/LINESeedSansTH_W_Bd.woff") format("woff");
-  font-weight: 700;
-  font-display: swap;
+  unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
 }
 
 /*
@@ -24,13 +21,13 @@
  * --syncx-* on <html>; everything below derives from them so the Apple look follows the admin palette.
  */
 :root {
-  --syncx-accent: #1d1d1f;
-  --syncx-button: #1d1d1f;
-  --syncx-bg: #f5f5f7;
-  --syncx-card: #ffffff;
-  --syncx-text: #1d1d1f;
-  --syncx-muted: #6e6e73;
-  --syncx-border: rgba(0, 0, 0, 0.08);
+  --syncx-accent: #f5f5f7;
+  --syncx-button: #f5f5f7;
+  --syncx-bg: #000000;
+  --syncx-card: #161618;
+  --syncx-text: #f5f5f7;
+  --syncx-muted: #86868b;
+  --syncx-border: rgba(255, 255, 255, 0.12);
 
   --radius: 1.125rem;
 
@@ -41,7 +38,7 @@
   --popover: color-mix(in srgb, var(--syncx-card) 86%, transparent);
   --popover-foreground: var(--syncx-text);
   --primary: var(--syncx-button);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #0b0b0c;
   --secondary: color-mix(in srgb, var(--syncx-text) 6%, var(--syncx-card));
   --secondary-foreground: var(--syncx-text);
   --muted: color-mix(in srgb, var(--syncx-text) 5%, var(--syncx-card));
@@ -56,7 +53,7 @@
   --sidebar: var(--syncx-card);
   --sidebar-foreground: var(--syncx-text);
   --sidebar-primary: var(--syncx-button);
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: #0b0b0c;
   --sidebar-accent: var(--secondary);
   --sidebar-accent-foreground: var(--syncx-text);
   --sidebar-border: var(--syncx-border);
@@ -65,11 +62,10 @@
 
 @theme inline {
   --font-sans:
-    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter Variable", "Helvetica Neue",
-    "LINE Seed Sans TH", "Noto Sans Thai", system-ui, sans-serif;
+    "SLATZ Thai", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display:
-    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Variable", "Helvetica Neue", "LINE Seed Sans TH",
-    "Noto Sans Thai", system-ui, sans-serif;
+    "SLATZ Thai", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica,
+    Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
 
   --radius-sm: calc(var(--radius) - 8px);
@@ -121,7 +117,34 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-synthesis-weight: none;
     scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--syncx-muted) 75%, transparent) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--syncx-muted) 70%, transparent);
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   body {
@@ -204,15 +227,14 @@
   .liquid-glass {
     position: relative;
     isolation: isolate;
-    background: color-mix(in srgb, var(--glass-tint, #ffffff) var(--glass-alpha, 55%), transparent);
+    background: color-mix(in srgb, var(--glass-tint, #2c2c2e) var(--glass-alpha, 72%), transparent);
     backdrop-filter: blur(var(--glass-blur, 18px)) saturate(180%);
     -webkit-backdrop-filter: blur(var(--glass-blur, 18px)) saturate(180%);
     box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.85),
-      inset 0 -1px 1px rgba(0, 0, 0, 0.05),
-      0 0 0 0.5px rgba(0, 0, 0, 0.08),
-      0 12px 32px -12px rgba(0, 0, 0, 0.22),
-      0 2px 6px -2px rgba(0, 0, 0, 0.08);
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+      0 0 0 0.5px rgba(255, 255, 255, 0.14),
+      0 12px 32px -12px rgba(0, 0, 0, 0.5);
   }
 
   .liquid-glass::before {
@@ -223,8 +245,8 @@
     border-radius: inherit;
     pointer-events: none;
     background:
-      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.55), transparent 65%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 55%);
+      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.16), transparent 65%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
     opacity: 0.9;
   }
 
@@ -247,6 +269,23 @@
       linear-gradient(#000 0 0);
     mask-composite: exclude;
     -webkit-mask-composite: xor;
+  }
+
+  html[data-theme="light"] .liquid-glass {
+    --glass-tint: #ffffff;
+    --glass-alpha: 55%;
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.85),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.05),
+      0 0 0 0.5px rgba(0, 0, 0, 0.08),
+      0 12px 32px -12px rgba(0, 0, 0, 0.22),
+      0 2px 6px -2px rgba(0, 0, 0, 0.08);
+  }
+
+  html[data-theme="light"] .liquid-glass::before {
+    background:
+      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.55), transparent 65%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 55%);
   }
 
   .liquid-glass-dark {
@@ -419,9 +458,9 @@
 
 @keyframes blur-rise {
   from {
-    opacity: 0;
-    transform: translateY(8px);
-    filter: blur(8px);
+    opacity: 0.45;
+    transform: translateY(6px);
+    filter: blur(4px);
   }
   to {
     opacity: 1;

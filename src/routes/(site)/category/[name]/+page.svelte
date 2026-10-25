@@ -7,8 +7,14 @@
   import { reveal } from "$lib/attachments";
   import ProductCard from "$lib/components/ProductCard.svelte";
   import { getStores } from "$lib/stores";
+  import { cn } from "$lib/utils";
 
   const { site, products, categories } = getStores();
+  const titleType = $derived(
+    { sm: "text-[28px] sm:text-[36px]", md: "text-[32px] sm:text-[40px]", lg: "text-[36px] sm:text-[48px]" }[
+      site.config.home.titleSize
+    ],
+  );
   products.ensureLoaded();
   categories.ensureLoaded();
 
@@ -16,7 +22,11 @@
 
   const name = $derived(page.params.name ?? "");
   const category = $derived(categories.categories.find((c) => c.name === name));
-  const inCategory = $derived(products.products.filter((p) => p.category === name));
+  const inCategory = $derived(
+    products.products
+      .filter((p) => p.category === name && p.status !== "hidden")
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)),
+  );
   const filtered = $derived.by(() => {
     const q = query.trim().toLowerCase();
     if (!q) return inCategory;
@@ -33,14 +43,14 @@
   </nav>
   <header class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
     <div>
-      <h1 class="reveal display text-[40px] sm:text-[64px]">{name}</h1>
+      <h1 class={cn("reveal display", titleType)}>{name}</h1>
       <p class="mt-1 text-[17px] text-muted-foreground">{inCategory.length} สินค้าในหมวดหมู่นี้</p>
     </div>
     <label class="flex h-11 w-full items-center gap-2 rounded-full bg-card px-4 text-sm md:max-w-xs">
       <SearchIcon class="size-4 text-muted-foreground" />
       <input
         bind:value={query}
-        placeholder="ค้นหาสินค้าในหมวดหมู่นี้..."
+        placeholder={site.config.searchPlaceholder}
         class="w-full bg-transparent outline-none placeholder:text-muted-foreground"
       />
     </label>
