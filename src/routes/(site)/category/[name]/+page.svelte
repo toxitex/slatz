@@ -44,7 +44,7 @@
       <SearchIcon class="size-4 text-muted-foreground" />
       <input
         bind:value={query}
-        placeholder="ค้นหาสินค้าในหมวดหมู่นี้..."
+        placeholder={site.config.searchPlaceholder}
         class="w-full bg-transparent outline-none placeholder:text-muted-foreground"
       />
     </label>

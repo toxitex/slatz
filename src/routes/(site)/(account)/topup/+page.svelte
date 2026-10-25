@@ -41,7 +41,7 @@
 
 <div class="grid gap-5 md:grid-cols-[1.2fr_1fr]">
   <section class="tile p-8 sm:p-10">
-    <h2 class="display text-[28px]">เติมเงินด้วยคูปอง</h2>
+    <h2 class="text-[22px] font-semibold">เติมเงินด้วยคูปอง</h2>
     <p class="mt-1 text-[15px] text-muted-foreground">
       ยอดคงเหลือปัจจุบัน <strong class="text-foreground tabular-nums">{formatBaht(auth.user?.balance ?? 0)}</strong>
     </p>

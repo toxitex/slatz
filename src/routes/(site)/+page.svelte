@@ -50,6 +50,11 @@
       config.home.heroSize
     ],
   );
+  const heroSub = $derived(
+    { sm: "text-[17px] sm:text-[21px]", md: "text-[19px] sm:text-[24px]", lg: "text-[21px] sm:text-[28px]" }[
+      config.home.heroSize
+    ],
+  );
   const statementType = $derived(
     {
       sm: "text-[22px] leading-snug sm:text-[32px]",
@@ -144,7 +149,7 @@
         <span class={cn("text-sheen leading-[1.1]", heroType)}>{config.heroHeadline}</span>
       {/if}
     </h1>
-    <p class={cn("mt-5 max-w-2xl text-[21px] leading-snug text-muted-foreground sm:text-[28px]", heroCentered && "mx-auto")}>
+    <p class={cn("mt-5 max-w-2xl leading-snug text-muted-foreground", heroSub, heroCentered && "mx-auto")}>
       {#each subtitleWords as word, i (i)}<span class="blur-word whitespace-pre" style="--i: {i}">{word}</span>{/each}
     </p>
     <div class={cn("reveal mt-9 flex flex-wrap items-center gap-3", heroCentered ? "justify-center" : "justify-start")} style="animation-delay: 380ms">
@@ -198,7 +203,7 @@
   >
     <div class="container-apple" {@attach reveal()}>
       <h2 class="display text-[32px] sm:text-[44px]">{product.name}</h2>
-      <p class={cn("mt-1 text-[21px] sm:text-[28px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
+      <p class={cn("mt-1 text-[17px] sm:text-[21px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
       <p class={cn("mt-1 text-sm", dark ? "text-[#86868b]" : "text-muted-foreground")}>{priceLine(product)}</p>
       {@render links(product, dark)}
     </div>
@@ -311,7 +316,7 @@
         >
           <p class="flex items-baseline justify-center gap-1.5">
             <strong
-              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[40px] text-transparent tabular-nums sm:text-[56px]"
+              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[36px] text-transparent tabular-nums sm:text-[48px]"
               {@attach countUp(stat.value)}
             ></strong>
             {#if stat.unit}<span class="text-[17px] text-[#86868b]">{stat.unit}</span>{/if}
