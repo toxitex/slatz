@@ -43,6 +43,13 @@ export const defaultSiteConfig: SiteConfig = {
   announcementTitle: "ยินดีต้อนรับ",
   announcementBody: "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
   announcementLink: "ไปที่ร้านค้า",
+  home: {
+    heroAlign: "center",
+    heroSize: "lg",
+    statementAlign: "left",
+    statementSize: "md",
+    statementSpace: "normal",
+  },
   stats: {
     heading: "ตัวเลขที่ลูกค้าไว้วางใจ",
     live: true,
@@ -132,6 +139,7 @@ export function mergeConfig(input: unknown): SiteConfig {
     stats: { ...defaultSiteConfig.stats, ...(saved.stats ?? {}) },
     theme: upgradeTheme(saved.theme),
     footer: { ...defaultSiteConfig.footer, ...(saved.footer ?? {}) },
+    home: { ...defaultSiteConfig.home, ...(saved.home ?? {}) },
     store: { ...defaultSiteConfig.store, ...(saved.store ?? {}) },
     products: Array.isArray(saved.products)
       ? saved.products.map((product) => ({

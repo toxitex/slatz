@@ -16,6 +16,7 @@
   let { section }: { section: ConfigSectionKey } = $props();
 
   const { site } = getStores();
+  const choiceClass = "h-8 rounded-lg bg-secondary px-2 text-[13px] text-foreground outline-none";
 
   const statRows = [
     { key: "users", label: "ผู้ใช้", unitHint: "คน" },
@@ -82,6 +83,19 @@
     <TextRow label="คำบรรยายใต้หัวข้อ" bind:value={site.config.heroSubtitle} />
     <TextRow label="ปุ่มค้นหา" hint="ปุ่มบนฮีโร่และในเมนูร้านค้า" bind:value={site.config.searchButtonText} />
     <TextRow label="ข้อความในช่องค้นหา" bind:value={site.config.searchPlaceholder} />
+    <SettingsRow label="ขนาดหัวข้อ" hint="ย่อตามความกว้างหน้าจอ และตัดบรรทัดได้">
+      <select bind:value={site.config.home.heroSize} aria-label="ขนาดหัวข้อ" class={choiceClass}>
+        <option value="sm">เล็ก</option>
+        <option value="md">กลาง</option>
+        <option value="lg">ใหญ่</option>
+      </select>
+    </SettingsRow>
+    <SettingsRow label="จัดวาง">
+      <select bind:value={site.config.home.heroAlign} aria-label="จัดวางฮีโร่" class={choiceClass}>
+        <option value="center">กึ่งกลาง</option>
+        <option value="left">ชิดซ้าย</option>
+      </select>
+    </SettingsRow>
   </SettingsGroup>
   <SettingsGroup title="รูปแบนเนอร์">
     <ImageRow label="แบนเนอร์" bind:value={site.config.heroImageUrl} />
@@ -91,6 +105,26 @@
     <TextRow label="หัวข้อประกาศ" bind:value={site.config.announcementTitle} />
     <TextRow label="ประโยคบนหน้าแรก" bind:value={site.config.announcementBody} multiline />
     <TextRow label="ลิงก์ใต้ประโยค" hint="เว้นว่างเพื่อซ่อนลิงก์" bind:value={site.config.announcementLink} placeholder="ไปที่ร้านค้า" />
+    <SettingsRow label="ขนาดประโยค">
+      <select bind:value={site.config.home.statementSize} aria-label="ขนาดประโยค" class={choiceClass}>
+        <option value="sm">เล็ก</option>
+        <option value="md">กลาง</option>
+        <option value="lg">ใหญ่</option>
+      </select>
+    </SettingsRow>
+    <SettingsRow label="จัดวางประโยค">
+      <select bind:value={site.config.home.statementAlign} aria-label="จัดวางประโยค" class={choiceClass}>
+        <option value="left">ชิดซ้าย</option>
+        <option value="center">กึ่งกลาง</option>
+      </select>
+    </SettingsRow>
+    <SettingsRow label="ช่องว่างรอบประโยค">
+      <select bind:value={site.config.home.statementSpace} aria-label="ช่องว่างรอบประโยค" class={choiceClass}>
+        <option value="tight">กระชับ</option>
+        <option value="normal">ปกติ</option>
+        <option value="roomy">กว้าง</option>
+      </select>
+    </SettingsRow>
   </SettingsGroup>
 {:else if section === "stats"}
   <SettingsGroup title="หัวข้อบนหน้าแรก" description="แถบใต้ประโยคประกาศ ตัวเลขด้านล่างเป็นการ์ดสี่ใบ">

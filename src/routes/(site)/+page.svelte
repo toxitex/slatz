@@ -44,6 +44,22 @@
   const headlinePhrases = $derived(
     [config.heroHeadline, ...(config.heroMorphWords ?? "").split(",")].map((t) => t.trim()).filter(Boolean),
   );
+  const heroCentered = $derived(config.home.heroAlign !== "left");
+  const heroType = $derived(
+    { sm: "text-[clamp(28px,5.5vw,48px)]", md: "text-[clamp(32px,7vw,64px)]", lg: "text-[clamp(36px,8vw,80px)]" }[
+      config.home.heroSize
+    ],
+  );
+  const statementType = $derived(
+    {
+      sm: "text-[22px] leading-snug sm:text-[32px]",
+      md: "text-[26px] leading-[1.2] sm:text-[40px]",
+      lg: "text-[32px] leading-[1.15] sm:text-[56px]",
+    }[config.home.statementSize],
+  );
+  const statementSpace = $derived(
+    { tight: "py-10 sm:py-14", normal: "py-16 sm:py-20", roomy: "py-24 sm:py-32" }[config.home.statementSpace],
+  );
 
   function tagline(product: SyncXProduct) {
     return product.description.split("\n").find((line) => line.trim()) || product.category;
@@ -86,7 +102,7 @@
   {/if}
 {/snippet}
 
-<section class="relative -mt-[72px] overflow-hidden pt-[72px] pb-16 text-center sm:pb-24">
+<section class={cn("relative -mt-[72px] overflow-hidden pt-[72px] pb-16 sm:pb-24", heroCentered ? "text-center" : "text-left")}>
   <Grainient
     class="!absolute inset-0"
     colors={darkTheme
@@ -123,18 +139,15 @@
     </p>
     <h1 class="reveal display mx-auto mt-2 max-w-5xl" style="animation-delay: 120ms">
       {#if headlinePhrases.length > 1}
-        <MorphingText
-          texts={headlinePhrases}
-          class="h-[1.15em] text-[clamp(36px,9.5vw,88px)] leading-[1.1] whitespace-nowrap"
-        />
+        <MorphingText texts={headlinePhrases} class={cn("min-h-[1.15em] leading-[1.1] whitespace-normal", heroType)} />
       {:else}
-        <span class="text-sheen text-[clamp(40px,9.5vw,88px)]">{config.heroHeadline}</span>
+        <span class={cn("text-sheen leading-[1.1]", heroType)}>{config.heroHeadline}</span>
       {/if}
     </h1>
-    <p class="mx-auto mt-5 max-w-2xl text-[21px] leading-snug text-muted-foreground sm:text-[28px]">
+    <p class={cn("mt-5 max-w-2xl text-[21px] leading-snug text-muted-foreground sm:text-[28px]", heroCentered && "mx-auto")}>
       {#each subtitleWords as word, i (i)}<span class="blur-word whitespace-pre" style="--i: {i}">{word}</span>{/each}
     </p>
-    <div class="reveal mt-9 flex flex-wrap items-center justify-center gap-3" style="animation-delay: 380ms">
+    <div class={cn("reveal mt-9 flex flex-wrap items-center gap-3", heroCentered ? "justify-center" : "justify-start")} style="animation-delay: 380ms">
       <Button href={resolve("/store")} size="lg" class="px-7">{config.ctaText}</Button>
       <button
         type="button"
@@ -252,11 +265,15 @@
 
 <!-- Words light up as the statement scrolls through the viewport. Hidden when the announcement body is empty. -->
 {#if config.announcementBody.trim()}
-  <section class="container-apple py-24 sm:py-32" aria-labelledby="announcement-heading" {@attach scrollProgress}>
+  <section
+    class={cn("container-apple", statementSpace, config.home.statementAlign === "center" && "text-center")}
+    aria-labelledby="announcement-heading"
+    {@attach scrollProgress}
+  >
     {#if config.announcementTitle.trim()}
       <p id="announcement-heading" class="eyebrow mb-4">{config.announcementTitle}</p>
     {/if}
-    <p class="display text-[32px] leading-[1.15] sm:text-[56px]" aria-label={config.announcementBody}>
+    <p class={cn("display", statementType)} aria-label={config.announcementBody}>
       {#each words as word, i (i)}
         <span
           aria-hidden="true"

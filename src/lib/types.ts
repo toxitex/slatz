@@ -54,6 +54,14 @@ export type SiteConfig = {
   announcementBody: string;
   /** Link under the home announcement. Empty hides the link. */
   announcementLink: string;
+  /** Layout of the homepage hero and the big statement. Edited in the dashboard. */
+  home: {
+    heroAlign: "left" | "center";
+    heroSize: "sm" | "md" | "lg";
+    statementAlign: "left" | "center";
+    statementSize: "sm" | "md" | "lg";
+    statementSpace: "tight" | "normal" | "roomy";
+  };
   stats: {
     heading: string;
     /** Show real numbers from /api/stats instead of the manual values below. */
