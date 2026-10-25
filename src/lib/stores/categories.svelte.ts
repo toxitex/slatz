@@ -1,5 +1,6 @@
 import { toast } from "svelte-sonner";
 import { api, errorMessage } from "$lib/api";
+import { broadcast, onSync } from "$lib/sync";
 import type { Category } from "$lib/types";
 import type { ProductsStore } from "./products.svelte";
 
@@ -46,6 +47,9 @@ export class CategoriesStore {
 
   constructor(products: ProductsStore) {
     this.#products = products;
+    onSync((message) => {
+      if (message.type === "categories" && this.#loaded) void this.refresh();
+    });
   }
 
   ensureLoaded() {
@@ -96,6 +100,7 @@ export class CategoriesStore {
       const created = toCategory(row);
       this.categories = ordered([...this.categories, created]);
       toast("เพิ่มหมวดหมู่แล้ว");
+      broadcast({ type: "categories" });
       return created;
     } catch (err) {
       this.error = errorMessage(err);
@@ -123,6 +128,12 @@ export class CategoriesStore {
     if (!Object.keys(dbPatch).length) return true;
     try {
       await api.patch(`/api/categories/${categoryId}`, dbPatch);
+      broadcast({ type: "categories" });
+      if (existing && patch.name !== undefined && patch.name !== existing.name) {
+        // The server renames the category on its products too.
+        void this.#products.refresh();
+        broadcast({ type: "products" });
+      }
       return true;
     } catch (err) {
       this.error = errorMessage(err);
@@ -143,6 +154,9 @@ export class CategoriesStore {
     this.categories = previous.filter((cat) => cat.id !== categoryId);
     try {
       await api.delete(`/api/categories/${categoryId}`);
+      broadcast({ type: "categories" });
+      void this.#products.refresh();
+      broadcast({ type: "products" });
       toast("ลบหมวดหมู่แล้ว");
       return true;
     } catch (err) {

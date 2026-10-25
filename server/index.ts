@@ -1,3 +1,4 @@
+import "./env.js";
 import express from "express";
 import { createServer } from "http";
 import path from "path";
@@ -93,6 +94,9 @@ async function startServer() {
 
   // --- Data API (products / coupons / categories / auth) ---
   registerRoutes(app);
+
+  // Admin uploads live outside the SPA build so redeploys don't wipe them.
+  app.use("/uploads", express.static(UPLOADS_DIR, { maxAge: "30d", fallthrough: false }));
 
   // Static files
   const staticPath =

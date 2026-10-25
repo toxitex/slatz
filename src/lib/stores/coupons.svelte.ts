@@ -1,5 +1,6 @@
 import { toast } from "svelte-sonner";
 import { api, errorMessage } from "$lib/api";
+import { broadcast, onSync } from "$lib/sync";
 import type { Coupon } from "$lib/types";
 
 const STORAGE_KEY = "syncx-coupons-v1";
@@ -37,6 +38,12 @@ export class CouponsStore {
   databaseMode = $state(true);
   loading = $state(true);
   error = $state<string | null>(null);
+
+  constructor() {
+    onSync((message) => {
+      if (message.type === "coupons" && this.#loaded) void this.refresh();
+    });
+  }
 
   ensureLoaded() {
     if (this.#loaded) return;
@@ -85,6 +92,7 @@ export class CouponsStore {
       });
       const created = toCoupon(row);
       this.coupons = [created, ...this.coupons];
+      broadcast({ type: "coupons" });
       return created;
     } catch (err) {
       this.error = errorMessage(err);
@@ -108,6 +116,7 @@ export class CouponsStore {
     if (!Object.keys(dbPatch).length) return true;
     try {
       await api.patch(`/api/coupons/${couponId}`, dbPatch);
+      broadcast({ type: "coupons" });
       return true;
     } catch (err) {
       this.error = errorMessage(err);
@@ -126,6 +135,7 @@ export class CouponsStore {
     this.coupons = previous.filter((coupon) => coupon.id !== couponId);
     try {
       await api.delete(`/api/coupons/${couponId}`);
+      broadcast({ type: "coupons" });
       return true;
     } catch (err) {
       this.coupons = previous;

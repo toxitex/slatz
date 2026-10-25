@@ -550,6 +550,9 @@ export function registerRoutes(app: Express) {
       if (!product || product.is_active !== 1 || product.status === "hidden") {
         throw new Error("ไม่พบสินค้านี้หรือสินค้าปิดบริการอยู่");
       }
+      if (product.status === "out_of_stock") {
+        throw new Error("สินค้านี้หมดชั่วคราว");
+      }
 
       const tiers = safeParse<any[]>(product.tiers, []);
       const tier = tiers.find((t) => t.id === tierId);
@@ -704,5 +707,151 @@ export function registerRoutes(app: Express) {
     // SELECT vouchers used by this user
     const rows = db.prepare("SELECT * FROM vouchers WHERE used_by = ? ORDER BY used_at DESC").all(auth.sub) as any[];
     res.json(rows);
+  });
+
+  /* ------------------------- admin dashboard --------------------------- */
+
+  // Lets the dashboard confirm its access code against the server instead of a value baked into the bundle.
+  app.post("/api/admin/verify", requireAdmin, (_req: Request, res: Response) => {
+    res.json({ ok: true });
+  });
+
+  const publicProductTotals = () => {
+    const rows = db
+      .prepare("SELECT tiers, total_sold FROM products WHERE is_active = 1 AND status != 'hidden'")
+      .all() as { tiers: string; total_sold: number }[];
+    let stock = 0;
+    let sold = 0;
+    for (const row of rows) {
+      for (const tier of safeParse<{ stock?: number }[]>(row.tiers, [])) stock += Math.max(0, Number(tier.stock) || 0);
+      sold += row.total_sold || 0;
+    }
+    return { products: rows.length, stock, sold };
+  };
+
+  // Public, cached briefly: powers the live numbers on the storefront home page.
+  app.get("/api/stats", (_req: Request, res: Response) => {
+    const users = (db.prepare("SELECT COUNT(*) AS n FROM users").get() as { n: number }).n;
+    res.set("Cache-Control", "public, max-age=30");
+    res.json({ users, ...publicProductTotals() });
+  });
+
+  app.get("/api/admin/stats", requireAdmin, (_req: Request, res: Response) => {
+    const count = (sql: string, ...args: unknown[]) => (db.prepare(sql).get(...args) as { n: number }).n;
+    const sum = (sql: string, ...args: unknown[]) => (db.prepare(sql).get(...args) as { s: number | null }).s ?? 0;
+
+    const since = new Date(Date.now() - 13 * 86400000);
+    since.setUTCHours(0, 0, 0, 0);
+    const daily = db
+      .prepare(
+        `SELECT substr(created_at, 1, 10) AS day, COUNT(*) AS orders, COALESCE(SUM(total), 0) AS revenue
+         FROM orders WHERE created_at >= ? GROUP BY day ORDER BY day`,
+      )
+      .all(since.toISOString()) as { day: string; orders: number; revenue: number }[];
+    const byDay = new Map(daily.map((d) => [d.day, d]));
+    const sales = Array.from({ length: 14 }, (_, i) => {
+      const day = new Date(since.getTime() + i * 86400000).toISOString().slice(0, 10);
+      return { day, orders: byDay.get(day)?.orders ?? 0, revenue: byDay.get(day)?.revenue ?? 0 };
+    });
+
+    const lowStock: { productId: string; productName: string; tierLabel: string; stock: number }[] = [];
+    const products = db.prepare("SELECT id, name, tiers, status FROM products WHERE status != 'hidden'").all() as {
+      id: string;
+      name: string;
+      tiers: string;
+      status: string;
+    }[];
+    for (const product of products) {
+      for (const tier of safeParse<{ label?: string; stock?: number }[]>(product.tiers, [])) {
+        const stock = Number(tier.stock) || 0;
+        if (stock <= 5) lowStock.push({ productId: product.id, productName: product.name, tierLabel: tier.label ?? "", stock });
+      }
+    }
+    lowStock.sort((a, b) => a.stock - b.stock);
+
+    const today = new Date().toISOString().slice(0, 10);
+    res.json({
+      totals: {
+        users: count("SELECT COUNT(*) AS n FROM users"),
+        newUsers7d: count("SELECT COUNT(*) AS n FROM users WHERE created_at >= ?", new Date(Date.now() - 7 * 86400000).toISOString()),
+        orders: count("SELECT COUNT(*) AS n FROM orders"),
+        revenue: sum("SELECT SUM(total) AS s FROM orders"),
+        revenueToday: sum("SELECT SUM(total) AS s FROM orders WHERE substr(created_at, 1, 10) = ?", today),
+        topupCredited: sum("SELECT SUM(amount) AS s FROM vouchers WHERE is_used = 1"),
+        vouchersAvailable: count("SELECT COUNT(*) AS n FROM vouchers WHERE is_used = 0"),
+        vouchersAvailableValue: sum("SELECT SUM(amount) AS s FROM vouchers WHERE is_used = 0"),
+        ...publicProductTotals(),
+      },
+      sales,
+      topProducts: db
+        .prepare(
+          `SELECT product_id AS productId, product_name AS productName, SUM(quantity) AS quantity, SUM(total) AS revenue
+           FROM orders GROUP BY product_id ORDER BY revenue DESC LIMIT 5`,
+        )
+        .all(),
+      lowStock: lowStock.slice(0, 8),
+      recentOrders: db
+        .prepare(
+          `SELECT o.id, o.product_name, o.tier_label, o.quantity, o.total, o.created_at, u.email AS user_email, u.display_name AS user_name
+           FROM orders o LEFT JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC LIMIT 6`,
+        )
+        .all(),
+    });
+  });
+
+  /* ---------------------------- vouchers ------------------------------- */
+
+  const voucherSchema = z.object({
+    amount: z.number().positive("จำนวนเงินต้องมากกว่า 0"),
+    count: z.number().int().min(1).max(100).optional(),
+    code: z.string().trim().min(3).max(40).optional(),
+    prefix: z.string().trim().max(10).optional(),
+  });
+
+  app.get("/api/vouchers", requireAdmin, (_req: Request, res: Response) => {
+    const rows = db
+      .prepare(
+        `SELECT v.id, v.code, v.amount, v.is_used, v.used_at, v.created_at, u.email AS used_by_email
+         FROM vouchers v LEFT JOIN users u ON u.id = v.used_by ORDER BY v.created_at DESC`,
+      )
+      .all() as { is_used: number }[];
+    res.json(rows.map((r) => ({ ...r, is_used: r.is_used === 1 })));
+  });
+
+  app.post("/api/vouchers", requireAdmin, (req: Request, res: Response) => {
+    const validated = voucherSchema.safeParse(req.body);
+    if (!validated.success) return res.status(400).json({ error: validated.error.issues[0].message });
+    const { amount, code, prefix } = validated.data;
+    const total = code ? 1 : (validated.data.count ?? 1);
+    const segment = () => Math.random().toString(36).slice(2, 6).toUpperCase().padEnd(4, "X");
+    const insert = db.prepare("INSERT INTO vouchers (id, code, amount, is_used, created_at) VALUES (?, ?, ?, 0, ?)");
+    const exists = db.prepare("SELECT 1 FROM vouchers WHERE code = ?");
+    const ts = nowIso();
+    try {
+      const created = db.transaction(() => {
+        const codes: string[] = [];
+        for (let i = 0; i < total; i++) {
+          let next = code?.toUpperCase() ?? "";
+          if (!next) {
+            do next = `${(prefix || "TOPUP").toUpperCase()}-${segment()}-${segment()}`;
+            while (exists.get(next));
+          } else if (exists.get(next)) {
+            throw new Error("รหัสนี้มีอยู่แล้ว");
+          }
+          insert.run(newId("vouch"), next, amount, ts);
+          codes.push(next);
+        }
+        return codes;
+      })();
+      res.json({ codes: created });
+    } catch (err) {
+      res.status(400).json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  });
+
+  app.delete("/api/vouchers/:id", requireAdmin, (req: Request, res: Response) => {
+    const result = db.prepare("DELETE FROM vouchers WHERE id = ? AND is_used = 0").run(req.params.id);
+    if (!result.changes) return res.status(400).json({ error: "ลบได้เฉพาะรหัสที่ยังไม่ถูกใช้" });
+    res.json({ ok: true });
   });
 }

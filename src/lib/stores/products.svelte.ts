@@ -1,5 +1,6 @@
 import { toast } from "svelte-sonner";
 import { api, errorMessage } from "$lib/api";
+import { broadcast, onSync } from "$lib/sync";
 import { isAdminGranted } from "$lib/admin-access";
 import type { ProductStatus, ProductTier, SyncXProduct } from "$lib/types";
 import { createProductDraft, type SiteConfigStore } from "./site-config.svelte";
@@ -89,6 +90,9 @@ export class ProductsStore {
 
   constructor(site: SiteConfigStore) {
     this.#site = site;
+    onSync((message) => {
+      if (message.type === "products" && this.#loaded) void this.refresh();
+    });
     this.products = $derived(this.databaseMode ? this.#databaseProducts : this.#site.config.products);
   }
 
@@ -137,6 +141,7 @@ export class ProductsStore {
       const created = toProduct(row);
       this.#databaseProducts = [created, ...this.#databaseProducts];
       toast("เพิ่มสินค้าแล้ว");
+      broadcast({ type: "products" });
       return created;
     } catch (err) {
       this.error = errorMessage(err);
@@ -158,6 +163,7 @@ export class ProductsStore {
     if (!Object.keys(databasePatch).length) return true;
     try {
       await api.patch(`/api/products/${productId}`, databasePatch);
+      broadcast({ type: "products" });
       return true;
     } catch (err) {
       this.error = errorMessage(err);
@@ -176,6 +182,7 @@ export class ProductsStore {
     this.#databaseProducts = previous.filter((product) => product.id !== productId);
     try {
       await api.delete(`/api/products/${productId}`);
+      broadcast({ type: "products" });
       toast("ลบสินค้าแล้ว");
       return true;
     } catch (err) {

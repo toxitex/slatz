@@ -1,12 +1,16 @@
 <script lang="ts">
   import RotateCcwIcon from "@lucide/svelte/icons/rotate-ccw";
   import { toast } from "svelte-sonner";
+  import { api } from "$lib/api";
   import { Button } from "$lib/components/ui/button";
+  import { Switch } from "$lib/components/ui/switch";
+  import type { PublicStats } from "$lib/types";
   import { getStores } from "$lib/stores";
   import { appleTheme, blackTheme } from "$lib/stores/site-config.svelte";
   import ColorRow from "./ColorRow.svelte";
   import ImageRow from "./ImageRow.svelte";
   import SettingsGroup from "./SettingsGroup.svelte";
+  import SettingsRow from "./SettingsRow.svelte";
   import type { ConfigSectionKey } from "./sections";
   import TextRow from "./TextRow.svelte";
 
@@ -89,12 +93,31 @@
     <TextRow label="ลิงก์ใต้ประโยค" hint="เว้นว่างเพื่อซ่อนลิงก์" bind:value={site.config.announcementLink} placeholder="ไปที่ร้านค้า" />
   </SettingsGroup>
 {:else if section === "stats"}
-  <SettingsGroup title="หัวข้อบนหน้าแรก" description="แถบดำใต้ประโยคประกาศ ตัวเลขด้านล่างเป็นการ์ดสี่ใบ">
+  <SettingsGroup title="หัวข้อบนหน้าแรก" description="แถบใต้ประโยคประกาศ ตัวเลขด้านล่างเป็นการ์ดสี่ใบ">
     <TextRow label="หัวข้อ" bind:value={site.config.stats.heading} />
+  </SettingsGroup>
+  <SettingsGroup title="แหล่งข้อมูลตัวเลข" description="ตัวเลขบนหน้าแรกของร้าน">
+    <SettingsRow label="ใช้ตัวเลขจริงจากระบบ" hint="นับลูกค้า สินค้า คลัง และยอดขายจากฐานข้อมูล">
+      <Switch bind:checked={site.config.stats.live} aria-label="ใช้ตัวเลขจริงจากระบบ" />
+    </SettingsRow>
+    {#await api.get<PublicStats>("/api/stats") then liveStats}
+      <div class="grid grid-cols-4 gap-2 px-4 py-3 text-center">
+        {#each statRows as row (row.key)}
+          <div>
+            <p class="text-[17px] font-bold tabular-nums">{liveStats[row.key].toLocaleString("th-TH")}</p>
+            <p class="text-[11px] text-muted-foreground">{row.label}</p>
+          </div>
+        {/each}
+      </div>
+    {:catch}
+      <p class="px-4 py-3 text-xs text-destructive">โหลดตัวเลขจริงไม่สำเร็จ</p>
+    {/await}
   </SettingsGroup>
   {#each statRows as row (row.key)}
     <SettingsGroup title={`ตัวเลข — ${row.label}`}>
-      <TextRow label="ตัวเลข" bind:value={site.config.stats[row.key]} />
+      {#if !site.config.stats.live}
+        <TextRow label="ตัวเลข (กำหนดเอง)" bind:value={site.config.stats[row.key]} />
+      {/if}
       <TextRow label="ป้ายกำกับ" bind:value={site.config.stats[`${row.key}Label`]} />
       <TextRow label="หน่วยนับ" bind:value={site.config.stats[`${row.key}Unit`]} placeholder={row.unitHint} />
     </SettingsGroup>
