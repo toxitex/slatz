@@ -42,7 +42,7 @@
     <ChevronRightIcon class="size-3" />
     <span class="text-foreground">ร้านค้า</span>
   </nav>
-  <h1 class="reveal display max-w-3xl text-[40px] sm:text-[64px]">
+  <h1 class="reveal display max-w-3xl text-[32px] sm:text-[44px]">
     {site.config.store.headline} <span class="text-muted-foreground">{site.config.store.headlineAccent}</span>
   </h1>
   <h2 class="reveal display mt-12 text-[24px] sm:text-[28px]" style="animation-delay: 80ms">

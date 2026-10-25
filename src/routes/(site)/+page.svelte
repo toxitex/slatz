@@ -46,7 +46,7 @@
   );
   const heroCentered = $derived(config.home.heroAlign !== "left");
   const heroType = $derived(
-    { sm: "text-[clamp(28px,5.5vw,48px)]", md: "text-[clamp(32px,7vw,64px)]", lg: "text-[clamp(36px,8vw,80px)]" }[
+    { sm: "text-[clamp(28px,5vw,40px)]", md: "text-[clamp(32px,6vw,56px)]", lg: "text-[clamp(36px,7vw,72px)]" }[
       config.home.heroSize
     ],
   );
@@ -54,7 +54,7 @@
     {
       sm: "text-[22px] leading-snug sm:text-[32px]",
       md: "text-[26px] leading-[1.2] sm:text-[40px]",
-      lg: "text-[32px] leading-[1.15] sm:text-[56px]",
+      lg: "text-[28px] leading-[1.2] sm:text-[44px]",
     }[config.home.statementSize],
   );
   const statementSpace = $derived(
@@ -197,7 +197,7 @@
     aria-label={product.name}
   >
     <div class="container-apple" {@attach reveal()}>
-      <h2 class="display text-[40px] sm:text-[56px]">{product.name}</h2>
+      <h2 class="display text-[32px] sm:text-[44px]">{product.name}</h2>
       <p class={cn("mt-1 text-[21px] sm:text-[28px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
       <p class={cn("mt-1 text-sm", dark ? "text-[#86868b]" : "text-muted-foreground")}>{priceLine(product)}</p>
       {@render links(product, dark)}
@@ -225,7 +225,7 @@
         {@attach reveal((i % 2) * 80)}
         {@attach glassPointer}
       >
-        <h3 class="display px-6 text-[32px] sm:text-[40px]">{product.name}</h3>
+        <h3 class="display px-6 text-[28px] sm:text-[32px]">{product.name}</h3>
         <p class={cn("mt-1 px-6 text-[19px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
         {@render links(product, dark)}
         <div class="mt-8 flex flex-1 items-end justify-center px-10">
@@ -241,7 +241,7 @@
 
 {#if shelf.length}
   <section class="container-wide pt-20" aria-label="หมวดหมู่">
-    <h2 class="display mb-8 text-center text-[28px] sm:text-[40px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
+    <h2 class="display mb-8 text-center text-[24px] sm:text-[32px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
     <div class="flex gap-6 overflow-x-auto pb-2 [scrollbar-width:none] sm:justify-center">
       {#each shelf as category, i (category.id)}
         <a
@@ -298,7 +298,7 @@
   aria-labelledby="stats-heading"
 >
   <div class="container-wide">
-    <h2 id="stats-heading" class="display text-center text-[32px] sm:text-[48px]" {@attach reveal()}>
+    <h2 id="stats-heading" class="display text-center text-[28px] sm:text-[40px]" {@attach reveal()}>
       {config.stats.heading}
     </h2>
     <div class="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -311,7 +311,7 @@
         >
           <p class="flex items-baseline justify-center gap-1.5">
             <strong
-              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[48px] text-transparent tabular-nums sm:text-[72px]"
+              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[40px] text-transparent tabular-nums sm:text-[56px]"
               {@attach countUp(stat.value)}
             ></strong>
             {#if stat.unit}<span class="text-[17px] text-[#86868b]">{stat.unit}</span>{/if}

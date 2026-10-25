@@ -127,7 +127,7 @@
   </div>
 {:else if !product}
   <section class="container-apple py-32 text-center">
-    <h1 class="display text-[40px]">ไม่พบสินค้านี้</h1>
+    <h1 class="display text-[32px]">ไม่พบสินค้านี้</h1>
     <p class="mt-3 text-[17px] text-muted-foreground">{products.error ?? "สินค้าอาจถูกลบหรือยังไม่ได้เผยแพร่"}</p>
     <Button href={resolve("/store")} size="lg" class="mt-8">กลับไปยังร้านค้า</Button>
   </section>
@@ -179,7 +179,7 @@
       <div class="flex flex-col gap-8">
         <header>
           <p class="text-sm font-semibold text-muted-foreground">{product.category || "ทั่วไป"}</p>
-          <h1 class="display mt-1 text-[36px] sm:text-[48px]">{site.config.store.buyText} {product.name}</h1>
+          <h1 class="display mt-1 text-[32px] sm:text-[40px]">{site.config.store.buyText} {product.name}</h1>
           <div class="mt-3 flex flex-wrap gap-2 text-xs">
             <span
               class={cn(
@@ -229,7 +229,7 @@
         {:else}
           <section>
             <h2 class="text-[21px] font-semibold tracking-tight">ราคา</h2>
-            <p class="display mt-2 text-[32px]">{product.price || "ติดต่อร้านค้า"}</p>
+            <p class="display mt-2 text-[28px]">{product.price || "ติดต่อร้านค้า"}</p>
           </section>
         {/if}
 
@@ -297,7 +297,7 @@
             <div>
               <p class="text-xs font-semibold text-muted-foreground">ยอดชำระสุทธิ</p>
               <p class="mt-1 flex items-baseline gap-2">
-                <span class="display text-[32px] tabular-nums">{formatBaht(total)}</span>
+                <span class="display text-[28px] tabular-nums">{formatBaht(total)}</span>
                 {#if discount > 0}
                   <span class="text-sm text-muted-foreground line-through">{formatBaht(subtotal)}</span>
                 {/if}

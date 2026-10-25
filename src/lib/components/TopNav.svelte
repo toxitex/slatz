@@ -279,7 +279,7 @@
             <p class="mb-3 text-xs text-muted-foreground">เลือกซื้อ</p>
             <ul class="stagger-in space-y-1">
               <li style="--i: 0">
-                <a href={resolve("/store")} class="group display inline-flex items-center gap-1 text-2xl">
+                <a href={resolve("/store")} class="group inline-flex items-center gap-1 text-[17px] font-semibold">
                   ดูทั้งหมด
                   <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                 </a>
@@ -288,7 +288,7 @@
                 <li style="--i: {i + 1}">
                   <a
                     href={resolve(`/category/${encodeURIComponent(category.name)}`)}
-                    class="group display inline-flex items-center gap-1 text-2xl text-foreground/85 hover:text-foreground"
+                    class="group inline-flex items-center gap-1 text-[17px] font-semibold text-foreground/85 hover:text-foreground"
                   >
                     {category.name}
                     <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
@@ -356,7 +356,7 @@
               <li style="--i: {i}">
                 <a
                   href={resolve(link.href)}
-                  class="display block py-1.5 text-[26px] text-foreground/85 active:scale-[0.98] active:text-foreground"
+                  class="block py-1.5 text-[22px] font-semibold text-foreground/85 active:scale-[0.98] active:text-foreground"
                 >
                   {link.label}
                 </a>

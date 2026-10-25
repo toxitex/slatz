@@ -29,13 +29,13 @@
       <div class="flex items-center gap-4">
         <Avatar user={auth.user} class="size-16 text-2xl" />
         <div>
-          <h1 class="display text-[32px] sm:text-[40px]">สวัสดี, {auth.user.displayName}</h1>
+          <h1 class="display text-[28px] sm:text-[32px]">สวัสดี, {auth.user.displayName}</h1>
           <p class="text-[15px] text-muted-foreground">{auth.user.email}</p>
         </div>
       </div>
       <div class="sm:text-right">
         <p class="text-xs text-muted-foreground">ยอดเงินคงเหลือ</p>
-        <p class="display text-[28px] tabular-nums">{formatBaht(auth.user.balance)}</p>
+        <p class="display text-[24px] tabular-nums">{formatBaht(auth.user.balance)}</p>
       </div>
     </header>
 
