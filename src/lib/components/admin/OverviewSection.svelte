@@ -72,7 +72,7 @@
   <p class="rounded-2xl bg-card px-4 py-3 text-[13px] text-destructive">{error}</p>
 {/if}
 
-<section class="rounded-3xl bg-[#0b0b0c] px-5 py-6 text-[#f5f5f7] sm:px-7 sm:py-7">
+<section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7 sm:py-7">
   <h2 class="display text-[28px] font-bold leading-tight sm:text-[34px]">
     {#if model.current > 0}{model.current} วันติด{/if}
     {#if model.current === 0}ออเดอร์ {OVERVIEW_WEEKS} สัปดาห์ล่าสุด{/if}
@@ -121,7 +121,7 @@
 
 <div class="grid gap-3 sm:grid-cols-3">
   {#each figures as figure (figure.label)}
-    <section class="rounded-3xl bg-[#0b0b0c] px-5 py-5 text-[#f5f5f7]">
+    <section class="rounded-3xl bg-card px-5 py-5 text-foreground">
       <p class="display text-[32px] font-bold tabular-nums">{figure.value}</p>
       <p class="mt-1 text-[14px]">{figure.label}</p>
       <p class="text-[12px] text-[#86868b]">{figure.note}</p>
@@ -129,7 +129,7 @@
   {/each}
 </div>
 
-<section class="rounded-3xl bg-[#0b0b0c] px-5 py-6 text-[#f5f5f7] sm:px-7">
+<section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7">
   <h2 class="display text-center text-[26px] font-bold sm:text-[32px]">ยอดขายสะสม</h2>
   <p class="mx-auto mt-2 max-w-lg text-center text-[14px] leading-relaxed text-[#86868b]">
     รวมจากออเดอร์ในช่วงเดียวกับตารางด้านบน จุดบนเส้นคือครั้งแรกที่ยอดถึงหลักพัน
@@ -137,34 +137,34 @@
   <svg viewBox="0 0 {line.width} {line.height}" class="mt-2 w-full" role="img" aria-label="กราฟยอดขายสะสม">
     <defs>
       <linearGradient id="sales-fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#f5f5f7" stop-opacity="0.18" />
-        <stop offset="100%" stop-color="#f5f5f7" stop-opacity="0" />
+        <stop offset="0%" stop-color="currentColor" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="currentColor" stop-opacity="0" />
       </linearGradient>
     </defs>
     {#each line.grid as row, index (index)}
-      <line x1={line.pad.l} x2={line.width - line.pad.r} y1={row.y} y2={row.y} stroke="#2c2c2e" stroke-width="1" />
-      <text x="4" y={row.y + 4} fill="#86868b" font-size="12">{row.label}</text>
+      <line x1={line.pad.l} x2={line.width - line.pad.r} y1={row.y} y2={row.y} stroke="currentColor" stroke-opacity="0.16" stroke-width="1" />
+      <text x="4" y={row.y + 4} fill="currentColor" fill-opacity="0.55" font-size="12">{row.label}</text>
     {/each}
     <path d={line.area} fill="url(#sales-fill)" />
-    <path d={line.path} fill="none" stroke="#f5f5f7" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+    <path d={line.path} fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
     {#each line.months as month (month.index)}
-      <text x={line.coords[month.index].x} y={line.height - 8} fill="#86868b" font-size="11" text-anchor="middle">{month.label}</text>
+      <text x={line.coords[month.index].x} y={line.height - 8} fill="currentColor" fill-opacity="0.55" font-size="11" text-anchor="middle">{month.label}</text>
     {/each}
     {#each model.milestones as mark, markIndex (mark.amount)}
       {@const point = line.coords[mark.index]}
       {@const nearEnd = point.x > line.width - line.pad.r - 48}
-      <circle cx={point.x} cy={point.y} r="4.5" fill="#0b0b0c" stroke="#f5f5f7" stroke-width="2" />
+      <circle cx={point.x} cy={point.y} r="4.5" fill="var(--syncx-card)" stroke="currentColor" stroke-width="2" />
       <text
         x={nearEnd ? point.x - 8 : point.x + 8}
         y={point.y - 8 - (markIndex % 2) * 12}
-        fill="#f5f5f7"
+        fill="currentColor"
         font-size="12"
         text-anchor={nearEnd ? "end" : "start"}
       >{formatBaht(mark.amount)}</text>
     {/each}
     {#if line.coords.length}
       {@const last = line.coords[line.coords.length - 1]}
-      <circle cx={last.x} cy={last.y} r="4.5" fill="#f5f5f7" />
+      <circle cx={last.x} cy={last.y} r="4.5" fill="currentColor" />
     {/if}
   </svg>
 </section>

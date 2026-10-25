@@ -21,13 +21,13 @@
  * --syncx-* on <html>; everything below derives from them so the Apple look follows the admin palette.
  */
 :root {
-  --syncx-accent: #1d1d1f;
-  --syncx-button: #1d1d1f;
-  --syncx-bg: #f5f5f7;
-  --syncx-card: #ffffff;
-  --syncx-text: #1d1d1f;
-  --syncx-muted: #6e6e73;
-  --syncx-border: rgba(0, 0, 0, 0.08);
+  --syncx-accent: #f5f5f7;
+  --syncx-button: #f5f5f7;
+  --syncx-bg: #000000;
+  --syncx-card: #161618;
+  --syncx-text: #f5f5f7;
+  --syncx-muted: #86868b;
+  --syncx-border: rgba(255, 255, 255, 0.12);
 
   --radius: 1.125rem;
 
@@ -38,7 +38,7 @@
   --popover: color-mix(in srgb, var(--syncx-card) 86%, transparent);
   --popover-foreground: var(--syncx-text);
   --primary: var(--syncx-button);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #0b0b0c;
   --secondary: color-mix(in srgb, var(--syncx-text) 6%, var(--syncx-card));
   --secondary-foreground: var(--syncx-text);
   --muted: color-mix(in srgb, var(--syncx-text) 5%, var(--syncx-card));
@@ -53,7 +53,7 @@
   --sidebar: var(--syncx-card);
   --sidebar-foreground: var(--syncx-text);
   --sidebar-primary: var(--syncx-button);
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: #0b0b0c;
   --sidebar-accent: var(--secondary);
   --sidebar-accent-foreground: var(--syncx-text);
   --sidebar-border: var(--syncx-border);
@@ -201,7 +201,7 @@
   .liquid-glass {
     position: relative;
     isolation: isolate;
-    background: color-mix(in srgb, var(--glass-tint, #ffffff) var(--glass-alpha, 55%), transparent);
+    background: color-mix(in srgb, var(--glass-tint, #2c2c2e) var(--glass-alpha, 72%), transparent);
     backdrop-filter: blur(var(--glass-blur, 18px)) saturate(180%);
     -webkit-backdrop-filter: blur(var(--glass-blur, 18px)) saturate(180%);
     box-shadow:
@@ -220,8 +220,8 @@
     border-radius: inherit;
     pointer-events: none;
     background:
-      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.55), transparent 65%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 55%);
+      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.16), transparent 65%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
     opacity: 0.9;
   }
 
@@ -244,6 +244,17 @@
       linear-gradient(#000 0 0);
     mask-composite: exclude;
     -webkit-mask-composite: xor;
+  }
+
+  html[data-theme="light"] .liquid-glass {
+    --glass-tint: #ffffff;
+    --glass-alpha: 55%;
+  }
+
+  html[data-theme="light"] .liquid-glass::before {
+    background:
+      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.55), transparent 65%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 55%);
   }
 
   .liquid-glass-dark {

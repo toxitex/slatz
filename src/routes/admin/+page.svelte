@@ -29,9 +29,10 @@
   import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
-  import { cn } from "$lib/utils";
+  import { cn, isDarkColor } from "$lib/utils";
 
   const { site, products, categories, coupons } = getStores();
+  const darkTheme = $derived(isDarkColor(site.config.theme.backgroundColor));
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");
@@ -136,7 +137,9 @@
   <main class="relative grid min-h-dvh place-items-center overflow-hidden bg-background px-5">
     <Grainient
       class="!absolute inset-0"
-      colors={["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
+      colors={darkTheme
+        ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
+        : ["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
       angle={160}
       speed={0.45}
       silk={0.7}

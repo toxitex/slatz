@@ -3,6 +3,7 @@
   import { toast } from "svelte-sonner";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
+  import { appleTheme, blackTheme } from "$lib/stores/site-config.svelte";
   import ColorRow from "./ColorRow.svelte";
   import ImageRow from "./ImageRow.svelte";
   import SettingsGroup from "./SettingsGroup.svelte";
@@ -32,18 +33,29 @@
     <ImageRow label="โลโก้" bind:value={site.config.logoImageUrl} />
   </SettingsGroup>
 {:else if section === "colors"}
-  <SettingsGroup title="สีธีม" description="สีทั้งหมดใช้กับหน้าร้านทันที ค่าเริ่มต้นคือโทนขาว เทา ดำ แบบ Apple">
+  <SettingsGroup title="สีธีม" description="สีทั้งหมดใช้กับหน้าร้านและแดชบอร์ดทันที ธีมดำคือพื้นหลังดำ การ์ดเทาเข้ม และปุ่มขาว">
     {#snippet actions()}
       <Button
         variant="ghost"
         size="sm"
         class="text-link"
         onclick={() => {
-          site.resetTheme();
-          toast("รีเซ็ตเป็นธีม Apple แล้ว");
+          site.setTheme(blackTheme);
+          toast("ใช้ธีมดำแล้ว");
         }}
       >
-        <RotateCcwIcon />รีเซ็ตธีม
+        ธีมดำ
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="text-link"
+        onclick={() => {
+          site.setTheme(appleTheme);
+          toast("ใช้ธีมสว่างแล้ว");
+        }}
+      >
+        <RotateCcwIcon />ธีมสว่าง
       </Button>
     {/snippet}
     <ColorRow label="Accent" hint="ลิงก์และไฮไลต์" bind:value={site.config.theme.accentColor} />

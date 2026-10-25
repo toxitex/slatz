@@ -9,13 +9,14 @@
   import { getStores } from "$lib/stores";
   import { tierRange } from "$lib/stores/products.svelte";
   import type { SyncXProduct } from "$lib/types";
-  import { cn, formatBaht } from "$lib/utils";
+  import { cn, formatBaht, isDarkColor } from "$lib/utils";
 
   const { site, products, categories, ui } = getStores();
   products.ensureLoaded();
   categories.ensureLoaded();
 
   const config = $derived(site.config);
+  const darkTheme = $derived(isDarkColor(config.theme.backgroundColor));
   const stats = $derived([
     { label: config.stats.usersLabel, value: config.stats.users, unit: config.stats.usersUnit },
     { label: config.stats.productsLabel, value: config.stats.products, unit: config.stats.productsUnit },
@@ -77,7 +78,9 @@
 <section class="relative -mt-[72px] overflow-hidden pt-[72px] pb-16 text-center sm:pb-24">
   <Grainient
     class="!absolute inset-0"
-    colors={["#ffffff", "#f3f3f5", "#dcdce0", "#aeaeb2", "#6e6e73"]}
+    colors={darkTheme
+      ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
+      : ["#ffffff", "#f3f3f5", "#dcdce0", "#aeaeb2", "#6e6e73"]}
     angle={125}
     speed={0.55}
     flow={1.1}
@@ -256,7 +259,12 @@
 {/if}
 
 <section
-  class="bg-black bg-[radial-gradient(70%_90%_at_50%_0%,#2c2c2e_0%,#000_70%)] py-20 text-[#f5f5f7] sm:py-28"
+  class={cn(
+    "py-20 sm:py-28",
+    darkTheme
+      ? "bg-card text-foreground"
+      : "bg-black bg-[radial-gradient(70%_90%_at_50%_0%,#2c2c2e_0%,#000_70%)] text-[#f5f5f7]",
+  )}
   aria-labelledby="stats-heading"
 >
   <div class="container-wide">

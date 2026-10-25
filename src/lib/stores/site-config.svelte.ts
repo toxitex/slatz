@@ -1,6 +1,7 @@
 import { api } from "$lib/api";
 import { isAdminGranted } from "$lib/admin-access";
 import type { SiteConfig, SyncXProduct } from "$lib/types";
+import { isDarkColor } from "$lib/utils";
 
 const STORAGE_KEY = "syncx-site-config-v1";
 
@@ -12,6 +13,16 @@ export const appleTheme: SiteConfig["theme"] = {
   textColor: "#1d1d1f",
   mutedTextColor: "#6e6e73",
   borderColor: "rgba(0, 0, 0, 0.08)",
+};
+
+export const blackTheme: SiteConfig["theme"] = {
+  accentColor: "#f5f5f7",
+  backgroundColor: "#000000",
+  buttonColor: "#f5f5f7",
+  cardColor: "#161618",
+  textColor: "#f5f5f7",
+  mutedTextColor: "#86868b",
+  borderColor: "rgba(255, 255, 255, 0.12)",
 };
 
 export const defaultSiteConfig: SiteConfig = {
@@ -44,7 +55,7 @@ export const defaultSiteConfig: SiteConfig = {
     soldLabel: "ขายแล้ว",
     soldUnit: "ชิ้น",
   },
-  theme: appleTheme,
+  theme: blackTheme,
   footer: {
     brandText: "SLATZ - ร้านค้าออนไลน์ที่คุณไว้วางใจ",
     contactEmail: "contact@slatz.xyz",
@@ -134,6 +145,8 @@ function loadLocal(): SiteConfig {
 
 function applyTheme(theme: SiteConfig["theme"]) {
   const root = document.documentElement;
+  const onButton = isDarkColor(theme.buttonColor) ? "#ffffff" : "#0b0b0c";
+  root.dataset.theme = isDarkColor(theme.backgroundColor) ? "dark" : "light";
   root.style.setProperty("--syncx-accent", theme.accentColor);
   root.style.setProperty("--syncx-button", theme.buttonColor);
   root.style.setProperty("--syncx-bg", theme.backgroundColor);
@@ -141,6 +154,8 @@ function applyTheme(theme: SiteConfig["theme"]) {
   root.style.setProperty("--syncx-text", theme.textColor);
   root.style.setProperty("--syncx-muted", theme.mutedTextColor);
   root.style.setProperty("--syncx-border", theme.borderColor);
+  root.style.setProperty("--primary-foreground", onButton);
+  root.style.setProperty("--sidebar-primary-foreground", onButton);
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme.backgroundColor);
 }
 
@@ -203,8 +218,12 @@ export class SiteConfigStore {
     this.config = mergeConfig(null);
   }
 
+  setTheme(theme: SiteConfig["theme"]) {
+    this.config.theme = { ...theme };
+  }
+
   resetTheme() {
-    this.config.theme = { ...appleTheme };
+    this.setTheme(appleTheme);
   }
 
   export() {
