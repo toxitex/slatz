@@ -76,21 +76,15 @@
   }
 </script>
 
-{#snippet links(product: SyncXProduct, dark: boolean)}
+{#snippet links(product: SyncXProduct)}
   <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
-    <Button
-      href={resolve(`/product/${product.id}`)}
-      class={cn("h-10 px-5 text-[15px]", dark && "bg-white text-black hover:bg-white/85")}
-    >
+    <Button href={resolve(`/product/${product.id}`)} class="h-10 px-5 text-[15px]">
       {config.store.learnMoreText}
     </Button>
     <Button
       href={resolve(`/product/${product.id}`)}
       variant="outline"
-      class={cn(
-        "h-10 border-foreground/80 bg-transparent px-5 text-[15px] hover:bg-foreground hover:text-background",
-        dark && "border-white/70 text-white hover:bg-white hover:text-black",
-      )}
+      class="h-10 border-foreground/20 bg-transparent px-5 text-[15px] hover:bg-foreground hover:text-background"
     >
       {config.store.buyText}
     </Button>
@@ -101,7 +95,7 @@
   {#if product.imageUrl}
     <img src={product.imageUrl} alt={product.name} loading="lazy" class={cn("object-cover", className)} />
   {:else}
-    <div class={cn("grid place-items-center bg-white/5", className)}>
+    <div class={cn("grid place-items-center bg-secondary", className)}>
       <ShoppingBagIcon class="size-14 opacity-30" strokeWidth={1} />
     </div>
   {/if}
@@ -123,9 +117,7 @@
     stir={0.8}
   />
   <div
-    class={darkTheme
-      ? "pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(0,0,0,0.2),rgba(0,0,0,0.78)),linear-gradient(to_bottom,transparent_62%,var(--syncx-bg))]"
-      : "pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_38%,rgba(255,255,255,0.82),rgba(255,255,255,0)_75%),linear-gradient(to_bottom,transparent_70%,var(--syncx-bg))]"}
+    class="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_18%,var(--syncx-bg)_78%)]"
   ></div>
 
   <div class="relative container-apple pt-12 sm:pt-16">
@@ -192,18 +184,17 @@
   {/if}
 </section>
 
-<!-- apple.com-style full-bleed product stories, alternating light and dark. -->
+<!-- Product stories sit on the page fill, with a secondary fill on every other story. -->
 {#each featured as product, i (product.id)}
-  {@const dark = i % 2 === 1}
   <section
-    class={cn("group mt-3 overflow-hidden pt-12 text-center sm:pt-14", dark ? "bg-black text-[#f5f5f7]" : "bg-card")}
+    class={cn("group mt-3 overflow-hidden pt-12 text-center sm:pt-14", i % 2 === 1 ? "bg-secondary" : "bg-background")}
     aria-label={product.name}
   >
     <div class="container-apple" {@attach reveal()}>
       <h2 class="display text-[32px] sm:text-[44px]">{product.name}</h2>
-      <p class={cn("mt-1 text-[17px] sm:text-[21px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
-      <p class={cn("mt-1 text-sm", dark ? "text-[#86868b]" : "text-muted-foreground")}>{priceLine(product)}</p>
-      {@render links(product, dark)}
+      <p class="mt-1 text-[17px] text-muted-foreground sm:text-[21px]">{tagline(product)}</p>
+      <p class="mt-1 text-sm text-muted-foreground">{priceLine(product)}</p>
+      {@render links(product)}
     </div>
     <div class="container-wide mt-10" {@attach reveal(120)}>
       <div class="mx-auto max-w-[980px] overflow-hidden rounded-t-[32px]">
@@ -219,17 +210,13 @@
 {#if tiles.length}
   <section class="grid gap-3 px-3 pt-3 md:grid-cols-2" aria-label="สินค้าแนะนำ">
     {#each tiles as product, i (product.id)}
-      {@const dark = i === 1 || i === 2}
       <article
-        class={cn(
-          "group flex flex-col overflow-hidden pt-12 text-center",
-          dark ? "bg-black text-[#f5f5f7]" : "bg-card",
-        )}
+        class={cn("group flex flex-col overflow-hidden pt-12 text-center", i % 2 === 1 ? "bg-secondary" : "bg-card")}
         {@attach reveal((i % 2) * 80)}
       >
         <h3 class="display px-6 text-[28px] sm:text-[32px]">{product.name}</h3>
-        <p class={cn("mt-1 px-6 text-[19px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
-        {@render links(product, dark)}
+        <p class="mt-1 px-6 text-[19px] text-muted-foreground">{tagline(product)}</p>
+        {@render links(product)}
         <div class="mt-8 flex flex-1 items-end justify-center px-10">
           {@render media(
             product,
@@ -290,33 +277,19 @@
   </section>
 {/if}
 
-<section
-  class={cn(
-    "py-20 sm:py-28",
-    darkTheme
-      ? "bg-card text-foreground"
-      : "bg-black bg-[radial-gradient(70%_90%_at_50%_0%,#2c2c2e_0%,#000_70%)] text-[#f5f5f7]",
-  )}
-  aria-labelledby="stats-heading"
->
+<section class="bg-secondary py-20 sm:py-28" aria-labelledby="stats-heading">
   <div class="container-wide">
     <h2 id="stats-heading" class="display text-center text-[28px] sm:text-[40px]" {@attach reveal()}>
       {config.stats.heading}
     </h2>
     <div class="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {#each stats as stat, i (stat.label)}
-        <div
-          class="rounded-3xl bg-white/[0.06] px-4 py-8 text-center shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.14)]"
-          {@attach reveal(i * 80)}
-        >
+        <div class="rounded-3xl bg-card px-4 py-8 text-center" {@attach reveal(i * 80)}>
           <p class="flex items-baseline justify-center gap-1.5">
-            <strong
-              class="display bg-gradient-to-b from-white to-[#86868b] bg-clip-text text-[36px] text-transparent tabular-nums sm:text-[48px]"
-              {@attach countUp(stat.value)}
-            ></strong>
-            {#if stat.unit}<span class="text-[17px] text-[#86868b]">{stat.unit}</span>{/if}
+            <strong class="display text-[36px] text-foreground tabular-nums sm:text-[48px]" {@attach countUp(stat.value)}></strong>
+            {#if stat.unit}<span class="text-[17px] text-muted-foreground">{stat.unit}</span>{/if}
           </p>
-          <p class="mt-1 text-[17px] text-[#86868b]">{stat.label}</p>
+          <p class="mt-1 text-[17px] text-muted-foreground">{stat.label}</p>
         </div>
       {/each}
     </div>

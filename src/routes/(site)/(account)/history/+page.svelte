@@ -24,7 +24,7 @@
 {#if fetching}
   <div class="mt-6 h-48 animate-pulse rounded-3xl bg-card"></div>
 {:else if topups.length}
-  <ul class="tile mt-6 divide-y divide-border px-6">
+  <ul class="mt-6 divide-y divide-border overflow-hidden rounded-[28px] bg-secondary px-6">
     {#each topups as topup (topup.id)}
       <li class="flex items-center justify-between gap-4 py-4">
         <div class="min-w-0">

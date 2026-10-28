@@ -31,14 +31,12 @@
   import UsersSection from "$lib/components/admin/UsersSection.svelte";
   import VouchersSection from "$lib/components/admin/VouchersSection.svelte";
   import FloatingField from "$lib/components/FloatingField.svelte";
-  import Grainient from "$lib/components/fx/Grainient.svelte";
   import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
   import { cn } from "$lib/utils";
 
   const { site, products, categories, coupons } = getStores();
-  const darkTheme = $derived(site.config.theme.mode === "dark");
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");
@@ -176,17 +174,7 @@
 </svelte:head>
 
 {#if !authorized}
-  <main class="relative grid min-h-dvh place-items-center overflow-hidden bg-background px-5">
-    <Grainient
-      class="!absolute inset-0"
-      colors={darkTheme
-        ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
-        : ["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
-      angle={160}
-      speed={0.45}
-      silk={0.7}
-      grainAmount={0.05}
-    />
+  <main class="grid min-h-dvh place-items-center bg-background px-5">
     <section
       class="reveal relative w-full max-w-[420px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
       aria-label="Admin access required"

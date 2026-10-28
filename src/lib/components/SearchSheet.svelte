@@ -82,7 +82,7 @@
 
 {#if ui.searchOpen}
   <div
-    class="fixed inset-0 z-[55] bg-black/20 backdrop-blur-md"
+    class="fixed inset-0 z-[55] bg-black/30"
     transition:fade={{ duration: 200 }}
     onclick={ui.closeSearch}
     role="presentation"

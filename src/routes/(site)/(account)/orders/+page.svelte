@@ -33,9 +33,9 @@
     {#each Array(3) as _, i (i)}<div class="h-28 animate-pulse rounded-3xl bg-card"></div>{/each}
   </div>
 {:else if orders.length}
-  <ul class="mt-6 space-y-3">
+  <ul class="mt-6 divide-y divide-border overflow-hidden rounded-[28px] bg-secondary">
     {#each orders as order (order.id)}
-      <li class="tile flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <li class="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
           <h3 class="text-[17px] font-semibold">{order.product_name}</h3>
           <p class="mt-0.5 text-xs text-muted-foreground">

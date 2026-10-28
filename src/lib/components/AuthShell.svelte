@@ -1,28 +1,15 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import { getStores } from "$lib/stores";
-  import Grainient from "./fx/Grainient.svelte";
   import LogoIcon from "./LogoIcon.svelte";
 
   let { title, subtitle, children, footer }: { title: string; subtitle: string; children: Snippet; footer: Snippet } =
     $props();
 
   const { site } = getStores();
-  const darkTheme = $derived(site.config.theme.mode === "dark");
 </script>
 
-<section class="relative -mt-[72px] flex flex-1 flex-col items-center overflow-hidden px-4 pt-[120px] pb-16 sm:pb-24">
-  <Grainient
-    class="!absolute inset-0"
-    colors={darkTheme
-      ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
-      : ["#ffffff", "#ededf0", "#c7c7cc", "#8e8e93", "#48484a"]}
-    angle={200}
-    speed={0.4}
-    silk={0.6}
-    grainAmount={0.04}
-    interactive={false}
-  />
+<section class="relative -mt-[72px] flex flex-1 flex-col items-center bg-background px-4 pt-[120px] pb-16 sm:pb-24">
   <div
     class="reveal relative w-full max-w-[480px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
   >
