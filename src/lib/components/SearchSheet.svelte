@@ -88,7 +88,7 @@
     role="presentation"
   ></div>
   <div
-    class="fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] bg-card pb-6 shadow-float"
+    class="sheet fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] pb-6"
     transition:glassPop
     role="dialog"
     aria-modal="true"

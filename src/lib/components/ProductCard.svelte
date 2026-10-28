@@ -23,7 +23,7 @@
 <a
   href={resolve(`/product/${product.id}`)}
   class={cn(
-    "group flex flex-col rounded-[28px] bg-card p-5 shadow-float transition-transform duration-500 ease-apple hover:-translate-y-1",
+    "group flex flex-col rounded-[28px] bg-card p-5 shadow-float transition-transform duration-500 ease-apple hover:-translate-y-1 active:scale-[0.985] active:duration-100",
     className,
   )}
   aria-label={product.name}

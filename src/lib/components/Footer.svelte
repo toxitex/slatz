@@ -15,7 +15,7 @@
   );
 </script>
 
-<footer class="mt-auto bg-background text-xs text-muted-foreground">
+<footer class="mt-auto bg-background text-xs tracking-[0.01em] text-muted-foreground">
   <div class="container-wide border-t border-border pt-5 pb-8">
     <p class="max-w-2xl leading-relaxed">{site.config.footer.brandText}</p>
 

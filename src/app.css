@@ -172,7 +172,8 @@
     @apply bg-background font-sans text-foreground;
     font-size: 17px;
     line-height: 1.47;
-    letter-spacing: -0.022em;
+    letter-spacing: -0.011em;
+    font-optical-sizing: auto;
     min-height: 100dvh;
   }
 
@@ -190,30 +191,48 @@
   .display {
     font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.07;
+    letter-spacing: -0.022em;
+    line-height: 1.08;
+    font-optical-sizing: auto;
   }
 
   .eyebrow {
     @apply text-sm font-semibold text-muted-foreground;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
   }
 
   .tile {
     @apply rounded-3xl bg-card shadow-float;
   }
 
-  /* Quiet bar for the nav. Solid when the page has scrolled. Not a glass highlight. */
+  /* Floating chrome. Content scrolls underneath. Heavier when the page has moved. */
   .nav-bar {
-    background: var(--syncx-card);
-    box-shadow: inset 0 0 0 0.5px var(--syncx-border);
-    transition: box-shadow 0.45s var(--ease-apple);
+    background: color-mix(in srgb, var(--syncx-bg) 72%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      inset 0 0.5px 0 color-mix(in srgb, white 45%, transparent),
+      inset 0 0 0 0.5px var(--syncx-border);
+    transition:
+      background-color 0.45s var(--ease-apple),
+      box-shadow 0.45s var(--ease-apple);
   }
 
   .nav-bar.is-solid {
+    background: color-mix(in srgb, var(--syncx-bg) 86%, transparent);
     box-shadow:
+      inset 0 0.5px 0 color-mix(in srgb, white 45%, transparent),
       inset 0 0 0 0.5px var(--syncx-border),
-      0 10px 28px -18px rgba(0, 0, 0, 0.45);
+      0 12px 32px -20px rgba(0, 0, 0, 0.45);
+  }
+
+  .sheet {
+    background: color-mix(in srgb, var(--syncx-card) 82%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
+      0 24px 64px -28px rgba(0, 0, 0, 0.5);
   }
 
   .theme-swap {
@@ -433,6 +452,24 @@
     opacity: 1;
     transform: none;
     filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nav-bar,
+  .sheet,
+  .glass {
+    background: var(--syncx-card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .nav-bar,
+  .sheet,
+  .tile {
+    box-shadow: inset 0 0 0 1.5px var(--syncx-text);
   }
 }
 

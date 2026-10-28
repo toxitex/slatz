@@ -199,7 +199,7 @@
   <div class="flex h-dvh bg-background text-[13px]">
     <aside
       class={cn(
-        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden bg-background md:w-[280px]",
+        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden bg-secondary md:w-[280px]",
         mobileDetail && "max-md:hidden",
       )}
     >

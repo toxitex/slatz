@@ -213,7 +213,7 @@
       <div class="flex items-center gap-1">
         <button
           type="button"
-          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
+          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] duration-100 ease-out hover:bg-foreground/[0.07] hover:text-foreground active:scale-[0.97]"
           aria-pressed={darkTheme}
           aria-label={darkTheme ? "สลับเป็นธีมสว่าง" : "สลับเป็นธีมมืด"}
           onclick={() => animateTheme(() => site.toggleMode())}
@@ -230,7 +230,7 @@
         </button>
         <button
           type="button"
-          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
+          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] duration-100 ease-out hover:bg-foreground/[0.07] hover:text-foreground active:scale-[0.97]"
           aria-label="ค้นหา"
           onclick={ui.openSearch}
         >
@@ -249,7 +249,7 @@
             </a>
             <a
               href={resolve("/register")}
-              class="shine rounded-full bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-transform active:scale-95"
+              class="rounded-full bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-transform duration-100 ease-out active:scale-[0.97]"
             >
               สมัครสมาชิก
             </a>
