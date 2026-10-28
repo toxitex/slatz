@@ -314,7 +314,12 @@ const link = (
   return { program, uniforms };
 };
 
-export type GrainientHandle = { wake: () => void; destroy: () => void };
+export type GrainientHandle = {
+  wake: () => void;
+  /** Redraw after a theme transition. False when the WebGL context has been lost. */
+  resume: () => boolean;
+  destroy: () => void;
+};
 
 export function createGrainient(
   container: HTMLElement,
@@ -326,6 +331,9 @@ export function createGrainient(
     antialias: false,
     depth: false,
     stencil: false,
+    // The theme crossfade snapshots the canvas. Without this the buffer is already
+    // cleared, so the snapshot is blank and the context can be lost.
+    preserveDrawingBuffer: true,
   });
   if (!gl) return null;
 
@@ -578,6 +586,7 @@ export function createGrainient(
 
   const frame = (now: number) => {
     raf = 0;
+    if (gl.isContextLost()) return;
     if (!visible || document.hidden) return;
     if (last && now - last < FRAME_MS - 2) {
       raf = requestAnimationFrame(frame);
@@ -606,7 +615,15 @@ export function createGrainient(
   };
 
   function wake() {
-    if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
+    if (!raf && visible && !document.hidden && !gl.isContextLost()) raf = requestAnimationFrame(frame);
+  }
+
+  function resume() {
+    if (gl.isContextLost()) return false;
+    visible = true;
+    last = 0;
+    resize();
+    return true;
   }
 
   const locate = (event: PointerEvent) => {
@@ -669,6 +686,7 @@ export function createGrainient(
 
   return {
     wake,
+    resume,
     destroy() {
       cancelAnimationFrame(raf);
       resizeObserver.disconnect();

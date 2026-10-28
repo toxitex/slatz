@@ -60,19 +60,31 @@
   });
 
   let handle: ReturnType<typeof createGrainient> = null;
+  // Plain copy so the canvas attachment does not re-run (and destroy the WebGL context) when colors change.
+  let current: Settings | undefined;
+
+  $effect.pre(() => {
+    current = settings;
+    handle?.wake();
+  });
 
   function mount(canvas: HTMLCanvasElement) {
-    handle = createGrainient(canvas.parentElement!, canvas, () => settings);
+    const onLost = (event: Event) => {
+      event.preventDefault();
+    };
+    const onSettle = () => {
+      handle?.resume();
+    };
+    canvas.addEventListener("webglcontextlost", onLost);
+    document.addEventListener("syncx-theme-settled", onSettle);
+    handle = createGrainient(canvas.parentElement!, canvas, () => current ?? settings);
     return () => {
+      canvas.removeEventListener("webglcontextlost", onLost);
+      document.removeEventListener("syncx-theme-settled", onSettle);
       handle?.destroy();
       handle = null;
     };
   }
-
-  $effect(() => {
-    void settings;
-    handle?.wake();
-  });
 </script>
 
 <div class="relative h-full w-full overflow-hidden {className}" aria-hidden="true">

@@ -201,15 +201,47 @@ function mergeStatus(
   };
 }
 
+/**
+ * A view-transition snapshot of a live WebGL canvas clears its drawing buffer and
+ * drops the context. Swap in a still image for the crossfade, then put the canvas back.
+ */
+function parkCanvases() {
+  const parked: { canvas: HTMLCanvasElement; image: HTMLImageElement }[] = [];
+  for (const canvas of document.querySelectorAll("canvas")) {
+    if (!(canvas instanceof HTMLCanvasElement) || !canvas.isConnected) continue;
+    const image = document.createElement("img");
+    image.className = canvas.className;
+    image.alt = "";
+    try {
+      image.src = canvas.toDataURL("image/jpeg", 0.8);
+    } catch {
+      image.removeAttribute("src");
+    }
+    canvas.replaceWith(image);
+    parked.push({ canvas, image });
+  }
+  return () => {
+    for (const { canvas, image } of parked) {
+      if (image.isConnected) image.replaceWith(canvas);
+    }
+  };
+}
+
 /** Crossfades the page when the theme changes. Falls back to an instant swap. */
 export function animateTheme(apply: () => void) {
+  const restore = parkCanvases();
+  const settle = () => {
+    restore();
+    document.dispatchEvent(new Event("syncx-theme-settled"));
+  };
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const start = document.startViewTransition?.bind(document);
   if (reduce || !start) {
     apply();
+    settle();
     return;
   }
-  start(apply);
+  start(apply).finished.then(settle, settle);
 }
 
 export function mergeConfig(input: unknown): SiteConfig {
