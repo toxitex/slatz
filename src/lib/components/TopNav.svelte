@@ -365,7 +365,7 @@
               <li style="--i: {i}">
                 <a
                   href={resolve(link.href)}
-                  class="block py-1.5 text-[22px] font-semibold text-foreground/85 active:scale-[0.98] active:text-foreground"
+                  class="block py-1.5 text-[19px] font-semibold text-foreground/85 active:scale-[0.98] active:text-foreground"
                 >
                   {link.label}
                 </a>

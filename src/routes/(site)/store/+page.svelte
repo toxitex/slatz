@@ -8,7 +8,7 @@
 
   const { site, products, categories } = getStores();
   const titleType = $derived(
-    { sm: "text-[40px] sm:text-[48px]", md: "text-[44px] sm:text-[56px]", lg: "text-[48px] sm:text-[64px]" }[
+    { sm: "text-[32px] sm:text-[36px]", md: "text-[34px] sm:text-[40px]", lg: "text-[36px] sm:text-[44px]" }[
       site.config.home.titleSize
     ],
   );
@@ -42,7 +42,7 @@
   const loading = $derived(categories.loading && products.loading);
 </script>
 
-<section class="container-wide pt-10 pb-2 sm:pt-14">
+<section class="container-wide pt-8 pb-2 sm:pt-10">
   <h1 class={cn("display tracking-tight", titleType)}>{site.config.store.headline}</h1>
   <p class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[17px] text-muted-foreground sm:text-[19px]">
     {#if site.config.store.headlineAccent.trim()}
@@ -71,7 +71,7 @@
 
 <section id="categories" class="container-wide scroll-mt-24 pt-6 pb-24" aria-label="หมวดหมู่">
   {#if site.config.store.sectionTitle.trim() && (loading || visibleTiles.length)}
-    <h2 class="display text-[28px] sm:text-[32px]">{site.config.store.sectionTitle}</h2>
+    <h2 class="display text-[22px] sm:text-[26px]">{site.config.store.sectionTitle}</h2>
   {/if}
   {#if loading}
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,7 +89,7 @@
         >
           <div class="relative z-10">
             <p class="text-[13px] font-semibold" style:color="var(--syncx-warn)">{tile.count} สินค้า</p>
-            <h2 class="display mt-1 text-[28px]">{tile.name}</h2>
+            <h2 class="display mt-1 text-[22px]">{tile.name}</h2>
             <span class="link mt-2 text-[15px]">เลือกซื้อ<ChevronRightIcon class="size-4" /></span>
           </div>
           {#if tile.imageUrl}
@@ -100,7 +100,7 @@
               class="absolute inset-x-6 bottom-0 h-[52%] w-[calc(100%-3rem)] object-contain transition-transform duration-700 ease-apple group-hover:scale-[1.04]"
             />
           {:else}
-            <span class="display absolute right-6 bottom-2 text-[120px] leading-none text-foreground/5">
+            <span class="display absolute right-6 bottom-2 text-[72px] leading-none text-foreground/5">
               {tile.name.charAt(0)}
             </span>
           {/if}

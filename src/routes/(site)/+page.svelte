@@ -46,20 +46,20 @@
   );
   const heroCentered = $derived(config.home.heroAlign !== "left");
   const heroType = $derived(
-    { sm: "text-[clamp(28px,5vw,40px)]", md: "text-[clamp(32px,6vw,56px)]", lg: "text-[clamp(36px,7vw,72px)]" }[
+    { sm: "text-[clamp(26px,4.5vw,36px)]", md: "text-[clamp(28px,5vw,44px)]", lg: "text-[clamp(32px,5.5vw,52px)]" }[
       config.home.heroSize
     ],
   );
   const heroSub = $derived(
-    { sm: "text-[17px] sm:text-[21px]", md: "text-[19px] sm:text-[24px]", lg: "text-[21px] sm:text-[28px]" }[
+    { sm: "text-[17px]", md: "text-[17px] sm:text-[19px]", lg: "text-[19px] sm:text-[21px]" }[
       config.home.heroSize
     ],
   );
   const statementType = $derived(
     {
-      sm: "text-[22px] leading-snug sm:text-[32px]",
-      md: "text-[26px] leading-[1.2] sm:text-[40px]",
-      lg: "text-[28px] leading-[1.2] sm:text-[44px]",
+      sm: "text-[20px] leading-snug sm:text-[26px]",
+      md: "text-[22px] leading-[1.25] sm:text-[30px]",
+      lg: "text-[24px] leading-[1.25] sm:text-[34px]",
     }[config.home.statementSize],
   );
   const statementSpace = $derived(
@@ -120,7 +120,7 @@
     class="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_18%,var(--syncx-bg)_78%)]"
   ></div>
 
-  <div class="relative container-apple pt-12 sm:pt-16">
+  <div class="relative container-apple pt-8 sm:pt-12">
     <a
       href={resolve("/store")}
       class="reveal inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-[13px] shadow-float"
@@ -130,7 +130,7 @@
       <span class="font-medium">เลือกซื้อเลย</span>
       <ChevronRightIcon class="size-3.5" />
     </a>
-    <p class="reveal mt-8 text-[17px] font-semibold text-muted-foreground sm:text-[21px]" style="animation-delay: 60ms">
+    <p class="reveal mt-6 text-[15px] font-semibold text-muted-foreground sm:text-[17px]" style="animation-delay: 60ms">
       {config.siteName}
     </p>
     <h1 class="reveal display mx-auto mt-2 max-w-5xl" style="animation-delay: 120ms">
@@ -143,7 +143,7 @@
     <p class={cn("mt-5 max-w-2xl leading-snug text-muted-foreground", heroSub, heroCentered && "mx-auto")}>
       {#each subtitleWords as word, i (i)}<span class="blur-word whitespace-pre" style="--i: {i}">{word}</span>{/each}
     </p>
-    <div class={cn("reveal mt-9 flex flex-wrap items-center gap-3", heroCentered ? "justify-center" : "justify-start")} style="animation-delay: 380ms">
+    <div class={cn("reveal mt-7 flex flex-wrap items-center gap-3", heroCentered ? "justify-center" : "justify-start")} style="animation-delay: 380ms">
       <Button href={resolve("/store")} size="lg" class="px-7">{config.ctaText}</Button>
       <button
         type="button"
@@ -156,12 +156,12 @@
   </div>
 
   {#if config.heroImageUrl}
-    <div class="relative container-wide mt-14" {@attach reveal()}>
-      <img src={config.heroImageUrl} alt="" class="mx-auto max-h-[560px] w-full rounded-[32px] object-cover" />
+    <div class="relative container-wide mt-10" {@attach reveal()}>
+      <img src={config.heroImageUrl} alt="" class="mx-auto max-h-[420px] w-full rounded-[28px] object-cover" />
     </div>
   {:else if showcase.length}
-    <div class="relative container-wide mt-14" {@attach reveal()}>
-      <div class="relative flex h-[260px] items-end justify-center overflow-hidden sm:h-[440px]">
+    <div class="relative container-wide mt-10" {@attach reveal()}>
+      <div class="relative flex h-[220px] items-end justify-center overflow-hidden sm:h-[320px]">
         {#each showcase as product, i (product.id)}
           {@const center = i === 1 || showcase.length === 1}
           <a
@@ -187,12 +187,12 @@
 <!-- Product stories sit on the page fill, with a secondary fill on every other story. -->
 {#each featured as product, i (product.id)}
   <section
-    class={cn("group mt-3 overflow-hidden pt-12 text-center sm:pt-14", i % 2 === 1 ? "bg-secondary" : "bg-background")}
+    class={cn("group mt-3 overflow-hidden pt-8 text-center sm:pt-10", i % 2 === 1 ? "bg-secondary" : "bg-background")}
     aria-label={product.name}
   >
     <div class="container-apple" {@attach reveal()}>
-      <h2 class="display text-[32px] sm:text-[44px]">{product.name}</h2>
-      <p class="mt-1 text-[17px] text-muted-foreground sm:text-[21px]">{tagline(product)}</p>
+      <h2 class="display text-[28px] sm:text-[34px]">{product.name}</h2>
+      <p class="mt-1 text-[17px] text-muted-foreground">{tagline(product)}</p>
       <p class="mt-1 text-sm text-muted-foreground">{priceLine(product)}</p>
       {@render links(product)}
     </div>
@@ -200,7 +200,7 @@
       <div class="mx-auto max-w-[980px] overflow-hidden rounded-t-[32px]">
         {@render media(
           product,
-          "h-[280px] w-full transition-transform duration-[1400ms] ease-apple group-hover:scale-[1.03] sm:h-[460px]",
+          "h-[220px] w-full transition-transform duration-[1400ms] ease-apple group-hover:scale-[1.03] sm:h-[320px]",
         )}
       </div>
     </div>
@@ -211,16 +211,16 @@
   <section class="grid gap-3 px-3 pt-3 md:grid-cols-2" aria-label="สินค้าแนะนำ">
     {#each tiles as product, i (product.id)}
       <article
-        class={cn("group flex flex-col overflow-hidden pt-12 text-center", i % 2 === 1 ? "bg-secondary" : "bg-card")}
+        class={cn("group flex flex-col overflow-hidden pt-8 text-center", i % 2 === 1 ? "bg-secondary" : "bg-card")}
         {@attach reveal((i % 2) * 80)}
       >
-        <h3 class="display px-6 text-[28px] sm:text-[32px]">{product.name}</h3>
-        <p class="mt-1 px-6 text-[19px] text-muted-foreground">{tagline(product)}</p>
+        <h3 class="display px-6 text-[22px] sm:text-[26px]">{product.name}</h3>
+        <p class="mt-1 px-6 text-[17px] text-muted-foreground">{tagline(product)}</p>
         {@render links(product)}
         <div class="mt-8 flex flex-1 items-end justify-center px-10">
           {@render media(
             product,
-            "h-[240px] w-full max-w-[520px] rounded-t-[28px] transition-transform duration-700 ease-apple group-hover:-translate-y-2 sm:h-[300px]",
+            "h-[180px] w-full max-w-[420px] rounded-t-[24px] transition-transform duration-700 ease-apple group-hover:-translate-y-2 sm:h-[220px]",
           )}
         </div>
       </article>
@@ -230,7 +230,7 @@
 
 {#if shelf.length}
   <section class="container-wide pt-20" aria-label="หมวดหมู่">
-    <h2 class="display mb-8 text-center text-[24px] sm:text-[32px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
+    <h2 class="display mb-6 text-center text-[22px] sm:text-[26px]" {@attach reveal()}>{config.store.categoryTitle}</h2>
     <div class="no-scrollbar flex gap-6 overflow-x-auto pb-2 sm:justify-center">
       {#each shelf as category, i (category.id)}
         <a
@@ -272,21 +272,21 @@
       {/each}
     </p>
     {#if config.announcementLink.trim()}
-      <a href={resolve("/store")} class="link mt-8 text-[19px]">{config.announcementLink}<ChevronRightIcon class="size-4" /></a>
+      <a href={resolve("/store")} class="link mt-6 text-[17px]">{config.announcementLink}<ChevronRightIcon class="size-4" /></a>
     {/if}
   </section>
 {/if}
 
-<section class="bg-secondary py-20 sm:py-28" aria-labelledby="stats-heading">
+<section class="bg-secondary py-14 sm:py-16" aria-labelledby="stats-heading">
   <div class="container-wide">
-    <h2 id="stats-heading" class="display text-center text-[28px] sm:text-[40px]" {@attach reveal()}>
+    <h2 id="stats-heading" class="display text-center text-[24px] sm:text-[28px]" {@attach reveal()}>
       {config.stats.heading}
     </h2>
-    <div class="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {#each stats as stat, i (stat.label)}
-        <div class="rounded-3xl bg-card px-4 py-8 text-center" {@attach reveal(i * 80)}>
+        <div class="rounded-3xl bg-card px-4 py-6 text-center" {@attach reveal(i * 80)}>
           <p class="flex items-baseline justify-center gap-1.5">
-            <strong class="display text-[36px] text-foreground tabular-nums sm:text-[48px]" {@attach countUp(stat.value)}></strong>
+            <strong class="display text-[28px] text-foreground tabular-nums sm:text-[36px]" {@attach countUp(stat.value)}></strong>
             {#if stat.unit}<span class="text-[17px] text-muted-foreground">{stat.unit}</span>{/if}
           </p>
           <p class="mt-1 text-[17px] text-muted-foreground">{stat.label}</p>

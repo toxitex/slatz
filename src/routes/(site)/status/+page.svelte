@@ -13,7 +13,7 @@
   <title>สถานะระบบ · {site.config.siteName}</title>
 </svelte:head>
 
-<section class="mx-auto w-full max-w-[680px] px-5 pt-14 pb-24 sm:pt-20">
+<section class="mx-auto w-full max-w-[680px] px-5 pt-10 pb-20 sm:pt-14">
   <a href={resolve("/")} class="inline-flex items-center gap-2 text-[15px] font-semibold tracking-tight">
     <span class="grid size-7 place-items-center overflow-hidden rounded-[8px] bg-foreground text-background">
       {#if site.config.logoImageUrl}
@@ -26,9 +26,9 @@
   </a>
 
   {#if status.kicker.trim()}
-    <p class="mt-12 text-[15px] font-semibold" style:color={tone}>{status.kicker}</p>
+    <p class="mt-10 text-[15px] font-semibold" style:color={tone}>{status.kicker}</p>
   {/if}
-  <h1 class="display mt-2 text-[40px] tracking-tight sm:text-[56px]">{status.headline}</h1>
+  <h1 class="display mt-2 text-[32px] tracking-tight sm:text-[40px]">{status.headline}</h1>
   {#if status.body.trim()}
     <p class="mt-4 max-w-[36rem] text-[17px] leading-relaxed text-foreground/80 sm:text-[19px]">{status.body}</p>
   {/if}

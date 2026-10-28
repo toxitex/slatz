@@ -20,7 +20,7 @@
         <LogoIcon size={26} />
       {/if}
     </span>
-    <h1 class="display mt-6 text-[30px] sm:text-[36px]">{title}</h1>
+    <h1 class="display mt-5 text-[26px] sm:text-[30px]">{title}</h1>
     <p class="mt-2 text-[15px] text-muted-foreground">{subtitle}</p>
     <div class="mt-8 text-left">
       {@render children()}

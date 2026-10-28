@@ -182,7 +182,7 @@
       <span class="mx-auto grid size-16 place-items-center rounded-[18px] bg-foreground text-background shadow-float">
         <LockIcon class="size-7" strokeWidth={1.75} />
       </span>
-      <h1 class="display mt-6 text-[32px]">สำหรับผู้ดูแลร้านเท่านั้น</h1>
+      <h1 class="display mt-5 text-[26px] sm:text-[30px]">สำหรับผู้ดูแลร้านเท่านั้น</h1>
       <p class="mt-2 text-[15px] text-muted-foreground">
         ใส่รหัสแอดมินเพื่อแก้ไขสี โลโก้ คำบนเว็บไซต์ และข้อมูลสินค้า
       </p>

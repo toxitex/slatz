@@ -31,11 +31,11 @@
   {#if eyebrow}
     <p class="text-[13px] font-semibold" style:color="var(--syncx-warn)">{eyebrow}</p>
   {/if}
-  <h3 class="mt-2 line-clamp-2 text-[22px] leading-tight font-semibold tracking-tight">{product.name}</h3>
+  <h3 class="mt-2 line-clamp-2 text-[19px] leading-tight font-semibold tracking-tight">{product.name}</h3>
   <p class="mt-1 text-[13px] font-medium" style:color={ready ? "var(--syncx-ok)" : "var(--syncx-warn)"}>
     {ready ? "พร้อมส่ง" : "สินค้าหมด"}
   </p>
-  <div class="mt-4 grid min-h-[168px] flex-1 place-items-center px-3 py-2">
+  <div class="mt-3 grid min-h-[148px] flex-1 place-items-center px-3 py-2">
     {#if product.imageUrl && !imageFailed}
       <img
         src={product.imageUrl}

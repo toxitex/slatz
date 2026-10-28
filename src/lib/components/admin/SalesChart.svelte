@@ -73,7 +73,7 @@
 {/if}
 
 <section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7 sm:py-7">
-  <h2 class="display text-[28px] font-bold leading-tight sm:text-[34px]">
+  <h2 class="display text-[24px] font-bold leading-tight sm:text-[28px]">
     {#if model.current > 0}{model.current} วันติด{/if}
     {#if model.current === 0}ออเดอร์ {OVERVIEW_WEEKS} สัปดาห์ล่าสุด{/if}
   </h2>
@@ -122,7 +122,7 @@
 <div class="grid gap-3 sm:grid-cols-3">
   {#each figures as figure (figure.label)}
     <section class="rounded-3xl bg-card px-5 py-5 text-foreground">
-      <p class="display text-[32px] font-bold tabular-nums">{figure.value}</p>
+      <p class="display text-[26px] font-bold tabular-nums">{figure.value}</p>
       <p class="mt-1 text-[14px]">{figure.label}</p>
       <p class="text-[12px] text-[#86868b]">{figure.note}</p>
     </section>
@@ -130,7 +130,7 @@
 </div>
 
 <section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7">
-  <h2 class="display text-center text-[26px] font-bold sm:text-[32px]">ยอดขายสะสม</h2>
+  <h2 class="display text-center text-[22px] font-bold sm:text-[26px]">ยอดขายสะสม</h2>
   <p class="mx-auto mt-2 max-w-lg text-center text-[14px] leading-relaxed text-[#86868b]">
     รวมจากออเดอร์ในช่วงเดียวกับตารางด้านบน จุดบนเส้นคือครั้งแรกที่ยอดถึงหลักพัน
   </p>

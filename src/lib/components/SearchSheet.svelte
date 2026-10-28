@@ -96,13 +96,13 @@
   >
     <div class="px-6 pt-6 sm:px-8">
       <label class="flex items-center gap-3">
-        <SearchIcon class="size-6 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+        <SearchIcon class="size-5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
         <input
           {@attach setup}
           bind:value={query}
           oninput={() => (activeIndex = 0)}
           placeholder={site.config.searchPlaceholder}
-          class="w-full bg-transparent text-xl text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-2xl"
+          class="w-full bg-transparent text-[17px] text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-[19px]"
         />
       </label>
 

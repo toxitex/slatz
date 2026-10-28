@@ -11,7 +11,7 @@
 
   const { site, products, categories } = getStores();
   const titleType = $derived(
-    { sm: "text-[28px] sm:text-[36px]", md: "text-[32px] sm:text-[40px]", lg: "text-[36px] sm:text-[48px]" }[
+    { sm: "text-[28px] sm:text-[32px]", md: "text-[30px] sm:text-[36px]", lg: "text-[32px] sm:text-[40px]" }[
       site.config.home.titleSize
     ],
   );
@@ -35,7 +35,7 @@
   const bannerUrl = $derived(category?.imageUrl || inCategory.find((p) => p.imageUrl)?.imageUrl || "");
 </script>
 
-<section class="container-wide pt-12 sm:pt-16">
+<section class="container-wide pt-8 sm:pt-10">
   <nav class="mb-4 flex items-center gap-1 text-xs text-muted-foreground" aria-label="Breadcrumb">
     <a href={resolve("/store")} class="hover:text-foreground">ร้านค้า</a>
     <ChevronRightIcon class="size-3" />

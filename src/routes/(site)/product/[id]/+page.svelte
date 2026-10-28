@@ -145,7 +145,7 @@
     </div>
   </div>
 
-  <section class="container-wide pt-10 pb-24">
+  <section class="container-wide pt-8 pb-20">
     <nav class="mb-6 flex items-center gap-1 text-xs text-muted-foreground" aria-label="Breadcrumb">
       <a href={resolve("/store")} class="hover:text-foreground">ร้านค้า</a>
       <ChevronRightIcon class="size-3" />
@@ -154,7 +154,7 @@
       <span class="truncate text-foreground">{product.name}</span>
     </nav>
 
-    <article class="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+    <article class="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
       <div class="lg:sticky lg:top-36 lg:self-start">
         <div class="group grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card shadow-float">
           {#if product.imageUrl}
@@ -178,7 +178,7 @@
       <div class="flex flex-col gap-8">
         <header>
           <p class="text-sm font-semibold text-muted-foreground">{product.category || "ทั่วไป"}</p>
-          <h1 class="display mt-1 text-[32px] sm:text-[40px]">{site.config.store.buyText} {product.name}</h1>
+          <h1 class="display mt-1 text-[26px] sm:text-[32px]">{site.config.store.buyText} {product.name}</h1>
           <div class="mt-3 flex flex-wrap gap-2 text-xs">
             <span
               class={cn(
@@ -195,7 +195,7 @@
 
         {#if tiers.length}
           <section aria-labelledby="tiers-heading">
-            <h2 id="tiers-heading" class="text-[21px] font-semibold tracking-tight">
+            <h2 id="tiers-heading" class="text-[17px] font-semibold tracking-tight">
               ตัวเลือก. <span class="text-muted-foreground">เลือกแบบที่ใช่สำหรับคุณ</span>
             </h2>
             <div class="mt-4 grid gap-3" role="radiogroup">
@@ -227,8 +227,8 @@
           </section>
         {:else}
           <section>
-            <h2 class="text-[21px] font-semibold tracking-tight">ราคา</h2>
-            <p class="display mt-2 text-[28px]">{product.price || "ติดต่อร้านค้า"}</p>
+            <h2 class="text-[17px] font-semibold tracking-tight">ราคา</h2>
+            <p class="display mt-2 text-[24px]">{product.price || "ติดต่อร้านค้า"}</p>
           </section>
         {/if}
 
@@ -296,7 +296,7 @@
             <div>
               <p class="text-xs font-semibold text-muted-foreground">ยอดชำระสุทธิ</p>
               <p class="mt-1 flex items-baseline gap-2">
-                <span class="display text-[28px] tabular-nums">{formatBaht(total)}</span>
+                <span class="display text-[24px] tabular-nums">{formatBaht(total)}</span>
                 {#if discount > 0}
                   <span class="text-sm text-muted-foreground line-through">{formatBaht(subtotal)}</span>
                 {/if}
@@ -324,7 +324,7 @@
         <section class="border-t border-border pt-2">
           <button
             type="button"
-            class="flex w-full items-center justify-between py-4 text-left text-[19px] font-semibold tracking-tight"
+            class="flex w-full items-center justify-between py-3.5 text-left text-[17px] font-semibold tracking-tight"
             aria-expanded={descriptionOpen}
             onclick={() => (descriptionOpen = !descriptionOpen)}
           >
@@ -349,7 +349,7 @@
         <span class="grid size-14 place-items-center rounded-full bg-foreground text-background">
           <CheckIcon class="size-7" strokeWidth={2.5} />
         </span>
-        <Dialog.Title class="display mt-4 text-[28px]">ทำรายการสำเร็จ</Dialog.Title>
+        <Dialog.Title class="display mt-4 text-[24px]">ทำรายการสำเร็จ</Dialog.Title>
         <Dialog.Description class="mt-1 text-sm text-muted-foreground">
           ขอบคุณสำหรับการสั่งซื้อ ระบบได้ออกคีย์การใช้งานของคุณแล้ว
         </Dialog.Description>
