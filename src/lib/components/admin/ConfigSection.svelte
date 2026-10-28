@@ -11,6 +11,7 @@
   import ImageRow from "./ImageRow.svelte";
   import SettingsGroup from "./SettingsGroup.svelte";
   import SettingsRow from "./SettingsRow.svelte";
+  import StatusModePicker from "./StatusModePicker.svelte";
   import type { ConfigSectionKey } from "./sections";
   import TextRow from "./TextRow.svelte";
 
@@ -128,7 +129,14 @@
     </SettingsRow>
   </SettingsGroup>
 {:else if section === "status"}
-  <SettingsGroup title="หน้าสถานะ" description="หน้าสถานะในเมนู สีเขียวคือปกติ สีส้มคือมีปัญหา หัวข้อและป้ายเล็กใช้สีตามรายการที่มีปัญหา">
+  <SettingsGroup title="สถานะที่แสดงบนเว็บ" description="เลือกแล้วหน้าร้านและหน้าสถานะเปลี่ยนทันที ข้อความด้านล่างแก้ต่อได้">
+    <div class="px-4 py-3">
+      <StatusModePicker />
+      <p class="mt-3 text-[15px] font-semibold">{site.config.status.headline}</p>
+      <p class="mt-1 text-[13px] text-muted-foreground">{site.config.status.body}</p>
+    </div>
+  </SettingsGroup>
+  <SettingsGroup title="ข้อความหน้าสถานะ" description="ป้ายเล็กใช้สีตามสถานะที่เลือก">
     <TextRow label="ป้ายเล็ก" bind:value={site.config.status.kicker} placeholder="ประกาศ" />
     <TextRow label="หัวข้อ" bind:value={site.config.status.headline} />
     <TextRow label="รายละเอียด" bind:value={site.config.status.body} multiline />

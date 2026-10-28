@@ -63,8 +63,9 @@ export type SiteConfig = {
   announcementBody: string;
   /** Link under the home announcement. Empty hides the link. */
   announcementLink: string;
-  /** Public maintenance page at /status. */
+  /** Public maintenance page at /status. `mode` is chosen in the dashboard. */
   status: {
+    mode: "ok" | "maintenance";
     kicker: string;
     headline: string;
     body: string;

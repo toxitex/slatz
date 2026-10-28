@@ -45,6 +45,7 @@ export const defaultSiteConfig: SiteConfig = {
     "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
   announcementLink: "ไปที่ร้านค้า",
   status: {
+    mode: "ok",
     kicker: "ประกาศ",
     headline: "ระบบทำงานตามปกติ",
     body: "ร้านค้าเปิดให้สั่งซื้อและเติมเงินได้ตามปกติ",
@@ -192,6 +193,7 @@ function mergeStatus(
       })
     : structuredClone(base.items);
   return {
+    mode: saved.mode === "maintenance" ? "maintenance" : "ok",
     kicker: typeof saved.kicker === "string" ? saved.kicker : base.kicker,
     headline:
       typeof saved.headline === "string" ? saved.headline : base.headline,
@@ -389,6 +391,33 @@ export class SiteConfigStore {
 
   reset() {
     this.config = mergeConfig(null);
+  }
+
+  /** Dashboard choice. Fills the public status page and the store banner. */
+  setStatusMode(mode: SiteConfig["status"]["mode"]) {
+    const maintenance = mode === "maintenance";
+    const copy = maintenance
+      ? {
+          headline: "เดี๋ยวเรากลับมา",
+          body: "ขณะนี้ร้านค้าใช้งานไม่ได้ชั่วคราว ทีมงานกำลังเร่งแก้ไขอยู่",
+          detail: "ใช้งานไม่ได้ชั่วคราว",
+          tone: "warn" as const,
+        }
+      : {
+          headline: "ระบบทำงานตามปกติ",
+          body: "ร้านค้าเปิดให้สั่งซื้อและเติมเงินได้ตามปกติ",
+          detail: "ใช้งานได้ปกติ",
+          tone: "ok" as const,
+        };
+    this.config.status.mode = mode;
+    this.config.status.kicker = "ประกาศ";
+    this.config.status.headline = copy.headline;
+    this.config.status.body = copy.body;
+    for (const item of this.config.status.items) {
+      const contact = /ติดต่อ|discord|facebook/i.test(item.label);
+      item.tone = contact ? "ok" : copy.tone;
+      item.detail = contact ? "ติดต่อได้ตามปกติ" : copy.detail;
+    }
   }
 
   setMode(mode: SiteConfig["theme"]["mode"]) {

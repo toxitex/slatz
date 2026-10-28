@@ -5,8 +5,7 @@
 
   const { site } = getStores();
   const status = $derived(site.config.status);
-  const attention = $derived(status.items.some((item) => item.tone === "warn"));
-  const tone = $derived(attention ? "var(--syncx-warn)" : "var(--syncx-ok)");
+  const tone = $derived(status.mode === "maintenance" ? "var(--syncx-warn)" : "var(--syncx-ok)");
 </script>
 
 <svelte:head>

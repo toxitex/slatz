@@ -30,6 +30,7 @@
   import { isConfigSection, sectionGroups, sectionItems, type SectionKey } from "$lib/components/admin/sections";
   import UsersSection from "$lib/components/admin/UsersSection.svelte";
   import VouchersSection from "$lib/components/admin/VouchersSection.svelte";
+  import StatusModePicker from "$lib/components/admin/StatusModePicker.svelte";
   import FloatingField from "$lib/components/FloatingField.svelte";
   import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
@@ -220,7 +221,11 @@
         </div>
       </div>
 
-      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-card px-3 text-muted-foreground shadow-[0_0_0_0.5px_var(--syncx-border)]">
+      <div class="px-4 pb-3">
+        <StatusModePicker />
+      </div>
+
+      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-background px-3 text-muted-foreground">
         <SearchIcon class="size-3.5" />
         <input bind:value={filter} placeholder="ค้นหา" class="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground" />
       </label>
@@ -236,8 +241,8 @@
                   class={cn(
                     "flex w-full items-center gap-2.5 px-3 py-2 text-left text-[14px] transition-colors",
                     item.key === active
-                      ? "bg-[color-mix(in_srgb,var(--syncx-accent)_14%,transparent)] font-medium text-[var(--syncx-accent)]"
-                      : "hover:bg-foreground/[0.03]",
+                      ? "bg-background font-medium"
+                      : "hover:bg-foreground/[0.04]",
                   )}
                   aria-current={item.key === active ? "page" : undefined}
                   onclick={() => select(item.key)}
@@ -264,7 +269,7 @@
     </aside>
 
     <main class={cn("flex min-w-0 flex-1 flex-col border-l border-border", !mobileDetail && "max-md:hidden")}>
-      <header class="glass sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
+      <header class="nav-bar sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 px-4 sm:px-6">
         <button
           type="button"
           class="-ml-1 flex items-center text-link md:hidden"

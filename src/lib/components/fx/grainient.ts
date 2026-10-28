@@ -615,11 +615,11 @@ export function createGrainient(
   };
 
   function wake() {
-    if (!raf && visible && !document.hidden && !gl.isContextLost()) raf = requestAnimationFrame(frame);
+    if (!raf && visible && !document.hidden && gl && !gl.isContextLost()) raf = requestAnimationFrame(frame);
   }
 
   function resume() {
-    if (gl.isContextLost()) return false;
+    if (!gl || gl.isContextLost()) return false;
     visible = true;
     last = 0;
     resize();
