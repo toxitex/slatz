@@ -9,24 +9,26 @@
   const { site } = getStores();
 </script>
 
-<section class="relative -mt-[72px] flex flex-1 flex-col items-center bg-background px-4 pt-[120px] pb-16 sm:pb-24">
-  <div
-    class="reveal relative w-full max-w-[480px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
-  >
-    <span class="mx-auto grid size-14 place-items-center overflow-hidden rounded-2xl bg-foreground text-background shadow-float">
-      {#if site.config.logoImageUrl}
-        <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
-      {:else}
-        <LogoIcon size={26} />
-      {/if}
-    </span>
-    <h1 class="display mt-5 text-[26px] sm:text-[30px]">{title}</h1>
-    <p class="mt-2 text-[15px] text-muted-foreground">{subtitle}</p>
-    <div class="mt-8 text-left">
-      {@render children()}
+<section class="flex flex-1 flex-col items-center px-5 pt-10 pb-16 sm:pt-16 sm:pb-20">
+  <div class="w-full max-w-[400px]">
+    <div class="flex flex-col items-center text-center">
+      <span class="grid size-12 place-items-center overflow-hidden rounded-[14px] bg-foreground text-background">
+        {#if site.config.logoImageUrl}
+          <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
+        {:else}
+          <LogoIcon size={22} />
+        {/if}
+      </span>
+      <p class="mt-5 text-[13px] font-semibold text-muted-foreground">{site.config.siteName}</p>
+      <h1 class="display mt-1 text-[26px] sm:text-[28px]">{title}</h1>
+      <p class="mt-2 text-[15px] leading-relaxed text-muted-foreground">{subtitle}</p>
     </div>
-    <p class="mt-8 border-t border-foreground/10 pt-6 text-sm text-muted-foreground">
-      {@render footer()}
-    </p>
+
+    <div class="mt-8 rounded-[28px] bg-card px-5 py-5 shadow-float sm:px-6">
+      {@render children()}
+      <p class="mt-5 border-t border-border pt-4 text-center text-[15px] text-muted-foreground">
+        {@render footer()}
+      </p>
+    </div>
   </div>
 </section>

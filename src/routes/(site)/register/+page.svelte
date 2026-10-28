@@ -9,7 +9,7 @@
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
 
-  const { site, auth } = getStores();
+  const { auth } = getStores();
 
   let displayName = $state("");
   let email = $state("");
@@ -50,19 +50,17 @@
   }
 </script>
 
-<AuthShell title="สร้างบัญชีของคุณ" subtitle={`บัญชีเดียวสำหรับทุกอย่างใน ${site.config.siteName}`}>
+<AuthShell title="สร้างบัญชี" subtitle="บัญชีเดียวสำหรับคำสั่งซื้อ ยอดเงิน และคีย์">
   <form class="flex flex-col gap-3" {onsubmit} novalidate>
     <FloatingField label="ชื่อที่แสดง" autocomplete="nickname" bind:value={displayName} />
     <FloatingField label="อีเมล" type="email" autocomplete="email" bind:value={email} />
-    <div class="mt-3 flex flex-col gap-3">
-      <FloatingField label="รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)" type="password" autocomplete="new-password" revealable bind:value={password} />
-      <FloatingField label="ยืนยันรหัสผ่าน" type="password" autocomplete="new-password" revealable bind:value={confirmPassword} />
-    </div>
+    <FloatingField label="รหัสผ่าน อย่างน้อย 6 ตัว" type="password" autocomplete="new-password" revealable bind:value={password} />
+    <FloatingField label="ยืนยันรหัสผ่าน" type="password" autocomplete="new-password" revealable bind:value={confirmPassword} />
 
-    {#if error}<p class="text-sm text-destructive" role="alert">{error}</p>{/if}
-    {#if success}<p class="text-sm text-foreground" role="status">{success}</p>{/if}
+    {#if error}<p class="rounded-xl bg-destructive/10 px-3 py-2 text-[13px] text-destructive" role="alert">{error}</p>{/if}
+    {#if success}<p class="rounded-xl bg-secondary px-3 py-2 text-[13px]" role="status">{success}</p>{/if}
 
-    <Button type="submit" size="lg" class="mt-3 w-full" disabled={submitting}>
+    <Button type="submit" size="lg" class="mt-1 h-12 w-full" disabled={submitting}>
       {submitting ? "กำลังสร้างบัญชี..." : "สมัครสมาชิก"}
     </Button>
   </form>

@@ -9,7 +9,7 @@
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
 
-  const { site, auth } = getStores();
+  const { auth } = getStores();
 
   let email = $state("");
   let password = $state("");
@@ -40,15 +40,15 @@
   }
 </script>
 
-<AuthShell title={`ลงชื่อเข้าใช้ ${site.config.siteName}`} subtitle="จัดการคำสั่งซื้อ ยอดเงิน และคีย์ของคุณได้ในที่เดียว">
+<AuthShell title="ลงชื่อเข้าใช้" subtitle="จัดการคำสั่งซื้อ ยอดเงิน และคีย์ของคุณได้ในที่เดียว">
   <form class="flex flex-col gap-3" {onsubmit} novalidate>
     <FloatingField label="อีเมล" type="email" autocomplete="email" bind:value={email} />
     <FloatingField label="รหัสผ่าน" type="password" autocomplete="current-password" revealable bind:value={password} />
 
-    {#if error}<p class="text-sm text-destructive" role="alert">{error}</p>{/if}
-    {#if success}<p class="text-sm text-foreground" role="status">{success}</p>{/if}
+    {#if error}<p class="rounded-xl bg-destructive/10 px-3 py-2 text-[13px] text-destructive" role="alert">{error}</p>{/if}
+    {#if success}<p class="rounded-xl bg-secondary px-3 py-2 text-[13px]" role="status">{success}</p>{/if}
 
-    <Button type="submit" size="lg" class="mt-3 w-full" disabled={submitting}>
+    <Button type="submit" size="lg" class="mt-1 h-12 w-full" disabled={submitting}>
       {submitting ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
     </Button>
   </form>

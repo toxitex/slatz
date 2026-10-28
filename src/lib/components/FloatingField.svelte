@@ -24,12 +24,14 @@
     bind:value
     type={revealable && revealed ? "text" : type}
     placeholder=" "
-    class="peer h-14 w-full rounded-xl border border-foreground/20 bg-card px-4 pt-5 text-[17px] outline-none transition-[border-color,box-shadow] focus:border-primary focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--syncx-button)_25%,transparent)]"
-    class:pr-12={revealable}
+    class={[
+      "peer h-12 w-full rounded-xl border border-border bg-secondary px-3.5 pt-4 text-[15px] outline-none transition-[border-color,box-shadow] focus:border-[var(--syncx-action)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--syncx-action)_25%,transparent)]",
+      revealable && "pr-12",
+    ]}
   />
   <label
     for={inputId}
-    class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[17px] text-muted-foreground transition-all duration-200 ease-apple peer-focus:top-4 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-4 peer-[:not(:placeholder-shown)]:text-xs"
+    class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-[15px] text-muted-foreground transition-all duration-200 ease-apple peer-focus:top-2.5 peer-focus:text-[11px] peer-[:not(:placeholder-shown)]:top-2.5 peer-[:not(:placeholder-shown)]:text-[11px]"
   >
     {label}
   </label>
