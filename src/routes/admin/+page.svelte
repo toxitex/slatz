@@ -188,7 +188,7 @@
       grainAmount={0.05}
     />
     <section
-      class="liquid-glass reveal relative w-full max-w-[420px] rounded-[32px] px-6 py-10 text-center [--glass-alpha:58%] [--glass-blur:30px] sm:px-10"
+      class="reveal relative w-full max-w-[420px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
       aria-label="Admin access required"
     >
       <span class="mx-auto grid size-16 place-items-center rounded-[18px] bg-foreground text-background shadow-float">

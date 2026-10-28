@@ -2,7 +2,7 @@
   import { resolve } from "$app/paths";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
   import ShoppingBagIcon from "@lucide/svelte/icons/shopping-bag";
-  import { countUp, glassPointer, reveal, scrollProgress, segmentWords } from "$lib/attachments";
+  import { countUp, reveal, scrollProgress, segmentWords } from "$lib/attachments";
   import Grainient from "$lib/components/fx/Grainient.svelte";
   import MorphingText from "$lib/components/fx/MorphingText.svelte";
   import { Button } from "$lib/components/ui/button";
@@ -131,8 +131,7 @@
   <div class="relative container-apple pt-12 sm:pt-16">
     <a
       href={resolve("/store")}
-      class="liquid-glass border-beam reveal inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] [--beam-duration:5s]"
-      {@attach glassPointer}
+      class="reveal inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-[13px] shadow-float"
     >
       <span class="size-1.5 rounded-full bg-foreground"></span>
       <span>{config.announcementTitle}</span>
@@ -156,9 +155,8 @@
       <Button href={resolve("/store")} size="lg" class="px-7">{config.ctaText}</Button>
       <button
         type="button"
-        class="liquid-glass inline-flex h-12 items-center gap-1.5 rounded-full px-6 text-[17px] font-medium transition-transform active:scale-95"
+        class="inline-flex h-12 items-center gap-1.5 rounded-full bg-card px-6 text-[17px] font-medium shadow-float transition-transform active:scale-95"
         onclick={ui.openSearch}
-        {@attach glassPointer}
       >
         {config.searchButtonText}<ChevronRightIcon class="size-4" />
       </button>
@@ -171,7 +169,7 @@
     </div>
   {:else if showcase.length}
     <div class="relative container-wide mt-14" {@attach reveal()}>
-      <div class="liquid-glass relative flex h-[260px] items-end justify-center overflow-hidden rounded-[36px] [--glass-alpha:45%] [-webkit-backdrop-filter:none] [backdrop-filter:none] sm:h-[440px]">
+      <div class="relative flex h-[260px] items-end justify-center overflow-hidden sm:h-[440px]">
         {#each showcase as product, i (product.id)}
           {@const center = i === 1 || showcase.length === 1}
           <a
@@ -224,11 +222,10 @@
       {@const dark = i === 1 || i === 2}
       <article
         class={cn(
-          "group spotlight border-beam border-beam-hover flex flex-col overflow-hidden pt-12 text-center",
-          dark ? "bg-black text-[#f5f5f7] [--beam-color:#ffffff] [--spot-color:#636366]" : "bg-card [--spot-color:#e8e8ed]",
+          "group flex flex-col overflow-hidden pt-12 text-center",
+          dark ? "bg-black text-[#f5f5f7]" : "bg-card",
         )}
         {@attach reveal((i % 2) * 80)}
-        {@attach glassPointer}
       >
         <h3 class="display px-6 text-[28px] sm:text-[32px]">{product.name}</h3>
         <p class={cn("mt-1 px-6 text-[19px]", dark ? "text-[#86868b]" : "text-muted-foreground")}>{tagline(product)}</p>
@@ -309,10 +306,8 @@
     <div class="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {#each stats as stat, i (stat.label)}
         <div
-          class="liquid-glass liquid-glass-dark border-beam rounded-3xl px-4 py-8 text-center [--beam-color:#ffffff]"
-          style="--beam-duration: {7 + i * 1.5}s"
+          class="rounded-3xl bg-white/[0.06] px-4 py-8 text-center shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.14)]"
           {@attach reveal(i * 80)}
-          {@attach glassPointer}
         >
           <p class="flex items-baseline justify-center gap-1.5">
             <strong

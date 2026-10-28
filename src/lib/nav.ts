@@ -1,6 +1,7 @@
 export const primaryLinks = [
   { href: "/", label: "หน้าหลัก" },
   { href: "/store", label: "ร้านค้า" },
+  { href: "/status", label: "สถานะ" },
 ] as const;
 
 export const accountLinks = [
@@ -12,6 +13,9 @@ export const accountLinks = [
 
 export function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
-  if (href === "/store") return ["/store", "/category", "/product"].some((p) => pathname.startsWith(p));
+  if (href === "/store")
+    return ["/store", "/category", "/product"].some(p =>
+      pathname.startsWith(p)
+    );
   return pathname.startsWith(href);
 }

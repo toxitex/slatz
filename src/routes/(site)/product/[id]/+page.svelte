@@ -13,7 +13,6 @@
   import { toast } from "svelte-sonner";
   import { slide } from "svelte/transition";
   import { api, errorMessage } from "$lib/api";
-  import { glassPointer } from "$lib/attachments";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { getStores } from "$lib/stores";
@@ -133,7 +132,7 @@
   </section>
 {:else}
   <div class="sticky top-[68px] z-30 px-3">
-    <div class="liquid-glass mx-auto flex h-11 max-w-[880px] items-center justify-between gap-4 rounded-full pr-1.5 pl-5" {@attach glassPointer}>
+    <div class="nav-bar mx-auto flex h-11 max-w-[880px] items-center justify-between gap-4 rounded-full pr-1.5 pl-5 is-solid">
       <p class="truncate text-[15px] font-semibold tracking-tight">{product.name}</p>
       <div class="flex shrink-0 items-center gap-3">
         <span class="text-xs text-muted-foreground max-sm:hidden">
@@ -157,7 +156,7 @@
 
     <article class="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
       <div class="lg:sticky lg:top-36 lg:self-start">
-        <div class="spotlight group grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card [--spot-color:#ffffff]" {@attach glassPointer}>
+        <div class="group grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card shadow-float">
           {#if product.imageUrl}
             <img src={product.imageUrl} alt={product.name} class="size-full object-cover transition-transform duration-[1200ms] ease-apple group-hover:scale-[1.03]" />
           {:else}
@@ -292,7 +291,7 @@
           </div>
         </section>
 
-        <section id="checkout" class="tile border-beam p-6 [--beam-duration:8s]">
+        <section id="checkout" class="tile p-6">
           <div class="flex items-end justify-between gap-4">
             <div>
               <p class="text-xs font-semibold text-muted-foreground">ยอดชำระสุทธิ</p>

@@ -7,6 +7,15 @@ export type ProductTier = {
 
 export type ProductStatus = "active" | "out_of_stock" | "hidden";
 
+export type StatusTone = "ok" | "warn";
+
+export type StatusItem = {
+  id: string;
+  label: string;
+  detail: string;
+  tone: StatusTone;
+};
+
 export type SyncXProduct = {
   id: string;
   name: string;
@@ -54,6 +63,15 @@ export type SiteConfig = {
   announcementBody: string;
   /** Link under the home announcement. Empty hides the link. */
   announcementLink: string;
+  /** Public maintenance page at /status. */
+  status: {
+    kicker: string;
+    headline: string;
+    body: string;
+    /** Shown under the list. Empty hides the line. */
+    updated: string;
+    items: StatusItem[];
+  };
   /** Layout of the homepage hero and the big statement. Edited in the dashboard. */
   home: {
     heroAlign: "left" | "center";
@@ -148,7 +166,12 @@ export type AdminUser = {
   total_spent?: number;
 };
 
-export type PublicStats = { users: number; products: number; stock: number; sold: number };
+export type PublicStats = {
+  users: number;
+  products: number;
+  stock: number;
+  sold: number;
+};
 
 export type AdminStats = {
   totals: PublicStats & {
@@ -161,8 +184,18 @@ export type AdminStats = {
     vouchersAvailableValue: number;
   };
   sales: { day: string; orders: number; revenue: number }[];
-  topProducts: { productId: string; productName: string; quantity: number; revenue: number }[];
-  lowStock: { productId: string; productName: string; tierLabel: string; stock: number }[];
+  topProducts: {
+    productId: string;
+    productName: string;
+    quantity: number;
+    revenue: number;
+  }[];
+  lowStock: {
+    productId: string;
+    productName: string;
+    tierLabel: string;
+    stock: number;
+  }[];
   recentOrders: (Order & { user_name?: string })[];
 };
 

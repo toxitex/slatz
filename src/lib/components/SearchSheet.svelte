@@ -88,8 +88,7 @@
     role="presentation"
   ></div>
   <div
-    class="liquid-glass fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] pb-6"
-    style="--glass-alpha: 84%"
+    class="fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] bg-card pb-6 shadow-float"
     transition:glassPop
     role="dialog"
     aria-modal="true"

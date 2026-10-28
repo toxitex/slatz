@@ -46,7 +46,7 @@
       <h1 class={cn("reveal display", titleType)}>{name}</h1>
       <p class="mt-1 text-[17px] text-muted-foreground">{inCategory.length} สินค้าในหมวดหมู่นี้</p>
     </div>
-    <label class="flex h-11 w-full items-center gap-2 rounded-full bg-card px-4 text-sm md:max-w-xs">
+    <label class="flex h-11 w-full items-center gap-2 rounded-full bg-secondary px-4 text-sm shadow-float md:max-w-xs">
       <SearchIcon class="size-4 text-muted-foreground" />
       <input
         bind:value={query}

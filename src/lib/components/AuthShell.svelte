@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  import { glassPointer } from "$lib/attachments";
   import { getStores } from "$lib/stores";
   import Grainient from "./fx/Grainient.svelte";
   import LogoIcon from "./LogoIcon.svelte";
@@ -25,8 +24,7 @@
     interactive={false}
   />
   <div
-    class="liquid-glass reveal relative w-full max-w-[480px] rounded-[32px] px-6 py-10 text-center [--glass-alpha:62%] [--glass-blur:28px] sm:px-10"
-    {@attach glassPointer}
+    class="reveal relative w-full max-w-[480px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
   >
     <span class="mx-auto grid size-14 place-items-center overflow-hidden rounded-2xl bg-foreground text-background shadow-float">
       {#if site.config.logoImageUrl}

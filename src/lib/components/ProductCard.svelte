@@ -1,65 +1,56 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import ShoppingBagIcon from "@lucide/svelte/icons/shopping-bag";
-  import { glassPointer } from "$lib/attachments";
-  import { tierRange } from "$lib/stores/products.svelte";
+  import { totalStock } from "$lib/stores/products.svelte";
   import type { SyncXProduct } from "$lib/types";
-  import { cn, formatBaht } from "$lib/utils";
+  import { cn } from "$lib/utils";
 
   let {
     product,
     buttonText,
+    label = "",
     class: className = "",
-  }: { product: SyncXProduct; buttonText: string; class?: string } = $props();
+  }: { product: SyncXProduct; buttonText: string; label?: string; class?: string } = $props();
 
   let imageFailed = $state(false);
 
-  const range = $derived(tierRange(product.tiers ?? []));
-  const priceLabel = $derived(
-    range ? (range.min === range.max ? formatBaht(range.min) : `เริ่มต้น ${formatBaht(range.min)}`) : product.price,
+  const eyebrow = $derived(label || product.category);
+  const ready = $derived(
+    product.status !== "out_of_stock" && (product.tiers?.length ? totalStock(product.tiers) > 0 : true),
   );
-  const soldOut = $derived(product.status === "out_of_stock");
 </script>
 
 <a
   href={resolve(`/product/${product.id}`)}
   class={cn(
-    "group spotlight border-beam border-beam-hover flex flex-col overflow-hidden rounded-3xl bg-card [--spot-color:#ffffff] transition-[translate,box-shadow] duration-500 ease-apple hover:-translate-y-1 hover:shadow-float",
+    "group flex flex-col rounded-[28px] bg-card p-5 shadow-float transition-transform duration-500 ease-apple hover:-translate-y-1",
     className,
   )}
   aria-label={product.name}
-  {@attach glassPointer}
 >
-  <div class="relative grid aspect-[4/3] place-items-center overflow-hidden bg-muted">
+  {#if eyebrow}
+    <p class="text-[13px] font-semibold" style:color="var(--syncx-warn)">{eyebrow}</p>
+  {/if}
+  <h3 class="mt-2 line-clamp-2 text-[22px] leading-tight font-semibold tracking-tight">{product.name}</h3>
+  <p class="mt-1 text-[13px] font-medium" style:color={ready ? "var(--syncx-ok)" : "var(--syncx-warn)"}>
+    {ready ? "พร้อมส่ง" : "สินค้าหมด"}
+  </p>
+  <div class="mt-4 grid min-h-[168px] flex-1 place-items-center px-3 py-2">
     {#if product.imageUrl && !imageFailed}
       <img
         src={product.imageUrl}
-        alt={product.name}
+        alt=""
         loading="lazy"
-        class="size-full object-cover transition-transform duration-700 ease-apple group-hover:scale-[1.03]"
+        class="max-h-[168px] w-full object-contain transition-transform duration-700 ease-apple group-hover:scale-[1.03]"
         onerror={() => (imageFailed = true)}
       />
     {:else}
-      <ShoppingBagIcon class="size-10 text-muted-foreground/50" strokeWidth={1.25} />
-    {/if}
-    {#if soldOut}
-      <span class="absolute top-3 left-3 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur">
-        สินค้าหมดชั่วคราว
-      </span>
+      <ShoppingBagIcon class="size-10 text-muted-foreground/40" strokeWidth={1.25} />
     {/if}
   </div>
-  <div class="flex flex-1 flex-col gap-1 p-5">
-    {#if product.category}
-      <span class="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{product.category}</span>
-    {/if}
-    <h3 class="line-clamp-2 text-[17px] leading-snug font-semibold">{product.name}</h3>
-    <div class="mt-auto flex items-end justify-between gap-2 pt-3">
-      <span class="text-sm text-foreground/80">{priceLabel}</span>
-      <span
-        class="translate-y-1 rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground opacity-0 transition-[opacity,translate] duration-300 ease-spring group-hover:translate-y-0 group-hover:opacity-100 max-md:hidden"
-      >
-        {buttonText}
-      </span>
-    </div>
-  </div>
+  <span
+    class="mt-4 inline-flex h-9 w-fit items-center rounded-full bg-[var(--syncx-action)] px-4 text-[15px] font-medium text-white"
+  >
+    {buttonText}
+  </span>
 </a>

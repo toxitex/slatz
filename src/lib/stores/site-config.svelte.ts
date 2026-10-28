@@ -1,7 +1,7 @@
 import { api, errorMessage } from "$lib/api";
 import { broadcast, onSync } from "$lib/sync";
 import { isAdminGranted } from "$lib/admin-access";
-import type { SiteConfig, SyncXProduct } from "$lib/types";
+import type { SiteConfig, StatusItem, SyncXProduct } from "$lib/types";
 import { isDarkColor } from "$lib/utils";
 
 const STORAGE_KEY = "syncx-site-config-v1";
@@ -10,7 +10,7 @@ const MODE_KEY = "syncx-theme-mode";
 export const appleTheme: SiteConfig["theme"] = {
   mode: "light",
   accentColor: "#1d1d1f",
-  backgroundColor: "#f5f5f7",
+  backgroundColor: "#ffffff",
   buttonColor: "#1d1d1f",
   cardColor: "#ffffff",
   textColor: "#1d1d1f",
@@ -22,10 +22,10 @@ const darkSurfaces = {
   accentColor: "#f5f5f7",
   backgroundColor: "#000000",
   buttonColor: "#f5f5f7",
-  cardColor: "#161618",
+  cardColor: "#1c1c1e",
   textColor: "#f5f5f7",
-  mutedTextColor: "#86868b",
-  borderColor: "rgba(255, 255, 255, 0.12)",
+  mutedTextColor: "#98989d",
+  borderColor: "rgba(255, 255, 255, 0.1)",
 };
 
 export const defaultSiteConfig: SiteConfig = {
@@ -41,8 +41,31 @@ export const defaultSiteConfig: SiteConfig = {
   searchPlaceholder: "ค้นหาสินค้า หมวดหมู่...",
   searchButtonText: "ค้นหาสินค้า",
   announcementTitle: "ยินดีต้อนรับ",
-  announcementBody: "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
+  announcementBody:
+    "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
   announcementLink: "ไปที่ร้านค้า",
+  status: {
+    kicker: "ประกาศ",
+    headline: "ระบบทำงานตามปกติ",
+    body: "ร้านค้าเปิดให้สั่งซื้อและเติมเงินได้ตามปกติ",
+    updated: "",
+    items: [
+      { id: "site", label: "เว็บไซต์", detail: "ใช้งานได้ปกติ", tone: "ok" },
+      {
+        id: "orders",
+        label: "สั่งซื้อสินค้า",
+        detail: "ใช้งานได้ปกติ",
+        tone: "ok",
+      },
+      { id: "topup", label: "เติมเงิน", detail: "ใช้งานได้ปกติ", tone: "ok" },
+      {
+        id: "contact",
+        label: "ติดต่อทีมงานทาง Discord / Facebook",
+        detail: "ติดต่อได้ตามปกติ",
+        tone: "ok",
+      },
+    ],
+  },
   home: {
     heroAlign: "center",
     heroSize: "lg",
@@ -79,11 +102,11 @@ export const defaultSiteConfig: SiteConfig = {
     country: "ประเทศไทย",
   },
   store: {
-    headline: "ร้านค้า.",
+    headline: "ร้านค้า",
     headlineAccent: "วิธีที่ดีที่สุดในการเลือกซื้อสิ่งที่คุณชอบ",
     sectionTitle: "สินค้าทั้งหมด",
     categoryTitle: "เลือกซื้อตามหมวดหมู่",
-    latestTitle: "ล่าสุด.",
+    latestTitle: "ของเข้าใหม่",
     latestAccent: "สินค้าที่คัดมาให้คุณ",
     emptyStateText: "ไม่พบสินค้า กรุณากลับมาดูอีกครั้ง",
     productButtonText: "ดูรายละเอียด",
@@ -96,23 +119,39 @@ export const defaultSiteConfig: SiteConfig = {
 
 /** Previous built-in palettes; saved configs still on one of these get the current default. */
 const legacyThemes = [
-  { accentColor: "#e60039", backgroundColor: "#050506", buttonColor: "#e60039" },
-  { accentColor: "#0071e3", backgroundColor: "#f5f5f7", buttonColor: "#0071e3" },
+  {
+    accentColor: "#e60039",
+    backgroundColor: "#050506",
+    buttonColor: "#e60039",
+  },
+  {
+    accentColor: "#0071e3",
+    backgroundColor: "#f5f5f7",
+    buttonColor: "#0071e3",
+  },
 ];
 
-function upgradeTheme(theme: Partial<SiteConfig["theme"]> | undefined): SiteConfig["theme"] {
+function upgradeTheme(
+  theme: Partial<SiteConfig["theme"]> | undefined
+): SiteConfig["theme"] {
   if (!theme) return { ...appleTheme, mode: "dark" };
   const legacy = legacyThemes.some(
-    (t) =>
+    t =>
       t.accentColor === theme.accentColor?.toLowerCase() &&
       t.backgroundColor === theme.backgroundColor?.toLowerCase() &&
-      t.buttonColor === theme.buttonColor?.toLowerCase(),
+      t.buttonColor === theme.buttonColor?.toLowerCase()
   );
   const saved = legacy ? {} : theme;
   const background = saved.backgroundColor?.toLowerCase();
   const paintedDark = background === "#000000" || background === "#0b0b0c";
-  const mode = saved.mode === "light" || saved.mode === "dark" ? saved.mode : paintedDark ? "dark" : "light";
-  const colors = !saved.mode && paintedDark ? appleTheme : { ...appleTheme, ...saved };
+  const mode =
+    saved.mode === "light" || saved.mode === "dark"
+      ? saved.mode
+      : paintedDark
+        ? "dark"
+        : "light";
+  const colors =
+    !saved.mode && paintedDark ? appleTheme : { ...appleTheme, ...saved };
   return { ...colors, mode };
 }
 
@@ -131,8 +170,51 @@ export function createProductDraft(): SyncXProduct {
   };
 }
 
+function mergeStatus(
+  saved: Partial<SiteConfig["status"]> | undefined
+): SiteConfig["status"] {
+  const base = defaultSiteConfig.status;
+  if (!saved) return structuredClone(base);
+  const items: StatusItem[] = Array.isArray(saved.items)
+    ? saved.items.flatMap(item => {
+        if (!item || typeof item.label !== "string") return [];
+        return [
+          {
+            id:
+              typeof item.id === "string" && item.id
+                ? item.id
+                : crypto.randomUUID(),
+            label: item.label,
+            detail: typeof item.detail === "string" ? item.detail : "",
+            tone: item.tone === "warn" ? "warn" : "ok",
+          },
+        ];
+      })
+    : structuredClone(base.items);
+  return {
+    kicker: typeof saved.kicker === "string" ? saved.kicker : base.kicker,
+    headline:
+      typeof saved.headline === "string" ? saved.headline : base.headline,
+    body: typeof saved.body === "string" ? saved.body : base.body,
+    updated: typeof saved.updated === "string" ? saved.updated : base.updated,
+    items,
+  };
+}
+
+/** Crossfades the page when the theme changes. Falls back to an instant swap. */
+export function animateTheme(apply: () => void) {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const start = document.startViewTransition?.bind(document);
+  if (reduce || !start) {
+    apply();
+    return;
+  }
+  start(apply);
+}
+
 export function mergeConfig(input: unknown): SiteConfig {
-  if (!input || typeof input !== "object") return structuredClone(defaultSiteConfig);
+  if (!input || typeof input !== "object")
+    return structuredClone(defaultSiteConfig);
   const saved = input as Partial<SiteConfig>;
   return structuredClone({
     ...defaultSiteConfig,
@@ -142,8 +224,9 @@ export function mergeConfig(input: unknown): SiteConfig {
     footer: { ...defaultSiteConfig.footer, ...(saved.footer ?? {}) },
     home: { ...defaultSiteConfig.home, ...(saved.home ?? {}) },
     store: { ...defaultSiteConfig.store, ...(saved.store ?? {}) },
+    status: mergeStatus(saved.status),
     products: Array.isArray(saved.products)
-      ? saved.products.map((product) => ({
+      ? saved.products.map(product => ({
           ...createProductDraft(),
           ...product,
           tiers: Array.isArray(product?.tiers) ? product.tiers : [],
@@ -165,10 +248,16 @@ function applyTheme(theme: SiteConfig["theme"]) {
   const root = document.documentElement;
   const dark = theme.mode === "dark";
   const palette = dark ? { ...theme, ...darkSurfaces } : theme;
-  const keepAccent = dark && !isDarkColor(theme.accentColor) && theme.accentColor.toLowerCase() !== "#f5f5f7";
+  const keepAccent =
+    dark &&
+    !isDarkColor(theme.accentColor) &&
+    theme.accentColor.toLowerCase() !== "#f5f5f7";
   const onButton = isDarkColor(palette.buttonColor) ? "#ffffff" : "#0b0b0c";
   root.dataset.theme = dark ? "dark" : "light";
-  root.style.setProperty("--syncx-accent", keepAccent ? theme.accentColor : palette.accentColor);
+  root.style.setProperty(
+    "--syncx-accent",
+    keepAccent ? theme.accentColor : palette.accentColor
+  );
   root.style.setProperty("--syncx-button", palette.buttonColor);
   root.style.setProperty("--syncx-bg", palette.backgroundColor);
   root.style.setProperty("--syncx-card", palette.cardColor);
@@ -177,7 +266,9 @@ function applyTheme(theme: SiteConfig["theme"]) {
   root.style.setProperty("--syncx-border", palette.borderColor);
   root.style.setProperty("--primary-foreground", onButton);
   root.style.setProperty("--sidebar-primary-foreground", onButton);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", palette.backgroundColor);
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", palette.backgroundColor);
 }
 
 /**
@@ -194,7 +285,7 @@ export class SiteConfigStore {
   #skipNextSave = true;
 
   constructor() {
-    onSync((message) => {
+    onSync(message => {
       if (message.type !== "config") return;
       this.#skipNextSave = true;
       this.config = mergeConfig(message.config);
@@ -225,7 +316,9 @@ export class SiteConfigStore {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
     document.title = snapshot.siteName || defaultSiteConfig.siteName;
     const favicon = snapshot.logoImageUrl || "/favicon.png";
-    document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]').forEach((link) => (link.href = favicon));
+    document
+      .querySelectorAll<HTMLLinkElement>('link[rel="icon"]')
+      .forEach(link => (link.href = favicon));
 
     if (this.#skipNextSave) {
       this.#skipNextSave = false;

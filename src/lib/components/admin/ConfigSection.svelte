@@ -2,6 +2,7 @@
   import RotateCcwIcon from "@lucide/svelte/icons/rotate-ccw";
   import { toast } from "svelte-sonner";
   import { api } from "$lib/api";
+  import { animateTheme } from "$lib/stores/site-config.svelte";
   import { Button } from "$lib/components/ui/button";
   import { Switch } from "$lib/components/ui/switch";
   import type { PublicStats } from "$lib/types";
@@ -37,12 +38,12 @@
     <ImageRow label="โลโก้" bind:value={site.config.logoImageUrl} />
   </SettingsGroup>
 {:else if section === "colors"}
-  <SettingsGroup title="โหมดแสดงผล" description="สลับทั้งเว็บระหว่างธีมสว่างกับธีมมืด พื้นหลัง การ์ด กระจก ฮีโร่ และปุ่มเปลี่ยนตามโหมด">
+  <SettingsGroup title="โหมดแสดงผล" description="สลับทั้งเว็บระหว่างธีมสว่างกับธีมมืด พื้นหลัง การ์ด และปุ่มเปลี่ยนตามโหมด">
     <SettingsRow label="ธีมมืด">
       <Switch
         checked={site.config.theme.mode === "dark"}
         onCheckedChange={(checked) => {
-          site.setMode(checked ? "dark" : "light");
+          animateTheme(() => site.setMode(checked ? "dark" : "light"));
           toast(checked ? "ใช้ธีมมืดแล้ว" : "ใช้ธีมสว่างแล้ว");
         }}
         aria-label="ธีมมืด"
@@ -126,6 +127,50 @@
       </select>
     </SettingsRow>
   </SettingsGroup>
+{:else if section === "status"}
+  <SettingsGroup title="หน้าสถานะ" description="หน้าสถานะในเมนู สีเขียวคือปกติ สีส้มคือมีปัญหา หัวข้อและป้ายเล็กใช้สีตามรายการที่มีปัญหา">
+    <TextRow label="ป้ายเล็ก" bind:value={site.config.status.kicker} placeholder="ประกาศ" />
+    <TextRow label="หัวข้อ" bind:value={site.config.status.headline} />
+    <TextRow label="รายละเอียด" bind:value={site.config.status.body} multiline />
+    <TextRow label="อัปเดตล่าสุด" hint="เว้นว่างเพื่อซ่อน เช่น 7 ต.ค. 2569" bind:value={site.config.status.updated} />
+  </SettingsGroup>
+  {#each site.config.status.items as item, i (item.id)}
+    <SettingsGroup title={`รายการ ${i + 1}`}>
+      {#snippet actions()}
+        <Button
+          variant="ghost"
+          size="sm"
+          onclick={() => {
+            site.config.status.items = site.config.status.items.filter((row) => row.id !== item.id);
+          }}
+        >
+          ลบ
+        </Button>
+      {/snippet}
+      <TextRow label="ชื่อ" bind:value={item.label} />
+      <TextRow label="สถานะ" bind:value={item.detail} />
+      <SettingsRow label="สี">
+        <select bind:value={item.tone} aria-label="สีสถานะ" class={choiceClass}>
+          <option value="ok">ปกติ</option>
+          <option value="warn">มีปัญหา</option>
+        </select>
+      </SettingsRow>
+    </SettingsGroup>
+  {/each}
+  <Button
+    variant="outline"
+    class="w-fit"
+    onclick={() => {
+      site.config.status.items.push({
+        id: crypto.randomUUID(),
+        label: "รายการใหม่",
+        detail: "ใช้งานได้ปกติ",
+        tone: "ok",
+      });
+    }}
+  >
+    เพิ่มรายการ
+  </Button>
 {:else if section === "stats"}
   <SettingsGroup title="หัวข้อบนหน้าแรก" description="แถบใต้ประโยคประกาศ ตัวเลขด้านล่างเป็นการ์ดสี่ใบ">
     <TextRow label="หัวข้อ" bind:value={site.config.stats.heading} />
@@ -168,11 +213,11 @@
     </SettingsRow>
     <TextRow label="คำต่อท้ายหัวข้อ" hint="ตัวอักษรสีจางต่อจากหัวข้อ" bind:value={site.config.store.headlineAccent} />
     <TextRow label="หัวข้อกลุ่มสินค้า" bind:value={site.config.store.sectionTitle} />
-    <TextRow label="หัวข้อสินค้าล่าสุด" bind:value={site.config.store.latestTitle} />
+    <TextRow label="ป้ายบนการ์ดสินค้า" hint="แถบเลื่อนบนหน้าร้าน เช่น ของเข้าใหม่" bind:value={site.config.store.latestTitle} />
     <TextRow label="คำต่อท้ายสินค้าล่าสุด" bind:value={site.config.store.latestAccent} />
     <TextRow label="เมื่อไม่มีสินค้า" hint="หน้าร้านและหน้าหมวดหมู่" bind:value={site.config.store.emptyStateText} />
   </SettingsGroup>
-  <SettingsGroup title="ปุ่มสินค้า" description="เรียนรู้เพิ่มเติมและซื้ออยู่บนเรื่องสินค้าในหน้าแรก ซื้อเลยอยู่ปุ่มสั่งซื้อในหน้าสินค้า ปุ่มบนการ์ดโชว์ตอนชี้เมาส์">
+  <SettingsGroup title="ปุ่มสินค้า" description="เรียนรู้เพิ่มเติมและซื้ออยู่บนเรื่องสินค้าในหน้าแรก ซื้อคือปุ่มสีน้ำเงินบนการ์ดสินค้า ซื้อเลยอยู่ปุ่มสั่งซื้อในหน้าสินค้า">
     <TextRow label="เรียนรู้เพิ่มเติม" bind:value={site.config.store.learnMoreText} />
     <TextRow label="ซื้อ" bind:value={site.config.store.buyText} />
     <TextRow label="ปุ่มสั่งซื้อ" bind:value={site.config.store.checkoutText} />
