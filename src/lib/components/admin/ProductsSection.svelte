@@ -109,7 +109,7 @@
         {#each column.items as product (product.id)}
           <button
             type="button"
-            class="flex w-full items-center gap-2.5 rounded-xl bg-background px-2.5 py-2 text-left shadow-[0_0_0_0.5px_var(--syncx-border)]"
+            class="flex w-full items-center gap-2.5 rounded-xl bg-secondary px-2.5 py-2 text-left"
             onclick={() => (editing = product)}
           >
             <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-secondary">

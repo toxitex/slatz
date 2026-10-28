@@ -11,7 +11,7 @@
   ];
 </script>
 
-<div class="grid grid-cols-2 rounded-full bg-background p-1" role="group" aria-label="สถานะร้าน">
+<div class="grid grid-cols-2 rounded-full bg-secondary p-1" role="group" aria-label="สถานะร้าน">
   {#each options as option (option.id)}
     <button
       type="button"

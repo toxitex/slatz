@@ -197,10 +197,10 @@
     </section>
   </main>
 {:else}
-  <div class="flex h-dvh bg-background text-[13px]">
+  <div class="admin-app flex h-dvh bg-background text-[13px] text-foreground">
     <aside
       class={cn(
-        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden bg-secondary md:w-[280px]",
+        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden border-r border-border bg-card md:w-[280px]",
         mobileDetail && "max-md:hidden",
       )}
     >
@@ -233,7 +233,7 @@
       <nav class="min-h-0 flex-1 overflow-y-auto px-4 pb-4" aria-label="หัวข้อการตั้งค่า">
         {#each visibleGroups as group (group.title)}
           <p class="px-3 pt-4 pb-1.5 text-[12px] font-medium text-muted-foreground">{group.title}</p>
-          <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
+          <ul class="overflow-hidden rounded-2xl bg-secondary">
             {#each group.items as item (item.key)}
               <li>
                 <button
@@ -241,7 +241,7 @@
                   class={cn(
                     "flex w-full items-center gap-2.5 px-3 py-2 text-left text-[14px] transition-colors",
                     item.key === active
-                      ? "bg-background font-medium"
+                      ? "bg-[var(--admin-selected)] font-medium"
                       : "hover:bg-foreground/[0.04]",
                   )}
                   aria-current={item.key === active ? "page" : undefined}
@@ -261,15 +261,15 @@
       </nav>
 
       <div class="flex items-center gap-2 px-4 pt-2 pb-4">
-        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1 bg-card">
+        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1">
           หน้าร้าน<ExternalLinkIcon />
         </Button>
-        <Button variant="secondary" size="sm" class="flex-1 bg-card" onclick={lock}><LockIcon />ล็อก</Button>
+        <Button variant="secondary" size="sm" class="flex-1" onclick={lock}><LockIcon />ล็อก</Button>
       </div>
     </aside>
 
     <main class={cn("flex min-w-0 flex-1 flex-col border-l border-border", !mobileDetail && "max-md:hidden")}>
-      <header class="nav-bar sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 px-4 sm:px-6">
+      <header class="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/85 px-4 backdrop-blur-xl sm:px-6">
         <button
           type="button"
           class="-ml-1 flex items-center text-link md:hidden"
