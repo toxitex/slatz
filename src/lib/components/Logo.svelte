@@ -2,7 +2,6 @@
   import { resolve } from "$app/paths";
   import { getStores } from "$lib/stores";
   import { cn } from "$lib/utils";
-  import LogoIcon from "./LogoIcon.svelte";
 
   let { class: className = "" }: { class?: string } = $props();
 
@@ -14,12 +13,10 @@
   class={cn("inline-flex items-center gap-2 text-[15px] font-semibold tracking-tight text-foreground", className)}
   aria-label={`${site.config.logoText} home`}
 >
-  <span class="grid size-6 place-items-center overflow-hidden rounded-[7px] bg-foreground text-background">
-    {#if site.config.logoImageUrl}
+  {#if site.config.logoImageUrl}
+    <span class="grid size-6 place-items-center overflow-hidden rounded-[7px] bg-foreground">
       <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
-    {:else}
-      <LogoIcon size={14} />
-    {/if}
-  </span>
+    </span>
+  {/if}
   <span>{site.config.logoText}</span>
 </a>

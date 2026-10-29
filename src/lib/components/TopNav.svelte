@@ -10,9 +10,9 @@
   import { toast } from "svelte-sonner";
   import { fade } from "svelte/transition";
   import { isAdminGranted } from "$lib/admin-access";
-  import { glassPointer } from "$lib/attachments";
   import { accountLinks, isActive, primaryLinks } from "$lib/nav";
   import { getStores } from "$lib/stores";
+  import { animateTheme } from "$lib/stores/site-config.svelte";
   import { glassPop } from "$lib/transitions";
   import { cn, formatBaht } from "$lib/utils";
   import Logo from "./Logo.svelte";
@@ -20,18 +20,18 @@
   import UserMenu from "./UserMenu.svelte";
 
   const { site, auth, ui, products, categories } = getStores();
-  const darkTheme = $derived(site.config.theme.mode === "dark");
+  const darkTheme = $derived(site.appearance === "dark");
 
   let menuOpen = $state(false);
   let flyout = $state(false);
-  let scrolled = $state(false);
+  let scrollY = $state(0);
   let adminGranted = $state(false);
+  const solid = $derived(scrollY > 12);
   let lens = $state({ x: 0, width: 0, visible: false });
-  let flyoutTimer: ReturnType<typeof setTimeout> | undefined;
-
   const desktopLinks = $derived<{ href: Pathname; label: string; flyout?: boolean }[]>([
     { href: "/", label: "หน้าหลัก" },
     { href: "/store", label: "ร้านค้า", flyout: true },
+    { href: "/status" as const, label: "สถานะ" },
     ...(auth.user
       ? [
           { href: "/topup" as const, label: "เติมเงิน" },
@@ -78,17 +78,13 @@
     adminGranted = isAdminGranted();
   });
 
-  function openFlyout(delay = 120) {
-    clearTimeout(flyoutTimer);
-    flyoutTimer = setTimeout(() => {
-      products.ensureLoaded();
-      categories.ensureLoaded();
-      flyout = true;
-    }, delay);
+  function openFlyout() {
+    products.ensureLoaded();
+    categories.ensureLoaded();
+    flyout = true;
   }
 
   function closeFlyout() {
-    clearTimeout(flyoutTimer);
     flyout = false;
   }
 
@@ -117,7 +113,7 @@
 </script>
 
 <svelte:window
-  onscroll={() => (scrolled = window.scrollY > 24)}
+  bind:scrollY
   onkeydown={(event) => {
     if (event.key === "Escape") {
       closeFlyout();
@@ -128,7 +124,7 @@
 
 {#if flyout || menuOpen}
   <div
-    class="fixed inset-0 z-40 bg-black/15 backdrop-blur-sm"
+    class="fixed inset-0 z-40 bg-black/30"
     transition:fade={{ duration: 250 }}
     role="presentation"
     onclick={() => {
@@ -141,16 +137,18 @@
 <header class="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3">
   <div
     role="presentation"
-    class={cn(
-      "pointer-events-auto mx-auto transition-[max-width] duration-700 ease-apple",
-      scrolled && !flyout ? "max-w-[880px]" : "max-w-[1100px]",
-    )}
-    onmouseleave={closeFlyout}
+    class="pointer-events-auto mx-auto max-w-[1100px]"
+    onmouseleave={() => {
+      lens = { ...lens, visible: false };
+      closeFlyout();
+    }}
   >
     <nav
-      class="liquid-glass flex h-12 items-center justify-between gap-4 rounded-full pr-1.5 pl-4"
+      class={cn(
+        "nav-bar flex h-12 items-center justify-between gap-4 rounded-full pr-1.5 pl-4",
+        solid && "is-solid",
+      )}
       aria-label="Primary navigation"
-      {@attach glassPointer}
     >
       <Logo />
 
@@ -161,7 +159,7 @@
       >
         <span
           class={cn(
-            "pointer-events-none absolute top-1/2 h-8 -translate-y-1/2 rounded-full bg-foreground/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-[left,width,opacity] duration-300 ease-spring",
+            "pointer-events-none absolute top-1/2 h-8 -translate-y-1/2 rounded-full bg-foreground/[0.08] transition-[left,width,opacity] duration-300 ease-spring",
             lens.visible ? "opacity-100" : "opacity-0",
           )}
           style:left="{lens.x}px"
@@ -171,7 +169,7 @@
           <a
             href={resolve(link.href)}
             class={cn(
-              "relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground",
+              "press relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground",
               isActive(page.url.pathname, link.href) && "font-medium text-foreground",
             )}
             aria-haspopup={link.flyout ? "true" : undefined}
@@ -183,7 +181,7 @@
             }}
             onfocus={(event) => {
               moveLens(event);
-              if (link.flyout) openFlyout(0);
+              if (link.flyout) openFlyout();
             }}
           >
             {link.label}
@@ -191,7 +189,7 @@
         {/each}
         <button
           type="button"
-          class="relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground"
+          class="press relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground"
           onmouseenter={(event) => {
             moveLens(event);
             closeFlyout();
@@ -205,22 +203,29 @@
       <div class="flex items-center gap-1">
         <button
           type="button"
-          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
+          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] duration-100 ease-out hover:bg-foreground/[0.07] hover:text-foreground active:scale-[0.97]"
           aria-pressed={darkTheme}
           aria-label={darkTheme ? "สลับเป็นธีมสว่าง" : "สลับเป็นธีมมืด"}
-          onclick={() => site.toggleMode()}
+          onclick={() => animateTheme(() => site.toggleMode())}
         >
-          {#if darkTheme}
-            <SunIcon class="size-[17px]" strokeWidth={1.75} />
-          {:else}
-            <MoonIcon class="size-[17px]" strokeWidth={1.75} />
-          {/if}
+          {#key darkTheme}
+            <span class="theme-swap grid">
+              {#if darkTheme}
+                <SunIcon class="size-[17px]" strokeWidth={1.75} />
+              {:else}
+                <MoonIcon class="size-[17px]" strokeWidth={1.75} />
+              {/if}
+            </span>
+          {/key}
         </button>
         <button
           type="button"
-          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] hover:bg-foreground/[0.07] hover:text-foreground active:scale-90"
+          class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] duration-100 ease-out hover:bg-foreground/[0.07] hover:text-foreground active:scale-[0.97]"
           aria-label="ค้นหา"
-          onclick={ui.openSearch}
+          onpointerdown={(event) => {
+            if (event.button !== 0) return;
+            ui.openSearch();
+          }}
         >
           <SearchIcon class="size-[17px]" strokeWidth={1.75} />
         </button>
@@ -231,13 +236,13 @@
           {:else if !auth.loading}
             <a
               href={resolve("/login")}
-              class="rounded-full px-3 py-1.5 text-[13px] text-foreground/75 transition-colors hover:bg-foreground/[0.07] hover:text-foreground"
+              class="press rounded-full px-3 py-1.5 text-[13px] text-foreground/75 transition-colors hover:bg-foreground/[0.07] hover:text-foreground"
             >
               เข้าสู่ระบบ
             </a>
             <a
               href={resolve("/register")}
-              class="shine rounded-full bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-transform active:scale-95"
+              class="rounded-full bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground transition-transform duration-100 ease-out active:scale-[0.97]"
             >
               สมัครสมาชิก
             </a>
@@ -246,7 +251,7 @@
 
         <button
           type="button"
-          class="relative grid size-9 place-items-center rounded-full transition-colors hover:bg-foreground/[0.07] md:hidden"
+          class="press relative grid size-9 place-items-center rounded-full transition-colors hover:bg-foreground/[0.07] md:hidden"
           aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"}
           aria-expanded={menuOpen}
           onclick={() => (menuOpen = !menuOpen)}
@@ -269,17 +274,15 @@
 
     {#if flyout}
       <div
-        class="liquid-glass mt-2 hidden overflow-hidden rounded-[28px] md:block"
-        style="--glass-alpha: 78%"
+        class="mt-2 hidden overflow-hidden rounded-[28px] bg-card shadow-float md:block"
         transition:glassPop
-        {@attach glassPointer}
       >
         <div class="grid grid-cols-[1.4fr_1fr_1fr] gap-10 px-10 pt-8 pb-10">
           <div>
             <p class="mb-3 text-xs text-muted-foreground">เลือกซื้อ</p>
             <ul class="stagger-in space-y-1">
               <li style="--i: 0">
-                <a href={resolve("/store")} class="group inline-flex items-center gap-1 text-[17px] font-semibold">
+                <a href={resolve("/store")} class="press group inline-flex items-center gap-1 text-[17px] font-semibold">
                   ดูทั้งหมด
                   <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                 </a>
@@ -288,7 +291,7 @@
                 <li style="--i: {i + 1}">
                   <a
                     href={resolve(`/category/${encodeURIComponent(category.name)}`)}
-                    class="group inline-flex items-center gap-1 text-[17px] font-semibold text-foreground/85 hover:text-foreground"
+                    class="press group inline-flex items-center gap-1 text-[17px] font-semibold text-foreground/85 hover:text-foreground"
                   >
                     {category.name}
                     <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
@@ -342,8 +345,7 @@
 
     {#if menuOpen}
       <div
-        class="liquid-glass mt-2 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-[28px] md:hidden"
-        style="--glass-alpha: 82%"
+        class="mt-2 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-[28px] bg-card shadow-float md:hidden"
         transition:glassPop
         {@attach lockScroll}
       >
@@ -356,7 +358,7 @@
               <li style="--i: {i}">
                 <a
                   href={resolve(link.href)}
-                  class="block py-1.5 text-[22px] font-semibold text-foreground/85 active:scale-[0.98] active:text-foreground"
+                  class="block py-1.5 text-[19px] font-semibold text-foreground/85 active:scale-[0.98] active:text-foreground"
                 >
                   {link.label}
                 </a>

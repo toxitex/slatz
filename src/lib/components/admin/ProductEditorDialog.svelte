@@ -214,7 +214,7 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
-      <AlertDialog.Action class="bg-destructive text-white hover:bg-destructive/90" onclick={remove}>ยืนยันการลบ</AlertDialog.Action>
+      <AlertDialog.Action class="bg-destructive text-[var(--on-fill)] hover:bg-destructive/90" onclick={remove}>ยืนยันการลบ</AlertDialog.Action>
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

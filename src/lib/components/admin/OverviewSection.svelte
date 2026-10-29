@@ -100,7 +100,7 @@
 {:else if stats}
   <div class="stagger-in grid grid-cols-2 gap-3 md:grid-cols-3">
     {#each kpis as kpi, i (kpi.label)}
-      <div class="rounded-2xl bg-card p-4 shadow-[0_0_0_0.5px_var(--syncx-border)]" style="--i: {i}">
+      <div class="rounded-2xl bg-card p-4 shadow-float" style="--i: {i}">
         <p class="text-[11px] text-muted-foreground">{kpi.label}</p>
         <p class="mt-1 text-[22px] font-semibold tracking-tight tabular-nums">{kpi.value}</p>
         <p class="mt-0.5 text-[11px] text-muted-foreground">{kpi.hint}</p>
@@ -108,7 +108,7 @@
     {/each}
   </div>
 
-  <section class="rounded-2xl bg-card p-5 shadow-[0_0_0_0.5px_var(--syncx-border)]" aria-labelledby="sales-heading">
+  <section class="rounded-2xl bg-card p-5 shadow-float" aria-labelledby="sales-heading">
     <div class="flex items-end justify-between gap-3">
       <div>
         <h3 id="sales-heading" class="text-[13px] font-semibold">ยอดขาย 14 วันล่าสุด</h3>
@@ -149,7 +149,7 @@
   </section>
 
   <div class="grid gap-4 md:grid-cols-2">
-    <section class="rounded-2xl bg-card p-5 shadow-[0_0_0_0.5px_var(--syncx-border)]">
+    <section class="rounded-2xl bg-card p-5 shadow-float">
       <h3 class="text-[13px] font-semibold">สินค้าขายดี</h3>
       {#if stats.topProducts.length}
         <ul class="mt-3 space-y-3">
@@ -170,7 +170,7 @@
       {/if}
     </section>
 
-    <section class="rounded-2xl bg-card p-5 shadow-[0_0_0_0.5px_var(--syncx-border)]">
+    <section class="rounded-2xl bg-card p-5 shadow-float">
       <div class="flex items-center justify-between">
         <h3 class="text-[13px] font-semibold">สต็อกใกล้หมด</h3>
         <button type="button" class="text-xs text-link hover:underline" onclick={() => onnavigate("products")}>จัดการสินค้า</button>
@@ -197,7 +197,7 @@
     </section>
   </div>
 
-  <section class="rounded-2xl bg-card p-5 shadow-[0_0_0_0.5px_var(--syncx-border)]">
+  <section class="rounded-2xl bg-card p-5 shadow-float">
     <div class="flex items-center justify-between">
       <h3 class="text-[13px] font-semibold">คำสั่งซื้อล่าสุด</h3>
       <button type="button" class="text-xs text-link hover:underline" onclick={() => onnavigate("orders")}>ดูทั้งหมด</button>
@@ -222,7 +222,7 @@
   </section>
 {/if}
 
-<section class="rounded-2xl bg-card p-5 shadow-[0_0_0_0.5px_var(--syncx-border)]" aria-labelledby="connection-heading">
+<section class="rounded-2xl bg-card p-5 shadow-float" aria-labelledby="connection-heading">
   <div class="flex items-center justify-between gap-3">
     <div>
       <h3 id="connection-heading" class="text-[13px] font-semibold">การเชื่อมต่อหน้าร้าน</h3>

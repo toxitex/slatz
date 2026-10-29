@@ -1,16 +1,24 @@
+import { untrack } from "svelte";
 import { api, errorMessage } from "$lib/api";
 import { broadcast, onSync } from "$lib/sync";
 import { isAdminGranted } from "$lib/admin-access";
-import type { SiteConfig, SyncXProduct } from "$lib/types";
+import type { SiteConfig, StatusItem, SyncXProduct } from "$lib/types";
 import { isDarkColor } from "$lib/utils";
 
 const STORAGE_KEY = "syncx-site-config-v1";
 const MODE_KEY = "syncx-theme-mode";
 
+function storedAppearance(): "light" | "dark" {
+  const fallback = loadLocal().theme.mode === "light" ? "light" : "dark";
+  if (typeof localStorage === "undefined") return fallback;
+  const pref = localStorage.getItem(MODE_KEY);
+  return pref === "light" || pref === "dark" ? pref : fallback;
+}
+
 export const appleTheme: SiteConfig["theme"] = {
   mode: "light",
   accentColor: "#1d1d1f",
-  backgroundColor: "#f5f5f7",
+  backgroundColor: "#ffffff",
   buttonColor: "#1d1d1f",
   cardColor: "#ffffff",
   textColor: "#1d1d1f",
@@ -22,10 +30,10 @@ const darkSurfaces = {
   accentColor: "#f5f5f7",
   backgroundColor: "#000000",
   buttonColor: "#f5f5f7",
-  cardColor: "#161618",
+  cardColor: "#1c1c1e",
   textColor: "#f5f5f7",
-  mutedTextColor: "#86868b",
-  borderColor: "rgba(255, 255, 255, 0.12)",
+  mutedTextColor: "#98989d",
+  borderColor: "rgba(255, 255, 255, 0.1)",
 };
 
 export const defaultSiteConfig: SiteConfig = {
@@ -41,8 +49,32 @@ export const defaultSiteConfig: SiteConfig = {
   searchPlaceholder: "ค้นหาสินค้า หมวดหมู่...",
   searchButtonText: "ค้นหาสินค้า",
   announcementTitle: "ยินดีต้อนรับ",
-  announcementBody: "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
+  announcementBody:
+    "ยินดีต้อนรับเข้าสู่ร้านค้าออนไลน์ SLATZ STUDIO ของเรา! แอดมินพร้อมบริการตลอด 24 ชั่วโมง",
   announcementLink: "ไปที่ร้านค้า",
+  status: {
+    mode: "ok",
+    kicker: "ประกาศ",
+    headline: "ระบบทำงานตามปกติ",
+    body: "ร้านค้าเปิดให้สั่งซื้อและเติมเงินได้ตามปกติ",
+    updated: "",
+    items: [
+      { id: "site", label: "เว็บไซต์", detail: "ใช้งานได้ปกติ", tone: "ok" },
+      {
+        id: "orders",
+        label: "สั่งซื้อสินค้า",
+        detail: "ใช้งานได้ปกติ",
+        tone: "ok",
+      },
+      { id: "topup", label: "เติมเงิน", detail: "ใช้งานได้ปกติ", tone: "ok" },
+      {
+        id: "contact",
+        label: "ติดต่อทีมงานทาง Discord / Facebook",
+        detail: "ติดต่อได้ตามปกติ",
+        tone: "ok",
+      },
+    ],
+  },
   home: {
     heroAlign: "center",
     heroSize: "lg",
@@ -79,11 +111,11 @@ export const defaultSiteConfig: SiteConfig = {
     country: "ประเทศไทย",
   },
   store: {
-    headline: "ร้านค้า.",
+    headline: "ร้านค้า",
     headlineAccent: "วิธีที่ดีที่สุดในการเลือกซื้อสิ่งที่คุณชอบ",
     sectionTitle: "สินค้าทั้งหมด",
     categoryTitle: "เลือกซื้อตามหมวดหมู่",
-    latestTitle: "ล่าสุด.",
+    latestTitle: "ของเข้าใหม่",
     latestAccent: "สินค้าที่คัดมาให้คุณ",
     emptyStateText: "ไม่พบสินค้า กรุณากลับมาดูอีกครั้ง",
     productButtonText: "ดูรายละเอียด",
@@ -96,23 +128,39 @@ export const defaultSiteConfig: SiteConfig = {
 
 /** Previous built-in palettes; saved configs still on one of these get the current default. */
 const legacyThemes = [
-  { accentColor: "#e60039", backgroundColor: "#050506", buttonColor: "#e60039" },
-  { accentColor: "#0071e3", backgroundColor: "#f5f5f7", buttonColor: "#0071e3" },
+  {
+    accentColor: "#e60039",
+    backgroundColor: "#050506",
+    buttonColor: "#e60039",
+  },
+  {
+    accentColor: "#0071e3",
+    backgroundColor: "#f5f5f7",
+    buttonColor: "#0071e3",
+  },
 ];
 
-function upgradeTheme(theme: Partial<SiteConfig["theme"]> | undefined): SiteConfig["theme"] {
+function upgradeTheme(
+  theme: Partial<SiteConfig["theme"]> | undefined
+): SiteConfig["theme"] {
   if (!theme) return { ...appleTheme, mode: "dark" };
   const legacy = legacyThemes.some(
-    (t) =>
+    t =>
       t.accentColor === theme.accentColor?.toLowerCase() &&
       t.backgroundColor === theme.backgroundColor?.toLowerCase() &&
-      t.buttonColor === theme.buttonColor?.toLowerCase(),
+      t.buttonColor === theme.buttonColor?.toLowerCase()
   );
   const saved = legacy ? {} : theme;
   const background = saved.backgroundColor?.toLowerCase();
   const paintedDark = background === "#000000" || background === "#0b0b0c";
-  const mode = saved.mode === "light" || saved.mode === "dark" ? saved.mode : paintedDark ? "dark" : "light";
-  const colors = !saved.mode && paintedDark ? appleTheme : { ...appleTheme, ...saved };
+  const mode =
+    saved.mode === "light" || saved.mode === "dark"
+      ? saved.mode
+      : paintedDark
+        ? "dark"
+        : "light";
+  const colors =
+    !saved.mode && paintedDark ? appleTheme : { ...appleTheme, ...saved };
   return { ...colors, mode };
 }
 
@@ -131,8 +179,84 @@ export function createProductDraft(): SyncXProduct {
   };
 }
 
+function mergeStatus(
+  saved: Partial<SiteConfig["status"]> | undefined
+): SiteConfig["status"] {
+  const base = defaultSiteConfig.status;
+  if (!saved) return structuredClone(base);
+  const items: StatusItem[] = Array.isArray(saved.items)
+    ? saved.items.flatMap(item => {
+        if (!item || typeof item.label !== "string") return [];
+        return [
+          {
+            id:
+              typeof item.id === "string" && item.id
+                ? item.id
+                : crypto.randomUUID(),
+            label: item.label,
+            detail: typeof item.detail === "string" ? item.detail : "",
+            tone: item.tone === "warn" ? "warn" : "ok",
+          },
+        ];
+      })
+    : structuredClone(base.items);
+  return {
+    mode: saved.mode === "maintenance" ? "maintenance" : "ok",
+    kicker: typeof saved.kicker === "string" ? saved.kicker : base.kicker,
+    headline:
+      typeof saved.headline === "string" ? saved.headline : base.headline,
+    body: typeof saved.body === "string" ? saved.body : base.body,
+    updated: typeof saved.updated === "string" ? saved.updated : base.updated,
+    items,
+  };
+}
+
+/**
+ * A view-transition snapshot of a live WebGL canvas clears its drawing buffer and
+ * drops the context. Swap in a still image for the crossfade, then put the canvas back.
+ */
+function parkCanvases() {
+  const parked: { canvas: HTMLCanvasElement; image: HTMLImageElement }[] = [];
+  for (const canvas of document.querySelectorAll("canvas")) {
+    if (!(canvas instanceof HTMLCanvasElement) || !canvas.isConnected) continue;
+    const image = document.createElement("img");
+    image.className = canvas.className;
+    image.alt = "";
+    try {
+      image.src = canvas.toDataURL("image/jpeg", 0.8);
+    } catch {
+      image.removeAttribute("src");
+    }
+    canvas.replaceWith(image);
+    parked.push({ canvas, image });
+  }
+  return () => {
+    for (const { canvas, image } of parked) {
+      if (image.isConnected) image.replaceWith(canvas);
+    }
+  };
+}
+
+/** Crossfades the page when the theme changes. Falls back to an instant swap. */
+export function animateTheme(apply: () => void) {
+  const restore = parkCanvases();
+  const settle = () => {
+    restore();
+    document.dispatchEvent(new Event("syncx-theme-settled"));
+  };
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const start = document.startViewTransition?.bind(document);
+  if (reduce || !start) {
+    apply();
+    settle();
+    return;
+  }
+  start(apply).finished.then(settle, settle);
+}
+
 export function mergeConfig(input: unknown): SiteConfig {
-  if (!input || typeof input !== "object") return structuredClone(defaultSiteConfig);
+  if (!input || typeof input !== "object")
+    return structuredClone(defaultSiteConfig);
   const saved = input as Partial<SiteConfig>;
   return structuredClone({
     ...defaultSiteConfig,
@@ -142,8 +266,9 @@ export function mergeConfig(input: unknown): SiteConfig {
     footer: { ...defaultSiteConfig.footer, ...(saved.footer ?? {}) },
     home: { ...defaultSiteConfig.home, ...(saved.home ?? {}) },
     store: { ...defaultSiteConfig.store, ...(saved.store ?? {}) },
+    status: mergeStatus(saved.status),
     products: Array.isArray(saved.products)
-      ? saved.products.map((product) => ({
+      ? saved.products.map(product => ({
           ...createProductDraft(),
           ...product,
           tiers: Array.isArray(product?.tiers) ? product.tiers : [],
@@ -161,14 +286,32 @@ function loadLocal(): SiteConfig {
   }
 }
 
+function applyFavicon(url: string) {
+  const links = [...document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]')];
+  if (!url) {
+    links.forEach((link) => link.remove());
+    return;
+  }
+  const icon = links[0] ?? document.head.appendChild(document.createElement("link"));
+  icon.rel = "icon";
+  icon.href = url;
+  links.slice(1).forEach((link) => link.remove());
+}
+
 function applyTheme(theme: SiteConfig["theme"]) {
   const root = document.documentElement;
   const dark = theme.mode === "dark";
   const palette = dark ? { ...theme, ...darkSurfaces } : theme;
-  const keepAccent = dark && !isDarkColor(theme.accentColor) && theme.accentColor.toLowerCase() !== "#f5f5f7";
+  const keepAccent =
+    dark &&
+    !isDarkColor(theme.accentColor) &&
+    theme.accentColor.toLowerCase() !== "#f5f5f7";
   const onButton = isDarkColor(palette.buttonColor) ? "#ffffff" : "#0b0b0c";
   root.dataset.theme = dark ? "dark" : "light";
-  root.style.setProperty("--syncx-accent", keepAccent ? theme.accentColor : palette.accentColor);
+  root.style.setProperty(
+    "--syncx-accent",
+    keepAccent ? theme.accentColor : palette.accentColor
+  );
   root.style.setProperty("--syncx-button", palette.buttonColor);
   root.style.setProperty("--syncx-bg", palette.backgroundColor);
   root.style.setProperty("--syncx-card", palette.cardColor);
@@ -177,7 +320,9 @@ function applyTheme(theme: SiteConfig["theme"]) {
   root.style.setProperty("--syncx-border", palette.borderColor);
   root.style.setProperty("--primary-foreground", onButton);
   root.style.setProperty("--sidebar-primary-foreground", onButton);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", palette.backgroundColor);
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", palette.backgroundColor);
 }
 
 /**
@@ -187,6 +332,8 @@ function applyTheme(theme: SiteConfig["theme"]) {
  */
 export class SiteConfigStore {
   config = $state<SiteConfig>(loadLocal());
+  /** Theme on this browser. The nav toggle writes this, not the shared site default. */
+  appearance = $state<"light" | "dark">(storedAppearance());
   saveState = $state<"idle" | "pending" | "saving" | "saved" | "error">("idle");
   saveError = $state<string | null>(null);
   savedAt = $state<Date | null>(null);
@@ -194,7 +341,7 @@ export class SiteConfigStore {
   #skipNextSave = true;
 
   constructor() {
-    onSync((message) => {
+    onSync(message => {
       if (message.type !== "config") return;
       this.#skipNextSave = true;
       this.config = mergeConfig(message.config);
@@ -213,7 +360,7 @@ export class SiteConfigStore {
       this.#skipNextSave = true;
       this.config = server;
       const pref = localStorage.getItem(MODE_KEY);
-      if (pref === "light" || pref === "dark") this.config.theme.mode = pref;
+      this.appearance = pref === "light" || pref === "dark" ? pref : server.theme.mode;
     } else if (isAdminGranted()) {
       void this.#save();
     }
@@ -221,11 +368,11 @@ export class SiteConfigStore {
 
   sync() {
     const snapshot = $state.snapshot(this.config) as SiteConfig;
-    applyTheme(snapshot.theme);
+    const mode = untrack(() => this.appearance);
+    applyTheme({ ...snapshot.theme, mode });
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
     document.title = snapshot.siteName || defaultSiteConfig.siteName;
-    const favicon = snapshot.logoImageUrl || "/favicon.png";
-    document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]').forEach((link) => (link.href = favicon));
+    applyFavicon(snapshot.logoImageUrl);
 
     if (this.#skipNextSave) {
       this.#skipNextSave = false;
@@ -264,15 +411,51 @@ export class SiteConfigStore {
 
   reset() {
     this.config = mergeConfig(null);
+    this.setMode(this.config.theme.mode);
   }
 
+  /** Dashboard choice. Fills the public status page and the store banner. */
+  setStatusMode(mode: SiteConfig["status"]["mode"]) {
+    const maintenance = mode === "maintenance";
+    const copy = maintenance
+      ? {
+          headline: "เดี๋ยวเรากลับมา",
+          body: "ขณะนี้ร้านค้าใช้งานไม่ได้ชั่วคราว ทีมงานกำลังเร่งแก้ไขอยู่",
+          detail: "ใช้งานไม่ได้ชั่วคราว",
+          tone: "warn" as const,
+        }
+      : {
+          headline: "ระบบทำงานตามปกติ",
+          body: "ร้านค้าเปิดให้สั่งซื้อและเติมเงินได้ตามปกติ",
+          detail: "ใช้งานได้ปกติ",
+          tone: "ok" as const,
+        };
+    this.config.status.mode = mode;
+    this.config.status.kicker = "ประกาศ";
+    this.config.status.headline = copy.headline;
+    this.config.status.body = copy.body;
+    for (const item of this.config.status.items) {
+      const contact = /ติดต่อ|discord|facebook/i.test(item.label);
+      item.tone = contact ? "ok" : copy.tone;
+      item.detail = contact ? "ติดต่อได้ตามปกติ" : copy.detail;
+    }
+  }
+
+  /** This browser only. Does not rewrite the saved site default. */
   setMode(mode: SiteConfig["theme"]["mode"]) {
-    this.config.theme.mode = mode;
+    this.appearance = mode;
     localStorage.setItem(MODE_KEY, mode);
+    applyTheme({ ...$state.snapshot(this.config).theme, mode });
+  }
+
+  /** First-visit default, stored with the rest of the site config. */
+  setDefaultMode(mode: SiteConfig["theme"]["mode"]) {
+    this.config.theme.mode = mode;
+    this.setMode(mode);
   }
 
   toggleMode() {
-    this.setMode(this.config.theme.mode === "dark" ? "light" : "dark");
+    this.setMode(this.appearance === "dark" ? "light" : "dark");
   }
 
   resetTheme() {
@@ -286,6 +469,7 @@ export class SiteConfigStore {
   import(json: string) {
     try {
       this.config = mergeConfig(JSON.parse(json));
+      this.setMode(this.config.theme.mode);
       return true;
     } catch (error) {
       console.warn("Config import failed.", error);

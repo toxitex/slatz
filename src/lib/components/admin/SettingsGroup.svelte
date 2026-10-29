@@ -21,7 +21,7 @@
       {#if actions}<div class="flex items-center gap-2">{@render actions()}</div>{/if}
     </div>
   {/if}
-  <div class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
+  <div class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-float">
     {@render children()}
   </div>
 </section>

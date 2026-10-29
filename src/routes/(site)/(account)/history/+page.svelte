@@ -1,30 +1,44 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
-  import { api } from "$lib/api";
+  import { api, errorMessage } from "$lib/api";
   import type { Topup } from "$lib/types";
   import { formatBaht } from "$lib/utils";
 
   let topups = $state<Topup[]>([]);
   let fetching = $state(true);
+  let failed = $state("");
 
-  api
-    .get<Topup[]>("/api/topups")
-    .then((rows) => (topups = rows))
-    .catch(console.error)
-    .finally(() => (fetching = false));
+  async function load() {
+    fetching = true;
+    failed = "";
+    try {
+      topups = await api.get<Topup[]>("/api/topups");
+    } catch (err) {
+      failed = errorMessage(err) || "โหลดประวัติไม่สำเร็จ";
+    } finally {
+      fetching = false;
+    }
+  }
+
+  void load();
 
   const totalCredited = $derived(topups.reduce((sum, t) => sum + (t.amount ?? 0), 0));
 </script>
 
 <div class="flex items-end justify-between gap-4">
-  <h2 class="text-[22px] font-semibold">ประวัติเติมเงิน <span class="text-muted-foreground">({topups.length})</span></h2>
+  <h2 class="section-title">ประวัติเติมเงิน <span class="text-muted-foreground">({topups.length})</span></h2>
   <p class="text-sm text-muted-foreground">รวมเติมทั้งหมด <strong class="text-foreground tabular-nums">{formatBaht(totalCredited)}</strong></p>
 </div>
 
-{#if fetching}
+{#if failed}
+  <div class="tile mt-6 px-6 py-16 text-center">
+    <p class="text-[17px] text-muted-foreground">{failed}</p>
+    <button type="button" class="press link mt-3 text-[15px]" onclick={load}>ลองอีกครั้ง</button>
+  </div>
+{:else if fetching}
   <div class="mt-6 h-48 animate-pulse rounded-3xl bg-card"></div>
 {:else if topups.length}
-  <ul class="tile mt-6 divide-y divide-border px-6">
+  <ul class="mt-6 divide-y divide-border overflow-hidden rounded-[28px] bg-secondary px-6">
     {#each topups as topup (topup.id)}
       <li class="flex items-center justify-between gap-4 py-4">
         <div class="min-w-0">

@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import type { Pathname } from "$app/types";
   import { toast } from "svelte-sonner";
   import Avatar from "$lib/components/Avatar.svelte";
   import { accountLinks } from "$lib/nav";
@@ -13,7 +14,10 @@
   const { auth } = getStores();
 
   $effect(() => {
-    if (!auth.loading && !auth.user) void goto(resolve("/login"), { replaceState: true });
+    if (!auth.loading && !auth.user) {
+      const next = encodeURIComponent(page.url.pathname);
+      void goto(resolve(`/login?next=${next}` as Pathname), { replaceState: true });
+    }
   });
 
   async function signOut() {
@@ -29,13 +33,13 @@
       <div class="flex items-center gap-4">
         <Avatar user={auth.user} class="size-16 text-2xl" />
         <div>
-          <h1 class="display text-[28px] sm:text-[32px]">สวัสดี, {auth.user.displayName}</h1>
+          <h1 class="display text-[24px] sm:text-[28px]">สวัสดี, {auth.user.displayName}</h1>
           <p class="text-[15px] text-muted-foreground">{auth.user.email}</p>
         </div>
       </div>
       <div class="sm:text-right">
         <p class="text-xs text-muted-foreground">ยอดเงินคงเหลือ</p>
-        <p class="display text-[24px] tabular-nums">{formatBaht(auth.user.balance)}</p>
+        <p class="display text-[20px] tabular-nums">{formatBaht(auth.user.balance)}</p>
       </div>
     </header>
 
@@ -45,7 +49,7 @@
         <a
           href={resolve(link.href)}
           class={cn(
-            "-mb-px shrink-0 border-b-2 py-3 transition-colors",
+            "press -mb-px shrink-0 border-b-2 py-3 transition-colors",
             active ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
           )}
           aria-current={active ? "page" : undefined}
@@ -53,7 +57,7 @@
           {link.label}
         </a>
       {/each}
-      <button type="button" class="ml-auto shrink-0 py-3 text-link hover:underline" onclick={signOut}>ออกจากระบบ</button>
+      <button type="button" class="press ml-auto shrink-0 py-3 text-link hover:underline" onclick={signOut}>ออกจากระบบ</button>
     </nav>
 
     <div class="pt-10">

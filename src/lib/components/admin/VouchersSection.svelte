@@ -137,7 +137,7 @@
       <h3 class="text-[13px] font-semibold">บัตรทั้งหมด</h3>
       <p class="text-xs text-muted-foreground">พร้อมใช้ {vouchers.filter((v) => !v.is_used).length} ใบ · มูลค่า {formatBaht(availableValue)}</p>
     </div>
-    <div class="inline-flex rounded-full bg-foreground/[0.06] p-0.5 text-xs">
+    <div class="inline-flex rounded-full bg-secondary p-0.5 text-xs">
       {#each [{ key: "available", label: "พร้อมใช้" }, { key: "used", label: "ใช้แล้ว" }, { key: "all", label: "ทั้งหมด" }] as option (option.key)}
         <button
           type="button"
@@ -158,7 +158,7 @@
   {:else if loading && !vouchers.length}
     <div class="h-40 animate-pulse rounded-2xl bg-card"></div>
   {:else if visible.length}
-    <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card text-[13px] shadow-[0_0_0_0.5px_var(--syncx-border)]">
+    <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card text-[13px] shadow-float">
       {#each visible as voucher (voucher.id)}
         <li class="flex items-center gap-3 px-4 py-2.5">
           <button

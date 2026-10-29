@@ -57,7 +57,7 @@
 {#if auth.user}
   <div class="grid gap-5 md:grid-cols-[1fr_1.3fr]">
     <section class="tile p-8">
-      <h2 class="text-[19px] font-semibold tracking-tight">ข้อมูลบัญชี</h2>
+      <h2 class="section-title">ข้อมูลบัญชี</h2>
       <dl class="mt-4 divide-y divide-border text-[15px]">
         <div class="flex justify-between gap-4 py-3"><dt class="text-muted-foreground">ชื่อที่แสดง</dt><dd>{auth.user.displayName}</dd></div>
         <div class="flex justify-between gap-4 py-3"><dt class="text-muted-foreground">อีเมล</dt><dd class="truncate">{auth.user.email}</dd></div>
@@ -71,7 +71,7 @@
     </section>
 
     <section class="tile p-8">
-      <h2 class="text-[19px] font-semibold tracking-tight">เปลี่ยนรหัสผ่าน</h2>
+      <h2 class="section-title">เปลี่ยนรหัสผ่าน</h2>
       <form class="mt-5 flex flex-col gap-3" {onsubmit}>
         <FloatingField label="รหัสผ่านปัจจุบัน" type="password" revealable autocomplete="current-password" bind:value={currentPassword} disabled={submitting} />
         <FloatingField label="รหัสผ่านใหม่ (6+ ตัวอักษร)" type="password" revealable autocomplete="new-password" bind:value={newPassword} disabled={submitting} />

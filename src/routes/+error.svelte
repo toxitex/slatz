@@ -9,9 +9,9 @@
 
 <div class="flex min-h-dvh flex-col">
   <TopNav />
-  <main class="container-apple flex flex-1 flex-col items-center justify-center py-32 pt-44 text-center">
+  <main class="container-apple flex flex-1 flex-col items-center justify-center px-5 pt-[72px] pb-24 text-center">
     <p class="display text-[72px] text-foreground/10 sm:text-[96px]">{page.status}</p>
-    <h1 class="display -mt-4 text-[28px] sm:text-[40px]">
+    <h1 class="display -mt-4 text-[24px] sm:text-[32px]">
       {page.status === 404 ? "ไม่พบหน้าที่คุณต้องการ" : "เกิดข้อผิดพลาด"}
     </h1>
     <p class="mt-3 max-w-md text-[17px] text-muted-foreground">

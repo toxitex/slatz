@@ -22,14 +22,18 @@
 
   const items = $derived.by<Item[]>(() => {
     const q = query.trim().toLowerCase();
+    const categories = categoryNames.map((name) => ({
+      key: name,
+      label: name,
+      href: `/category/${encodeURIComponent(name)}` as Pathname,
+    }));
+    if (!q) return categories;
     if (tab === "products") {
       return products.products
-        .filter((p) => !q || [p.name, p.description, p.category].some((field) => field?.toLowerCase().includes(q)))
+        .filter((p) => [p.name, p.description, p.category].some((field) => field?.toLowerCase().includes(q)))
         .map((p) => ({ key: p.id, label: p.name, sublabel: p.category || undefined, href: `/product/${p.id}` as Pathname }));
     }
-    return categoryNames
-      .filter((name) => !q || name.toLowerCase().includes(q))
-      .map((name) => ({ key: name, label: name, href: `/category/${encodeURIComponent(name)}` as Pathname }));
+    return categories.filter((item) => item.label.toLowerCase().includes(q));
   });
 
   function setTab(next: Tab) {
@@ -82,14 +86,13 @@
 
 {#if ui.searchOpen}
   <div
-    class="fixed inset-0 z-[55] bg-black/20 backdrop-blur-md"
+    class="fixed inset-0 z-[55] bg-black/30"
     transition:fade={{ duration: 200 }}
     onclick={ui.closeSearch}
     role="presentation"
   ></div>
   <div
-    class="liquid-glass fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] pb-6"
-    style="--glass-alpha: 84%"
+    class="sheet fixed inset-x-3 top-3 z-[60] mx-auto max-w-[760px] rounded-[28px] pb-6"
     transition:glassPop
     role="dialog"
     aria-modal="true"
@@ -97,13 +100,13 @@
   >
     <div class="px-6 pt-6 sm:px-8">
       <label class="flex items-center gap-3">
-        <SearchIcon class="size-6 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+        <SearchIcon class="size-5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
         <input
           {@attach setup}
           bind:value={query}
           oninput={() => (activeIndex = 0)}
           placeholder={site.config.searchPlaceholder}
-          class="w-full bg-transparent text-xl text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-2xl"
+          class="w-full bg-transparent text-[17px] text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-[19px]"
         />
       </label>
 
@@ -112,7 +115,7 @@
           <button
             type="button"
             class={cn(
-              "rounded-full px-4 py-1.5 transition-colors",
+              "press rounded-full px-4 py-1.5 transition-colors",
               tab === option.key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
             onclick={() => setTab(option.key as Tab)}
@@ -122,14 +125,14 @@
         {/each}
       </div>
 
-      <p class="eyebrow mt-6 mb-2 text-xs">{query ? "ผลการค้นหา" : "ลิงก์ด่วน"}</p>
+      <p class="eyebrow mt-6 mb-2 text-xs">{query ? "ผลการค้นหา" : "หมวดหมู่"}</p>
       <ul class="max-h-[50vh] overflow-y-auto">
         {#each items.slice(0, 30) as item, i (item.key)}
           <li>
             <button
               type="button"
               class={cn(
-                "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm transition-colors",
+                "press flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-[15px] transition-colors",
                 i === activeIndex ? "bg-secondary text-foreground" : "text-foreground/80",
               )}
               onmouseenter={() => (activeIndex = i)}
@@ -143,7 +146,10 @@
             </button>
           </li>
         {:else}
-          <li class="px-2 py-6 text-sm text-muted-foreground">ไม่พบผลลัพธ์สำหรับ “{query}”</li>
+          <li class="px-2 py-6 text-[15px] text-muted-foreground">
+            <p>{site.config.store.emptyStateText}</p>
+            <a href={resolve("/store")} class="link mt-3" onclick={ui.closeSearch}>ไปที่ร้านค้า</a>
+          </li>
         {/each}
       </ul>
 

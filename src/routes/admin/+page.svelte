@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
+  import { onDestroy } from "svelte";
   import ChevronLeftIcon from "@lucide/svelte/icons/chevron-left";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
   import LockIcon from "@lucide/svelte/icons/lock";
@@ -30,15 +32,18 @@
   import { isConfigSection, sectionGroups, sectionItems, type SectionKey } from "$lib/components/admin/sections";
   import UsersSection from "$lib/components/admin/UsersSection.svelte";
   import VouchersSection from "$lib/components/admin/VouchersSection.svelte";
+  import StatusModePicker from "$lib/components/admin/StatusModePicker.svelte";
   import FloatingField from "$lib/components/FloatingField.svelte";
-  import Grainient from "$lib/components/fx/Grainient.svelte";
-  import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
   import { cn } from "$lib/utils";
 
   const { site, products, categories, coupons } = getStores();
-  const darkTheme = $derived(site.config.theme.mode === "dark");
+
+  if (browser) document.documentElement.classList.add("admin-app");
+  onDestroy(() => {
+    if (browser) document.documentElement.classList.remove("admin-app");
+  });
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");
@@ -94,8 +99,6 @@
         return `${categories.categories.length} หมวด`;
       case "coupons":
         return `${coupons.coupons.length} โค้ด`;
-      case "overview":
-        return "ข้อมูลจริงจากฐานข้อมูล";
       default:
         return "แก้ไขแล้วแสดงบนหน้าร้านทันที";
     }
@@ -163,7 +166,7 @@
       <CheckIcon class="size-3.5 text-foreground" />บันทึกแล้ว · อัปเดตหน้าร้าน
     {:else if site.saveState === "error"}
       <CircleAlertIcon class="size-3.5 text-destructive" />
-      <span class="text-destructive" title={site.saveError ?? undefined}>บันทึกไม่สำเร็จ</span>
+      <span class="max-w-[16rem] truncate text-destructive">{site.saveError ?? "บันทึกไม่สำเร็จ"}</span>
       <button type="button" class="text-link hover:underline" onclick={() => site.retrySave()}>ลองอีกครั้ง</button>
     {:else}
       บันทึกอัตโนมัติ
@@ -176,25 +179,15 @@
 </svelte:head>
 
 {#if !authorized}
-  <main class="relative grid min-h-dvh place-items-center overflow-hidden bg-background px-5">
-    <Grainient
-      class="!absolute inset-0"
-      colors={darkTheme
-        ? ["#000000", "#161618", "#2c2c2e", "#48484a", "#6e6e73"]
-        : ["#f5f5f7", "#d8d8dc", "#8e8e93", "#3a3a3c", "#0b0b0c"]}
-      angle={160}
-      speed={0.45}
-      silk={0.7}
-      grainAmount={0.05}
-    />
+  <main class="admin-app grid min-h-dvh place-items-center bg-background px-5">
     <section
-      class="liquid-glass reveal relative w-full max-w-[420px] rounded-[32px] px-6 py-10 text-center [--glass-alpha:58%] [--glass-blur:30px] sm:px-10"
+      class="reveal relative w-full max-w-[420px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
       aria-label="Admin access required"
     >
       <span class="mx-auto grid size-16 place-items-center rounded-[18px] bg-foreground text-background shadow-float">
         <LockIcon class="size-7" strokeWidth={1.75} />
       </span>
-      <h1 class="display mt-6 text-[32px]">สำหรับผู้ดูแลร้านเท่านั้น</h1>
+      <h1 class="display mt-5 text-[26px] sm:text-[30px]">สำหรับผู้ดูแลร้านเท่านั้น</h1>
       <p class="mt-2 text-[15px] text-muted-foreground">
         ใส่รหัสแอดมินเพื่อแก้ไขสี โลโก้ คำบนเว็บไซต์ และข้อมูลสินค้า
       </p>
@@ -208,21 +201,19 @@
     </section>
   </main>
 {:else}
-  <div class="flex h-dvh bg-background text-[13px]">
+  <div class="admin-app flex h-dvh bg-background text-[13px] text-foreground">
     <aside
       class={cn(
-        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden bg-background md:w-[280px]",
+        "flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden border-r border-border bg-card md:w-[280px]",
         mobileDetail && "max-md:hidden",
       )}
     >
       <div class="flex items-center gap-2.5 px-5 pt-5 pb-3">
-        <span class="grid size-8 place-items-center overflow-hidden rounded-[9px] bg-foreground text-background">
-          {#if site.config.logoImageUrl}
+        {#if site.config.logoImageUrl}
+          <span class="grid size-8 place-items-center overflow-hidden rounded-[9px] bg-foreground">
             <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
-          {:else}
-            <LogoIcon size={15} />
-          {/if}
-        </span>
+          </span>
+        {/if}
         <div class="min-w-0">
           <p class="truncate text-[14px] font-semibold">{site.config.siteName}</p>
           <p class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -232,7 +223,11 @@
         </div>
       </div>
 
-      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-card px-3 text-muted-foreground shadow-[0_0_0_0.5px_var(--syncx-border)]">
+      <div class="px-4 pb-3">
+        <StatusModePicker />
+      </div>
+
+      <label class="mx-4 mb-1 flex h-9 items-center gap-2 rounded-xl bg-background px-3 text-muted-foreground">
         <SearchIcon class="size-3.5" />
         <input bind:value={filter} placeholder="ค้นหา" class="w-full bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground" />
       </label>
@@ -240,7 +235,7 @@
       <nav class="min-h-0 flex-1 overflow-y-auto px-4 pb-4" aria-label="หัวข้อการตั้งค่า">
         {#each visibleGroups as group (group.title)}
           <p class="px-3 pt-4 pb-1.5 text-[12px] font-medium text-muted-foreground">{group.title}</p>
-          <ul class="divide-y divide-border overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
+          <ul class="overflow-hidden rounded-2xl bg-secondary">
             {#each group.items as item (item.key)}
               <li>
                 <button
@@ -248,8 +243,8 @@
                   class={cn(
                     "flex w-full items-center gap-2.5 px-3 py-2 text-left text-[14px] transition-colors",
                     item.key === active
-                      ? "bg-[color-mix(in_srgb,var(--syncx-accent)_14%,transparent)] font-medium text-[var(--syncx-accent)]"
-                      : "hover:bg-foreground/[0.03]",
+                      ? "bg-[var(--admin-selected)] font-medium"
+                      : "hover:bg-foreground/[0.04]",
                   )}
                   aria-current={item.key === active ? "page" : undefined}
                   onclick={() => select(item.key)}
@@ -268,15 +263,15 @@
       </nav>
 
       <div class="flex items-center gap-2 px-4 pt-2 pb-4">
-        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1 bg-card">
+        <Button href={resolve("/")} target="_blank" rel="noopener" variant="secondary" size="sm" class="flex-1">
           หน้าร้าน<ExternalLinkIcon />
         </Button>
-        <Button variant="secondary" size="sm" class="flex-1 bg-card" onclick={lock}><LockIcon />ล็อก</Button>
+        <Button variant="secondary" size="sm" class="flex-1" onclick={lock}><LockIcon />ล็อก</Button>
       </div>
     </aside>
 
     <main class={cn("flex min-w-0 flex-1 flex-col border-l border-border", !mobileDetail && "max-md:hidden")}>
-      <header class="glass sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-6">
+      <header class="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/85 px-4 backdrop-blur-xl sm:px-6">
         <button
           type="button"
           class="-ml-1 flex items-center text-link md:hidden"

@@ -18,7 +18,7 @@
   โค้ดที่เปิดใช้งานใช้ได้ในหน้าสินค้าตอนสั่งซื้อ ปิดสวิตช์แล้วลูกค้าใช้โค้ดนั้นไม่ได้
 </p>
 {#if coupons.coupons.length}
-  <div class="overflow-hidden rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
+  <div class="overflow-hidden rounded-2xl bg-card shadow-float">
     <div class="hidden grid-cols-[1.4fr_1.2fr_0.8fr_4rem_2rem] gap-3 border-b border-border px-4 py-2 text-[11px] text-muted-foreground md:grid">
       <span>โค้ด</span><span>ประเภท</span><span class="text-right">มูลค่าส่วนลด</span><span class="text-center">ใช้งาน</span><span></span>
     </div>

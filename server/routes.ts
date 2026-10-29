@@ -11,6 +11,7 @@ import {
   requireAdmin,
 } from "./auth.js";
 import { z } from "zod";
+import { shopPauseMessage } from "./shop-status.js";
 
 const productSchema = z.object({
   name: z.string().min(1, "ชื่อสินค้าจำเป็นต้องระบุ").optional(),
@@ -194,32 +195,6 @@ export function registerRoutes(app: Express) {
       hash,
       auth.sub,
     );
-    res.json({ ok: true });
-  });
-
-  /* --------------------------- config ---------------------------------- */
-
-  app.get("/api/config", (_req: Request, res: Response) => {
-    const row = db.prepare("SELECT value FROM settings WHERE key = ?").get("site_config") as { value: string } | undefined;
-    if (!row) {
-      return res.status(404).json({ error: "not_configured" });
-    }
-    try {
-      res.json(JSON.parse(row.value));
-    } catch {
-      res.status(404).json({ error: "not_configured" });
-    }
-  });
-
-  app.post("/api/config", requireAdmin, (req: Request, res: Response) => {
-    const body = req.body;
-    if (!body || typeof body !== "object") {
-      return res.status(400).json({ error: "ข้อมูลไม่ถูกต้อง" });
-    }
-    const configStr = JSON.stringify(body);
-    db.prepare(
-      "INSERT INTO settings (key, value) VALUES ('site_config', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
-    ).run(configStr);
     res.json({ ok: true });
   });
 
@@ -535,6 +510,9 @@ export function registerRoutes(app: Express) {
 
   // POST /api/checkout
   app.post("/api/checkout", requireAuth, (req: Request, res: Response) => {
+    const paused = shopPauseMessage();
+    if (paused) return res.status(503).json({ error: paused });
+
     const auth = (req as Request & { auth?: { sub: string } }).auth!;
     const { productId, tierId, quantity, couponCode } = req.body ?? {};
 
@@ -653,6 +631,9 @@ export function registerRoutes(app: Express) {
 
   // POST /api/topup
   app.post("/api/topup", requireAuth, (req: Request, res: Response) => {
+    const paused = shopPauseMessage();
+    if (paused) return res.status(503).json({ error: paused });
+
     const auth = (req as Request & { auth?: { sub: string } }).auth!;
     const { code } = req.body ?? {};
 

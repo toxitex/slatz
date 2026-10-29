@@ -3,7 +3,7 @@
   import { formatBaht } from "$lib/utils";
   import { buildOverview, OVERVIEW_WEEKS, type OrderRow } from "./overview-model";
 
-  const SHADES = ["#2c2c2e", "#48484a", "#8e8e93", "#d1d1d6", "#f5f5f7"];
+  const SHADES = ["var(--admin-heat-0)", "var(--admin-heat-1)", "var(--admin-heat-2)", "var(--admin-heat-3)", "var(--admin-heat-4)"];
   const ROW_LABELS = ["จ", "", "อ", "", "พ", "", "ศ"];
 
   let orders = $state<OrderRow[]>([]);
@@ -72,12 +72,12 @@
   <p class="rounded-2xl bg-card px-4 py-3 text-[13px] text-destructive">{error}</p>
 {/if}
 
-<section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7 sm:py-7">
-  <h2 class="display text-[28px] font-bold leading-tight sm:text-[34px]">
+<section class="rounded-2xl bg-card px-5 py-6 text-foreground shadow-float sm:px-7 sm:py-7">
+  <h2 class="text-[13px] font-semibold leading-tight">
     {#if model.current > 0}{model.current} วันติด{/if}
     {#if model.current === 0}ออเดอร์ {OVERVIEW_WEEKS} สัปดาห์ล่าสุด{/if}
   </h2>
-  <p class="mt-2 max-w-xl text-[14px] leading-relaxed text-[#86868b]">
+  <p class="mt-2 max-w-xl text-[14px] leading-relaxed text-muted-foreground">
     แต่ละช่องคือหนึ่งวัน นับจากคำสั่งซื้อจริง ช่องสว่างคือวันที่มีออเดอร์มากกว่า
   </p>
 
@@ -88,21 +88,21 @@
     >
       <span></span>
       {#each model.weeks as week, weekIndex (weekIndex)}
-        <span class="truncate text-[10px] text-[#86868b]">{week.label}</span>
+        <span class="truncate text-[10px] text-muted-foreground">{week.label}</span>
       {/each}
       {#each ROW_LABELS as label, day (day)}
-        <span class="grid size-4 place-items-center text-[10px] leading-none text-[#86868b]">{label}</span>
+        <span class="grid size-4 place-items-center text-[10px] leading-none text-muted-foreground">{label}</span>
         {#each model.weeks as week, weekIndex (`${day}-${weekIndex}`)}
           {@const cell = week.days[day]}
           <span
             class="size-4 rounded-[3px]"
-            style:background={cell.future ? "#161617" : shade(cell.count)}
+            style:background={cell.future ? "var(--admin-heat-future)" : shade(cell.count)}
             title={cell.future ? "" : `${cell.key}: ${cell.count} ออเดอร์`}
           ></span>
         {/each}
       {/each}
     </div>
-    <div class="mt-4 flex items-center justify-between gap-4 text-[11px] text-[#86868b]">
+    <div class="mt-4 flex items-center justify-between gap-4 text-[11px] text-muted-foreground">
       <p class="flex items-center gap-1.5">
         น้อย
         {#each SHADES as color, index (index)}
@@ -115,23 +115,23 @@
   </div>
 
   {#if loading}
-    <p class="mt-6 text-[12px] text-[#86868b]">กำลังโหลดคำสั่งซื้อ...</p>
+    <p class="mt-6 text-[12px] text-muted-foreground">กำลังโหลดคำสั่งซื้อ...</p>
   {/if}
 </section>
 
 <div class="grid gap-3 sm:grid-cols-3">
   {#each figures as figure (figure.label)}
-    <section class="rounded-3xl bg-card px-5 py-5 text-foreground">
-      <p class="display text-[32px] font-bold tabular-nums">{figure.value}</p>
+    <section class="rounded-2xl bg-card px-5 py-5 text-foreground shadow-float">
+      <p class="text-[22px] font-semibold tabular-nums">{figure.value}</p>
       <p class="mt-1 text-[14px]">{figure.label}</p>
-      <p class="text-[12px] text-[#86868b]">{figure.note}</p>
+      <p class="text-[12px] text-muted-foreground">{figure.note}</p>
     </section>
   {/each}
 </div>
 
-<section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7">
-  <h2 class="display text-center text-[26px] font-bold sm:text-[32px]">ยอดขายสะสม</h2>
-  <p class="mx-auto mt-2 max-w-lg text-center text-[14px] leading-relaxed text-[#86868b]">
+<section class="rounded-2xl bg-card px-5 py-6 text-foreground shadow-float sm:px-7">
+  <h2 class="text-center text-[13px] font-semibold">ยอดขายสะสม</h2>
+  <p class="mx-auto mt-2 max-w-lg text-center text-[14px] leading-relaxed text-muted-foreground">
     รวมจากออเดอร์ในช่วงเดียวกับตารางด้านบน จุดบนเส้นคือครั้งแรกที่ยอดถึงหลักพัน
   </p>
   <svg viewBox="0 0 {line.width} {line.height}" class="mt-2 w-full" role="img" aria-label="กราฟยอดขายสะสม">
@@ -153,7 +153,7 @@
     {#each model.milestones as mark, markIndex (mark.amount)}
       {@const point = line.coords[mark.index]}
       {@const nearEnd = point.x > line.width - line.pad.r - 48}
-      <circle cx={point.x} cy={point.y} r="4.5" fill="var(--syncx-card)" stroke="currentColor" stroke-width="2" />
+      <circle cx={point.x} cy={point.y} r="4.5" fill="var(--card)" stroke="currentColor" stroke-width="2" />
       <text
         x={nearEnd ? point.x - 8 : point.x + 8}
         y={point.y - 8 - (markIndex % 2) * 12}

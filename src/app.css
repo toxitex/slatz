@@ -9,7 +9,8 @@
  */
 @font-face {
   font-family: "SLATZ Thai";
-  src: url("../node_modules/@fontsource-variable/anuphan/files/anuphan-thai-wght-normal.woff2") format("woff2-variations");
+  src: url("../node_modules/@fontsource-variable/anuphan/files/anuphan-thai-wght-normal.woff2")
+    format("woff2-variations");
   font-weight: 100 700;
   font-style: normal;
   font-display: swap;
@@ -24,10 +25,14 @@
   --syncx-accent: #f5f5f7;
   --syncx-button: #f5f5f7;
   --syncx-bg: #000000;
-  --syncx-card: #161618;
+  --syncx-card: #1c1c1e;
   --syncx-text: #f5f5f7;
-  --syncx-muted: #86868b;
-  --syncx-border: rgba(255, 255, 255, 0.12);
+  --syncx-muted: #98989d;
+  --syncx-border: rgba(255, 255, 255, 0.1);
+  --syncx-action: #0a84ff;
+  --syncx-ok: #30d158;
+  --syncx-warn: #ff9f0a;
+  --on-fill: #ffffff;
 
   --radius: 1.125rem;
 
@@ -62,10 +67,11 @@
 
 @theme inline {
   --font-sans:
-    "SLATZ Thai", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    "SLATZ Thai", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display:
-    "SLATZ Thai", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica,
-    Arial, sans-serif;
+    "SLATZ Thai", "SF Pro Display", "SF Pro Text", -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
 
   --radius-sm: calc(var(--radius) - 8px);
@@ -101,16 +107,31 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-link: var(--syncx-accent);
+  --color-link: var(--syncx-action);
 
   --ease-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-  --shadow-float: 0 2px 6px rgba(0, 0, 0, 0.04), 0 18px 48px rgba(0, 0, 0, 0.08);
+  --shadow-float:
+    0 2px 6px rgba(0, 0, 0, 0.04), 0 18px 48px rgba(0, 0, 0, 0.08);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  html[data-theme="light"] {
+    color-scheme: light;
+    --syncx-action: #0071e3;
+    --syncx-ok: #248a3d;
+    --syncx-warn: #c2410c;
+    --shadow-float:
+      0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 28px rgba(0, 0, 0, 0.06);
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.35);
   }
 
   html {
@@ -120,7 +141,8 @@
     font-synthesis-weight: none;
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--syncx-muted) 75%, transparent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--syncx-muted) 75%, transparent)
+      transparent;
   }
 
   *::-webkit-scrollbar {
@@ -151,7 +173,8 @@
     @apply bg-background font-sans text-foreground;
     font-size: 17px;
     line-height: 1.47;
-    letter-spacing: -0.022em;
+    letter-spacing: -0.011em;
+    font-optical-sizing: auto;
     min-height: 100dvh;
   }
 
@@ -169,17 +192,119 @@
   .display {
     font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.07;
+    letter-spacing: -0.022em;
+    line-height: 1.08;
+    font-optical-sizing: auto;
   }
 
   .eyebrow {
     @apply text-sm font-semibold text-muted-foreground;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.016em;
+    line-height: 1.15;
+    font-optical-sizing: auto;
+  }
+
+  .press {
+    transition: transform 100ms ease-out;
+  }
+
+  .press:active {
+    transform: scale(0.97);
   }
 
   .tile {
-    @apply rounded-3xl bg-card;
+    @apply rounded-3xl bg-card shadow-float;
+  }
+
+  /* Floating chrome. Content scrolls underneath. Heavier when the page has moved. */
+  .nav-bar {
+    background: color-mix(in srgb, var(--syncx-bg) 72%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      inset 0 0.5px 0 color-mix(in srgb, white 45%, transparent),
+      inset 0 0 0 0.5px var(--syncx-border);
+    transition:
+      background-color 0.45s var(--ease-apple),
+      box-shadow 0.45s var(--ease-apple);
+  }
+
+  .nav-bar.is-solid {
+    background: color-mix(in srgb, var(--syncx-bg) 86%, transparent);
+    box-shadow:
+      inset 0 0.5px 0 color-mix(in srgb, white 45%, transparent),
+      inset 0 0 0 0.5px var(--syncx-border),
+      0 12px 32px -20px rgba(0, 0, 0, 0.45);
+  }
+
+  .sheet {
+    background: color-mix(in srgb, var(--syncx-card) 82%, transparent);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
+      0 24px 64px -28px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Dashboard surfaces stay apart in both themes, even when the store uses white cards on white. */
+  .admin-app {
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  html[data-theme="light"].admin-app,
+  html[data-theme="light"] .admin-app {
+    --background: #f5f5f7;
+    --foreground: #1d1d1f;
+    --card: #ffffff;
+    --card-foreground: #1d1d1f;
+    --popover: #ffffff;
+    --popover-foreground: #1d1d1f;
+    --secondary: #e8e8ed;
+    --secondary-foreground: #1d1d1f;
+    --muted: #e8e8ed;
+    --muted-foreground: #6e6e73;
+    --border: rgba(0, 0, 0, 0.08);
+    --admin-selected: #d8d8de;
+    --admin-heat-0: #e8e8ed;
+    --admin-heat-1: #c7c7cc;
+    --admin-heat-2: #8e8e93;
+    --admin-heat-3: #48484a;
+    --admin-heat-4: #1d1d1f;
+    --admin-heat-future: #f5f5f7;
+  }
+
+  html[data-theme="dark"].admin-app,
+  html[data-theme="dark"] .admin-app {
+    --background: #000000;
+    --foreground: #f5f5f7;
+    --card: #1c1c1e;
+    --card-foreground: #f5f5f7;
+    --popover: #2c2c2e;
+    --popover-foreground: #f5f5f7;
+    --secondary: #2c2c2e;
+    --secondary-foreground: #f5f5f7;
+    --muted: #2c2c2e;
+    --muted-foreground: #98989d;
+    --border: rgba(255, 255, 255, 0.1);
+    --admin-selected: #3a3a3c;
+    --admin-heat-0: #2c2c2e;
+    --admin-heat-1: #48484a;
+    --admin-heat-2: #8e8e93;
+    --admin-heat-3: #d1d1d6;
+    --admin-heat-4: #f5f5f7;
+    --admin-heat-future: #111113;
+  }
+
+  .theme-swap {
+    animation: theme-swap 0.45s var(--ease-apple);
   }
 
   .glass {
@@ -220,133 +345,6 @@
     animation: sheen 3.2s var(--ease-apple) 0.4s infinite;
   }
 
-  /*
-   * Liquid glass: frosted backdrop, specular rim and a highlight that follows the pointer
-   * (--mx/--my via the `glassPointer` attachment). CSS-only so it stays cheap to composite.
-   */
-  .liquid-glass {
-    position: relative;
-    isolation: isolate;
-    background: color-mix(in srgb, var(--glass-tint, #2c2c2e) var(--glass-alpha, 72%), transparent);
-    backdrop-filter: blur(var(--glass-blur, 18px)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--glass-blur, 18px)) saturate(180%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.16),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.45),
-      0 0 0 0.5px rgba(255, 255, 255, 0.14),
-      0 12px 32px -12px rgba(0, 0, 0, 0.5);
-  }
-
-  .liquid-glass::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background:
-      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.16), transparent 65%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
-    opacity: 0.9;
-  }
-
-  .liquid-glass::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    pointer-events: none;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.95),
-      rgba(255, 255, 255, 0.15) 35%,
-      rgba(255, 255, 255, 0.05) 65%,
-      rgba(255, 255, 255, 0.7)
-    );
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-  }
-
-  html[data-theme="light"] .liquid-glass {
-    --glass-tint: #ffffff;
-    --glass-alpha: 55%;
-    box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.85),
-      inset 0 -1px 1px rgba(0, 0, 0, 0.05),
-      0 0 0 0.5px rgba(0, 0, 0, 0.08),
-      0 12px 32px -12px rgba(0, 0, 0, 0.22),
-      0 2px 6px -2px rgba(0, 0, 0, 0.08);
-  }
-
-  html[data-theme="light"] .liquid-glass::before {
-    background:
-      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.55), transparent 65%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 55%);
-  }
-
-  .liquid-glass-dark {
-    --glass-tint: #1d1d1f;
-    --glass-alpha: 62%;
-    color: #f5f5f7;
-  }
-
-  .liquid-glass-dark::before {
-    background:
-      radial-gradient(220px circle at var(--mx, 30%) var(--my, -60%), rgba(255, 255, 255, 0.16), transparent 65%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 55%);
-  }
-
-  .liquid-glass-dark::after {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.45),
-      rgba(255, 255, 255, 0.06) 35%,
-      rgba(255, 255, 255, 0.02) 65%,
-      rgba(255, 255, 255, 0.3)
-    );
-  }
-
-  /* Rotating highlight that travels around the border. */
-  .border-beam {
-    position: relative;
-  }
-
-  .border-beam::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: var(--beam-width, 1.5px);
-    pointer-events: none;
-    background: conic-gradient(
-      from var(--beam-angle),
-      transparent 0%,
-      transparent 62%,
-      color-mix(in srgb, var(--beam-color, var(--syncx-text)) 85%, transparent) 80%,
-      transparent 92%
-    );
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    animation: beam var(--beam-duration, 6s) linear infinite;
-  }
-
-  .border-beam-hover::after {
-    opacity: 0;
-    transition: opacity 0.4s var(--ease-apple);
-  }
-
-  .border-beam-hover:hover::after,
-  .border-beam-hover:focus-within::after {
-    opacity: 1;
-  }
-
   /* Diagonal light sweep across buttons on hover. */
   .shine {
     position: relative;
@@ -358,7 +356,12 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 70%
+    );
     transform: translateX(-120%);
   }
 
@@ -426,18 +429,6 @@
   }
 }
 
-@property --beam-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes beam {
-  to {
-    --beam-angle: 360deg;
-  }
-}
-
 @keyframes bar-grow {
   from {
     transform: scaleY(0);
@@ -492,6 +483,33 @@
   }
 }
 
+@keyframes theme-swap {
+  from {
+    opacity: 0;
+    transform: rotate(-50deg) scale(0.55);
+  }
+}
+
+@keyframes theme-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes theme-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+::view-transition-old(root) {
+  animation: theme-fade-out 0.4s var(--ease-apple) both;
+}
+
+::view-transition-new(root) {
+  animation: theme-fade-in 0.45s var(--ease-apple) both;
+}
+
 @keyframes reveal {
   from {
     opacity: 0;
@@ -505,32 +523,51 @@
   }
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  .nav-bar,
+  .sheet,
+  .glass {
+    background: var(--syncx-card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .nav-bar,
+  .sheet,
+  .tile {
+    box-shadow: inset 0 0 0 1.5px var(--syncx-text);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .text-sheen,
   .reveal,
-  .border-beam::after,
   .stagger-in > *,
-  .bar-grow {
-    transform-origin: bottom;
-    animation: bar-grow 0.8s var(--ease-spring) both;
-    animation-delay: calc(var(--i, 0) * 30ms);
-  }
-
-  .bar-fill {
-    transform-origin: left;
-    animation: bar-fill 1s var(--ease-apple) both;
-  }
-
-  .float-y {
-    animation: float-y 7s ease-in-out infinite;
-    animation-delay: var(--float-delay, 0s);
-  }
-
-  .blur-word {
+  .bar-grow,
+  .bar-fill,
+  .float-y,
+  .blur-word,
+  .theme-swap,
+  .shine::before,
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
     animation: none;
+    transition: none;
   }
+
   .text-sheen {
     color: var(--syncx-text);
     background: none;
+  }
+
+  .shine:hover::before,
+  .float-y {
+    transform: none;
   }
 }

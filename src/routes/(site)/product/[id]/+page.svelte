@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import type { Pathname } from "$app/types";
   import CheckIcon from "@lucide/svelte/icons/check";
   import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
@@ -11,9 +12,8 @@
   import ShoppingBagIcon from "@lucide/svelte/icons/shopping-bag";
   import ZapIcon from "@lucide/svelte/icons/zap";
   import { toast } from "svelte-sonner";
-  import { slide } from "svelte/transition";
+  import { softSlide } from "$lib/transitions";
   import { api, errorMessage } from "$lib/api";
-  import { glassPointer } from "$lib/attachments";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { getStores } from "$lib/stores";
@@ -52,9 +52,12 @@
   const stock = $derived(totalStock(tiers));
 
   const unavailable = $derived(product?.status === "out_of_stock");
+  const paused = $derived(site.config.status.mode === "maintenance");
   const buyLabel = $derived(
     buying
       ? "กำลังดำเนินการ..."
+      : paused
+        ? site.config.status.headline
       : unavailable
         ? "สินค้าหมดชั่วคราว"
       : !selectedTier
@@ -81,9 +84,13 @@
   }
 
   async function buy() {
+    if (paused) {
+      toast.error(site.config.status.headline);
+      return;
+    }
     if (!auth.user) {
       toast.error("กรุณาเข้าสู่ระบบก่อนซื้อสินค้า");
-      await goto(resolve("/login"));
+      await goto(resolve(`/login?next=${encodeURIComponent(page.url.pathname)}` as Pathname));
       return;
     }
     if (!product || !selectedTier) {
@@ -122,18 +129,20 @@
 
 {#if products.loading && !product}
   <div class="grid flex-1 place-items-center py-32 text-muted-foreground">
-    <ShoppingBagIcon class="size-8 animate-pulse" strokeWidth={1.25} />
-    <p class="mt-3 text-sm">กำลังโหลดข้อมูลสินค้า...</p>
+    <p class="text-[17px]">กำลังโหลดข้อมูลสินค้า...</p>
   </div>
 {:else if !product}
   <section class="container-apple py-32 text-center">
     <h1 class="display text-[32px]">ไม่พบสินค้านี้</h1>
     <p class="mt-3 text-[17px] text-muted-foreground">{products.error ?? "สินค้าอาจถูกลบหรือยังไม่ได้เผยแพร่"}</p>
+    {#if products.error}
+      <Button class="mt-6" onclick={() => products.refresh()}>ลองอีกครั้ง</Button>
+    {/if}
     <Button href={resolve("/store")} size="lg" class="mt-8">กลับไปยังร้านค้า</Button>
   </section>
 {:else}
-  <div class="sticky top-[68px] z-30 px-3">
-    <div class="liquid-glass mx-auto flex h-11 max-w-[880px] items-center justify-between gap-4 rounded-full pr-1.5 pl-5" {@attach glassPointer}>
+  <div class="sticky top-[72px] z-30 px-3">
+    <div class="nav-bar mx-auto flex h-11 max-w-[880px] items-center justify-between gap-4 rounded-full pr-1.5 pl-5 is-solid">
       <p class="truncate text-[15px] font-semibold tracking-tight">{product.name}</p>
       <div class="flex shrink-0 items-center gap-3">
         <span class="text-xs text-muted-foreground max-sm:hidden">
@@ -146,8 +155,8 @@
     </div>
   </div>
 
-  <section class="container-wide pt-10 pb-24">
-    <nav class="mb-6 flex items-center gap-1 text-xs text-muted-foreground" aria-label="Breadcrumb">
+  <section class="container-wide pt-8 pb-20">
+    <nav class="mb-6 flex items-center gap-1 text-[13px] tracking-[0.01em] text-muted-foreground" aria-label="Breadcrumb">
       <a href={resolve("/store")} class="hover:text-foreground">ร้านค้า</a>
       <ChevronRightIcon class="size-3" />
       <a href={resolve(`/category/${encodeURIComponent(product.category)}`)} class="hover:text-foreground">{product.category}</a>
@@ -155,9 +164,9 @@
       <span class="truncate text-foreground">{product.name}</span>
     </nav>
 
-    <article class="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+    <article class="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
       <div class="lg:sticky lg:top-36 lg:self-start">
-        <div class="spotlight group grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card [--spot-color:#ffffff]" {@attach glassPointer}>
+        <div class="group grid aspect-square place-items-center overflow-hidden rounded-[32px] bg-card shadow-float">
           {#if product.imageUrl}
             <img src={product.imageUrl} alt={product.name} class="size-full object-cover transition-transform duration-[1200ms] ease-apple group-hover:scale-[1.03]" />
           {:else}
@@ -179,7 +188,7 @@
       <div class="flex flex-col gap-8">
         <header>
           <p class="text-sm font-semibold text-muted-foreground">{product.category || "ทั่วไป"}</p>
-          <h1 class="display mt-1 text-[32px] sm:text-[40px]">{site.config.store.buyText} {product.name}</h1>
+          <h1 class="display mt-1 text-[26px] sm:text-[32px]">{site.config.store.buyText} {product.name}</h1>
           <div class="mt-3 flex flex-wrap gap-2 text-xs">
             <span
               class={cn(
@@ -196,7 +205,7 @@
 
         {#if tiers.length}
           <section aria-labelledby="tiers-heading">
-            <h2 id="tiers-heading" class="text-[21px] font-semibold tracking-tight">
+            <h2 id="tiers-heading" class="text-[17px] font-semibold tracking-tight">
               ตัวเลือก. <span class="text-muted-foreground">เลือกแบบที่ใช่สำหรับคุณ</span>
             </h2>
             <div class="mt-4 grid gap-3" role="radiogroup">
@@ -209,7 +218,7 @@
                   aria-checked={selected}
                   disabled={soldOut}
                   class={cn(
-                    "flex items-center justify-between gap-4 rounded-2xl border bg-card p-5 text-left transition-[border-color,box-shadow] duration-200",
+                    "press flex items-center justify-between gap-4 rounded-2xl border bg-card p-5 text-left transition-[border-color,box-shadow] duration-200",
                     selected ? "border-primary shadow-[0_0_0_1px_var(--syncx-button)]" : "border-foreground/15 hover:border-foreground/40",
                     soldOut && "cursor-not-allowed opacity-45",
                   )}
@@ -228,8 +237,8 @@
           </section>
         {:else}
           <section>
-            <h2 class="text-[21px] font-semibold tracking-tight">ราคา</h2>
-            <p class="display mt-2 text-[28px]">{product.price || "ติดต่อร้านค้า"}</p>
+            <h2 class="text-[17px] font-semibold tracking-tight">ราคา</h2>
+            <p class="display mt-2 text-[24px]">{product.price || "ติดต่อร้านค้า"}</p>
           </section>
         {/if}
 
@@ -240,7 +249,7 @@
               <div class="flex items-center rounded-full bg-secondary p-1">
                 <button
                   type="button"
-                  class="grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
+                  class="press grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
                   aria-label="ลดจำนวน"
                   onclick={() => (quantity = Math.max(1, quantity - 1))}
                 >
@@ -249,7 +258,7 @@
                 <span class="w-9 text-center text-[15px] font-semibold tabular-nums">{quantity}</span>
                 <button
                   type="button"
-                  class="grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
+                  class="press grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
                   aria-label="เพิ่มจำนวน"
                   onclick={() => (quantity += 1)}
                 >
@@ -284,7 +293,7 @@
               {/if}
             </div>
             {#if appliedCoupon}
-              <p class="mt-2 flex items-center gap-1 text-xs text-foreground" transition:slide={{ duration: 200 }}>
+              <p class="mt-2 flex items-center gap-1 text-xs text-foreground" transition:softSlide={{ duration: 200 }}>
                 <CheckIcon class="size-3.5" /> ใช้โค้ด <strong>{appliedCoupon.code}</strong> ลด
                 {appliedCoupon.discountType === "percent" ? `${appliedCoupon.discountValue}%` : formatBaht(appliedCoupon.discountValue)}
               </p>
@@ -292,12 +301,12 @@
           </div>
         </section>
 
-        <section id="checkout" class="tile border-beam p-6 [--beam-duration:8s]">
+        <section id="checkout" class="tile p-6">
           <div class="flex items-end justify-between gap-4">
             <div>
               <p class="text-xs font-semibold text-muted-foreground">ยอดชำระสุทธิ</p>
               <p class="mt-1 flex items-baseline gap-2">
-                <span class="display text-[28px] tabular-nums">{formatBaht(total)}</span>
+                <span class="display text-[24px] tabular-nums">{formatBaht(total)}</span>
                 {#if discount > 0}
                   <span class="text-sm text-muted-foreground line-through">{formatBaht(subtotal)}</span>
                 {/if}
@@ -310,14 +319,14 @@
           <Button
             size="lg"
             class="mt-5 w-full"
-            disabled={buying || unavailable || !selectedTier || selectedTier.stock <= 0}
+            disabled={buying || paused || unavailable || !selectedTier || selectedTier.stock <= 0}
             onclick={buy}
           >
             {buyLabel}
           </Button>
           {#if !auth.user && !auth.loading}
             <p class="mt-3 text-center text-xs text-muted-foreground">
-              ต้อง<a href={resolve("/login")} class="text-link hover:underline">เข้าสู่ระบบ</a>ก่อนสั่งซื้อ
+              ต้อง<a href={resolve(`/login?next=${encodeURIComponent(page.url.pathname)}` as Pathname)} class="text-link hover:underline">เข้าสู่ระบบ</a>ก่อนสั่งซื้อ
             </p>
           {/if}
         </section>
@@ -325,7 +334,7 @@
         <section class="border-t border-border pt-2">
           <button
             type="button"
-            class="flex w-full items-center justify-between py-4 text-left text-[19px] font-semibold tracking-tight"
+            class="flex w-full items-center justify-between py-3.5 text-left text-[17px] font-semibold tracking-tight"
             aria-expanded={descriptionOpen}
             onclick={() => (descriptionOpen = !descriptionOpen)}
           >
@@ -333,7 +342,7 @@
             <ChevronDownIcon class={cn("size-5 transition-transform duration-300", descriptionOpen && "rotate-180")} />
           </button>
           {#if descriptionOpen}
-            <p class="pb-4 text-[15px] leading-relaxed whitespace-pre-line text-foreground/80" transition:slide={{ duration: 250 }}>
+            <p class="pb-4 text-[15px] leading-relaxed whitespace-pre-line text-foreground/80" transition:softSlide={{ duration: 250 }}>
               {product.description || "ยังไม่มีคำอธิบายสินค้า"}
             </p>
           {/if}
@@ -350,7 +359,7 @@
         <span class="grid size-14 place-items-center rounded-full bg-foreground text-background">
           <CheckIcon class="size-7" strokeWidth={2.5} />
         </span>
-        <Dialog.Title class="display mt-4 text-[28px]">ทำรายการสำเร็จ</Dialog.Title>
+        <Dialog.Title class="display mt-4 text-[24px]">ทำรายการสำเร็จ</Dialog.Title>
         <Dialog.Description class="mt-1 text-sm text-muted-foreground">
           ขอบคุณสำหรับการสั่งซื้อ ระบบได้ออกคีย์การใช้งานของคุณแล้ว
         </Dialog.Description>
