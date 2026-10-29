@@ -68,7 +68,7 @@ async function startServer() {
       res.json({ url: `/uploads/${filename}` });
     } catch (err) {
       console.error("Upload error:", err);
-      res.status(500).json({ error: String(err) });
+      res.status(500).json({ error: "อัปโหลดไม่สำเร็จ" });
     }
   });
 
@@ -88,7 +88,7 @@ async function startServer() {
       fs.writeFileSync(CONFIG_FILE, JSON.stringify(req.body, null, 2), "utf8");
       res.json({ ok: true });
     } catch (err) {
-      res.status(500).json({ ok: false, error: String(err) });
+      res.status(500).json({ ok: false, error: "บันทึกการตั้งค่าไม่สำเร็จ" });
     }
   });
 

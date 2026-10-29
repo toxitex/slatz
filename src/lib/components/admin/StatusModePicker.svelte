@@ -19,7 +19,7 @@
         "h-8 rounded-full text-[13px] font-medium transition-transform duration-100 ease-out active:scale-[0.97]",
         mode === option.id
           ? option.id === "maintenance"
-            ? "bg-[var(--syncx-warn)] text-white"
+            ? "bg-[var(--syncx-warn)] text-[var(--on-fill)]"
             : "bg-card text-foreground shadow-float"
           : "text-muted-foreground",
       )}

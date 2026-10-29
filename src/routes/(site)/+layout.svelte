@@ -15,7 +15,7 @@
     {#if maintenance}
       <a
         href={resolve("/status")}
-        class="mx-auto mt-3 flex w-[min(100%-1.5rem,680px)] items-center justify-between gap-3 rounded-full bg-[var(--syncx-warn)] px-4 py-2 text-[13px] font-medium text-white"
+        class="press mx-auto mt-3 flex w-[min(100%-1.5rem,680px)] items-center justify-between gap-3 rounded-full bg-[var(--syncx-warn)] px-4 py-2 text-[13px] font-medium text-[var(--on-fill)]"
       >
         <span class="truncate">{site.config.status.headline}</span>
         <span class="shrink-0">ดูสถานะ</span>

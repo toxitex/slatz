@@ -40,7 +40,7 @@
   }
 </script>
 
-<SettingsGroup title="สำรองและกู้คืนการตั้งค่า" description="ข้อความ สี โลโก้ และตัวเลขบนหน้าร้าน ทั้งก้อนนี้เป็น JSON คำสั่งซื้อ ลูกค้า และสินค้าในฐานข้อมูลไม่อยู่ในไฟล์นี้">
+<SettingsGroup title="สำรองและกู้คืนการตั้งค่า" description="ส่งออกและนำเข้าเขียนทับไฟล์การตั้งค่าที่หน้าร้านอ่านจริง รวมแบรนด์ สี ค่าเริ่มต้นของธีม และสถานะร้าน คำสั่งซื้อ ลูกค้า และสินค้าในฐานข้อมูลไม่อยู่ในไฟล์นี้">
   <div class="flex flex-col gap-3 p-4">
     <div class="flex flex-wrap gap-2">
       <Button variant="secondary" onclick={exportConfig}><DownloadIcon />{copied ? "คัดลอกแล้ว" : "ส่งออก JSON"}</Button>
@@ -64,7 +64,7 @@
     </AlertDialog.Header>
     <AlertDialog.Footer>
       <AlertDialog.Cancel>ยกเลิก</AlertDialog.Cancel>
-      <AlertDialog.Action class="bg-destructive text-white hover:bg-destructive/90" onclick={reset}>รีเซ็ต</AlertDialog.Action>
+      <AlertDialog.Action class="bg-destructive text-[var(--on-fill)] hover:bg-destructive/90" onclick={reset}>รีเซ็ต</AlertDialog.Action>
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

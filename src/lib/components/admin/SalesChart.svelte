@@ -72,8 +72,8 @@
   <p class="rounded-2xl bg-card px-4 py-3 text-[13px] text-destructive">{error}</p>
 {/if}
 
-<section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7 sm:py-7">
-  <h2 class="display text-[24px] font-bold leading-tight sm:text-[28px]">
+<section class="rounded-2xl bg-card px-5 py-6 text-foreground shadow-float sm:px-7 sm:py-7">
+  <h2 class="text-[13px] font-semibold leading-tight">
     {#if model.current > 0}{model.current} วันติด{/if}
     {#if model.current === 0}ออเดอร์ {OVERVIEW_WEEKS} สัปดาห์ล่าสุด{/if}
   </h2>
@@ -121,16 +121,16 @@
 
 <div class="grid gap-3 sm:grid-cols-3">
   {#each figures as figure (figure.label)}
-    <section class="rounded-3xl bg-card px-5 py-5 text-foreground">
-      <p class="display text-[26px] font-bold tabular-nums">{figure.value}</p>
+    <section class="rounded-2xl bg-card px-5 py-5 text-foreground shadow-float">
+      <p class="text-[22px] font-semibold tabular-nums">{figure.value}</p>
       <p class="mt-1 text-[14px]">{figure.label}</p>
       <p class="text-[12px] text-muted-foreground">{figure.note}</p>
     </section>
   {/each}
 </div>
 
-<section class="rounded-3xl bg-card px-5 py-6 text-foreground sm:px-7">
-  <h2 class="display text-center text-[22px] font-bold sm:text-[26px]">ยอดขายสะสม</h2>
+<section class="rounded-2xl bg-card px-5 py-6 text-foreground shadow-float sm:px-7">
+  <h2 class="text-center text-[13px] font-semibold">ยอดขายสะสม</h2>
   <p class="mx-auto mt-2 max-w-lg text-center text-[14px] leading-relaxed text-muted-foreground">
     รวมจากออเดอร์ในช่วงเดียวกับตารางด้านบน จุดบนเส้นคือครั้งแรกที่ยอดถึงหลักพัน
   </p>

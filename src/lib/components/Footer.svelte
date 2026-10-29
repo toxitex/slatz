@@ -16,7 +16,8 @@
 </script>
 
 <footer class="mt-auto bg-background text-xs tracking-[0.01em] text-muted-foreground">
-  <div class="container-wide border-t border-border pt-5 pb-8">
+  <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent" aria-hidden="true"></div>
+  <div class="container-wide pt-5 pb-8">
     <p class="max-w-2xl leading-relaxed">{site.config.footer.brandText}</p>
 
     <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-border pt-6 sm:grid-cols-4">

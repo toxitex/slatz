@@ -27,7 +27,7 @@
   {#if status.kicker.trim()}
     <p class="mt-10 text-[15px] font-semibold" style:color={tone}>{status.kicker}</p>
   {/if}
-  <h1 class="display mt-2 text-[32px] tracking-tight sm:text-[40px]">{status.headline}</h1>
+  <h1 class="display mt-2 text-[32px] sm:text-[40px]">{status.headline}</h1>
   {#if status.body.trim()}
     <p class="mt-4 max-w-[36rem] text-[17px] leading-relaxed text-foreground/80 sm:text-[19px]">{status.body}</p>
   {/if}

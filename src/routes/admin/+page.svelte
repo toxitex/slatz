@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
+  import { onDestroy } from "svelte";
   import ChevronLeftIcon from "@lucide/svelte/icons/chevron-left";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
   import LockIcon from "@lucide/svelte/icons/lock";
@@ -38,6 +40,11 @@
   import { cn } from "$lib/utils";
 
   const { site, products, categories, coupons } = getStores();
+
+  if (browser) document.documentElement.classList.add("admin-app");
+  onDestroy(() => {
+    if (browser) document.documentElement.classList.remove("admin-app");
+  });
 
   let authorized = $state(isAdminGranted());
   let accessCode = $state("");
@@ -93,8 +100,6 @@
         return `${categories.categories.length} หมวด`;
       case "coupons":
         return `${coupons.coupons.length} โค้ด`;
-      case "overview":
-        return "ข้อมูลจริงจากฐานข้อมูล";
       default:
         return "แก้ไขแล้วแสดงบนหน้าร้านทันที";
     }
@@ -162,7 +167,7 @@
       <CheckIcon class="size-3.5 text-foreground" />บันทึกแล้ว · อัปเดตหน้าร้าน
     {:else if site.saveState === "error"}
       <CircleAlertIcon class="size-3.5 text-destructive" />
-      <span class="text-destructive" title={site.saveError ?? undefined}>บันทึกไม่สำเร็จ</span>
+      <span class="max-w-[16rem] truncate text-destructive">{site.saveError ?? "บันทึกไม่สำเร็จ"}</span>
       <button type="button" class="text-link hover:underline" onclick={() => site.retrySave()}>ลองอีกครั้ง</button>
     {:else}
       บันทึกอัตโนมัติ
@@ -175,7 +180,7 @@
 </svelte:head>
 
 {#if !authorized}
-  <main class="grid min-h-dvh place-items-center bg-background px-5">
+  <main class="admin-app grid min-h-dvh place-items-center bg-background px-5">
     <section
       class="reveal relative w-full max-w-[420px] rounded-[32px] bg-card px-6 py-10 text-center shadow-float sm:px-10"
       aria-label="Admin access required"

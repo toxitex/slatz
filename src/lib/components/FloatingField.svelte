@@ -8,9 +8,10 @@
     label: string;
     value?: string;
     revealable?: boolean;
+    error?: string;
   };
 
-  let { label, value = $bindable(""), type = "text", revealable = false, id, class: className, ...rest }: Props = $props();
+  let { label, value = $bindable(""), type = "text", revealable = false, error = "", id, class: className, ...rest }: Props = $props();
 
   const uid = $props.id();
   const inputId = $derived(id ?? `field-${uid}`);
@@ -22,6 +23,8 @@
     {...rest}
     id={inputId}
     bind:value
+    aria-invalid={error ? true : undefined}
+    aria-describedby={error ? `${inputId}-error` : undefined}
     type={revealable && revealed ? "text" : type}
     placeholder=" "
     class={[
@@ -38,11 +41,14 @@
   {#if revealable}
     <button
       type="button"
-      class="absolute top-1/2 right-3 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:text-foreground"
+      class="press absolute top-1/2 right-3 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:text-foreground"
       aria-label={revealed ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
       onclick={() => (revealed = !revealed)}
     >
       {#if revealed}<EyeOffIcon class="size-4" />{:else}<EyeIcon class="size-4" />{/if}
     </button>
+  {/if}
+  {#if error}
+    <p id="{inputId}-error" class="mt-1 px-1 text-[13px] text-destructive" role="alert">{error}</p>
   {/if}
 </div>

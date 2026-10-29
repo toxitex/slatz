@@ -34,13 +34,13 @@
 
 {#if orders.length}
   <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-    <div class="rounded-2xl bg-card p-4">
+    <div class="rounded-2xl bg-card p-4 shadow-float">
       <p class="text-[11px] text-muted-foreground">คำสั่งซื้อทั้งหมด</p>
-      <p class="mt-1 text-[22px] font-bold tabular-nums">{orders.length}</p>
+      <p class="mt-1 text-[22px] font-semibold tabular-nums">{orders.length}</p>
     </div>
-    <div class="rounded-2xl bg-card p-4">
+    <div class="rounded-2xl bg-card p-4 shadow-float">
       <p class="text-[11px] text-muted-foreground">ยอดขายรวม</p>
-      <p class="mt-1 text-[22px] font-bold tabular-nums">{formatBaht(revenue)}</p>
+      <p class="mt-1 text-[22px] font-semibold tabular-nums">{formatBaht(revenue)}</p>
     </div>
   </div>
 {/if}
@@ -48,7 +48,7 @@
 {#if loading && !orders.length}
   <div class="h-64 animate-pulse rounded-2xl bg-card"></div>
 {:else if orders.length}
-  <div class="overflow-x-auto rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
+  <div class="overflow-x-auto rounded-2xl bg-card shadow-float">
     <table class="w-full min-w-[960px] text-[13px]">
       <thead class="border-b border-border text-left text-[11px] text-muted-foreground">
         <tr>
@@ -81,7 +81,7 @@
     </table>
   </div>
 {:else}
-  <div class="flex flex-col items-center gap-2 rounded-2xl bg-card px-6 py-14 text-center text-[13px] text-muted-foreground">
+  <div class="flex flex-col items-center gap-2 rounded-2xl bg-card px-6 py-14 text-center text-[13px] text-muted-foreground shadow-float">
     <ReceiptIcon class="size-6" strokeWidth={1.5} />
     ยังไม่มีรายการสั่งซื้อใดๆ ในระบบ
   </div>

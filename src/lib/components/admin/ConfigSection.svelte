@@ -11,7 +11,6 @@
   import ImageRow from "./ImageRow.svelte";
   import SettingsGroup from "./SettingsGroup.svelte";
   import SettingsRow from "./SettingsRow.svelte";
-  import StatusModePicker from "./StatusModePicker.svelte";
   import type { ConfigSectionKey } from "./sections";
   import TextRow from "./TextRow.svelte";
 
@@ -39,15 +38,15 @@
     <ImageRow label="โลโก้" bind:value={site.config.logoImageUrl} />
   </SettingsGroup>
 {:else if section === "colors"}
-  <SettingsGroup title="โหมดแสดงผล" description="สลับทั้งเว็บระหว่างธีมสว่างกับธีมมืด พื้นหลัง การ์ด และปุ่มเปลี่ยนตามโหมด">
-    <SettingsRow label="ธีมมืด">
+  <SettingsGroup title="โหมดเริ่มต้น" description="ค่านี้ใช้กับผู้ที่ยังไม่เคยเลือกธีมในเบราว์เซอร์นี้ ปุ่มบนแถบนำทางเปลี่ยนเฉพาะเครื่องนั้น">
+    <SettingsRow label="ธีมมืดเป็นค่าเริ่มต้น">
       <Switch
         checked={site.config.theme.mode === "dark"}
         onCheckedChange={(checked) => {
-          animateTheme(() => site.setMode(checked ? "dark" : "light"));
-          toast(checked ? "ใช้ธีมมืดแล้ว" : "ใช้ธีมสว่างแล้ว");
+          animateTheme(() => site.setDefaultMode(checked ? "dark" : "light"));
+          toast(checked ? "ตั้งค่าเริ่มต้นเป็นธีมมืดแล้ว" : "ตั้งค่าเริ่มต้นเป็นธีมสว่างแล้ว");
         }}
-        aria-label="ธีมมืด"
+        aria-label="ธีมมืดเป็นค่าเริ่มต้น"
       />
     </SettingsRow>
   </SettingsGroup>
@@ -131,7 +130,7 @@
 {:else if section === "status"}
   <SettingsGroup title="สถานะที่แสดงบนเว็บ" description="เลือกแล้วหน้าร้านและหน้าสถานะเปลี่ยนทันที ข้อความด้านล่างแก้ต่อได้">
     <div class="px-4 py-3">
-      <StatusModePicker />
+      <p class="text-[13px] text-muted-foreground">เลือกสถานะจากแถบด้านข้าง ข้อความด้านล่างคือสิ่งที่หน้าร้านแสดงอยู่</p>
       <p class="mt-3 text-[15px] font-semibold">{site.config.status.headline}</p>
       <p class="mt-1 text-[13px] text-muted-foreground">{site.config.status.body}</p>
     </div>

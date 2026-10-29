@@ -41,7 +41,6 @@ export type SectionItem = {
   label: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: Component<any>;
-  color: string;
 };
 
 export const sectionGroups: { title: string; items: SectionItem[] }[] = [
@@ -52,7 +51,6 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
         key: "overview",
         label: "ภาพรวม",
         icon: LayoutDashboardIcon,
-        color: "#1d1d1f",
       },
     ],
   },
@@ -63,43 +61,36 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
         key: "products",
         label: "สินค้า",
         icon: ShoppingBagIcon,
-        color: "#3a3a3c",
       },
       {
         key: "categories",
         label: "หมวดหมู่สินค้า",
         icon: LayoutGridIcon,
-        color: "#48484a",
       },
       {
         key: "coupons",
         label: "คูปองส่วนลด",
         icon: TicketIcon,
-        color: "#636366",
       },
       {
         key: "vouchers",
         label: "บัตรเติมเงิน",
         icon: WalletIcon,
-        color: "#1d1d1f",
       },
       {
         key: "orders",
         label: "ประวัติคำสั่งซื้อ",
         icon: HistoryIcon,
-        color: "#8e8e93",
       },
       {
         key: "users",
         label: "จัดการลูกค้า",
         icon: UsersIcon,
-        color: "#1d1d1f",
       },
       {
         key: "store-config",
         label: "ข้อความหน้าร้าน",
         icon: StoreIcon,
-        color: "#3a3a3c",
       },
     ],
   },
@@ -110,38 +101,32 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
         key: "branding",
         label: "ข้อมูลแบรนด์",
         icon: SparklesIcon,
-        color: "#48484a",
       },
-      { key: "colors", label: "สีธีม", icon: PaletteIcon, color: "#636366" },
+      { key: "colors", label: "สีธีม", icon: PaletteIcon },
       {
         key: "hero",
         label: "แบนเนอร์หน้าแรก",
         icon: ImageIcon,
-        color: "#8e8e93",
       },
       {
         key: "announcement",
         label: "ประกาศบนเว็บ",
         icon: MegaphoneIcon,
-        color: "#1d1d1f",
       },
       {
         key: "status",
         label: "สถานะระบบ",
         icon: ActivityIcon,
-        color: "#3a3a3c",
       },
       {
         key: "stats",
         label: "ตัวเลขบนหน้าแรก",
         icon: BarChart3Icon,
-        color: "#48484a",
       },
       {
         key: "footer",
         label: "ฟุตเตอร์",
         icon: PanelBottomIcon,
-        color: "#3a3a3c",
       },
     ],
   },
@@ -152,7 +137,6 @@ export const sectionGroups: { title: string; items: SectionItem[] }[] = [
         key: "backup",
         label: "จัดการข้อมูล",
         icon: DatabaseIcon,
-        color: "#48484a",
       },
     ],
   },

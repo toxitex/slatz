@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import type { Pathname } from "$app/types";
   import CheckIcon from "@lucide/svelte/icons/check";
   import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
   import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
@@ -11,7 +12,7 @@
   import ShoppingBagIcon from "@lucide/svelte/icons/shopping-bag";
   import ZapIcon from "@lucide/svelte/icons/zap";
   import { toast } from "svelte-sonner";
-  import { slide } from "svelte/transition";
+  import { softSlide } from "$lib/transitions";
   import { api, errorMessage } from "$lib/api";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
@@ -51,9 +52,12 @@
   const stock = $derived(totalStock(tiers));
 
   const unavailable = $derived(product?.status === "out_of_stock");
+  const paused = $derived(site.config.status.mode === "maintenance");
   const buyLabel = $derived(
     buying
       ? "กำลังดำเนินการ..."
+      : paused
+        ? site.config.status.headline
       : unavailable
         ? "สินค้าหมดชั่วคราว"
       : !selectedTier
@@ -80,9 +84,13 @@
   }
 
   async function buy() {
+    if (paused) {
+      toast.error(site.config.status.headline);
+      return;
+    }
     if (!auth.user) {
       toast.error("กรุณาเข้าสู่ระบบก่อนซื้อสินค้า");
-      await goto(resolve("/login"));
+      await goto(resolve(`/login?next=${encodeURIComponent(page.url.pathname)}` as Pathname));
       return;
     }
     if (!product || !selectedTier) {
@@ -121,17 +129,19 @@
 
 {#if products.loading && !product}
   <div class="grid flex-1 place-items-center py-32 text-muted-foreground">
-    <ShoppingBagIcon class="size-8 animate-pulse" strokeWidth={1.25} />
-    <p class="mt-3 text-sm">กำลังโหลดข้อมูลสินค้า...</p>
+    <p class="text-[17px]">กำลังโหลดข้อมูลสินค้า...</p>
   </div>
 {:else if !product}
   <section class="container-apple py-32 text-center">
     <h1 class="display text-[32px]">ไม่พบสินค้านี้</h1>
     <p class="mt-3 text-[17px] text-muted-foreground">{products.error ?? "สินค้าอาจถูกลบหรือยังไม่ได้เผยแพร่"}</p>
+    {#if products.error}
+      <Button class="mt-6" onclick={() => products.refresh()}>ลองอีกครั้ง</Button>
+    {/if}
     <Button href={resolve("/store")} size="lg" class="mt-8">กลับไปยังร้านค้า</Button>
   </section>
 {:else}
-  <div class="sticky top-[68px] z-30 px-3">
+  <div class="sticky top-[72px] z-30 px-3">
     <div class="nav-bar mx-auto flex h-11 max-w-[880px] items-center justify-between gap-4 rounded-full pr-1.5 pl-5 is-solid">
       <p class="truncate text-[15px] font-semibold tracking-tight">{product.name}</p>
       <div class="flex shrink-0 items-center gap-3">
@@ -146,7 +156,7 @@
   </div>
 
   <section class="container-wide pt-8 pb-20">
-    <nav class="mb-6 flex items-center gap-1 text-xs text-muted-foreground" aria-label="Breadcrumb">
+    <nav class="mb-6 flex items-center gap-1 text-[13px] tracking-[0.01em] text-muted-foreground" aria-label="Breadcrumb">
       <a href={resolve("/store")} class="hover:text-foreground">ร้านค้า</a>
       <ChevronRightIcon class="size-3" />
       <a href={resolve(`/category/${encodeURIComponent(product.category)}`)} class="hover:text-foreground">{product.category}</a>
@@ -208,7 +218,7 @@
                   aria-checked={selected}
                   disabled={soldOut}
                   class={cn(
-                    "flex items-center justify-between gap-4 rounded-2xl border bg-card p-5 text-left transition-[border-color,box-shadow] duration-200",
+                    "press flex items-center justify-between gap-4 rounded-2xl border bg-card p-5 text-left transition-[border-color,box-shadow] duration-200",
                     selected ? "border-primary shadow-[0_0_0_1px_var(--syncx-button)]" : "border-foreground/15 hover:border-foreground/40",
                     soldOut && "cursor-not-allowed opacity-45",
                   )}
@@ -239,7 +249,7 @@
               <div class="flex items-center rounded-full bg-secondary p-1">
                 <button
                   type="button"
-                  class="grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
+                  class="press grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
                   aria-label="ลดจำนวน"
                   onclick={() => (quantity = Math.max(1, quantity - 1))}
                 >
@@ -248,7 +258,7 @@
                 <span class="w-9 text-center text-[15px] font-semibold tabular-nums">{quantity}</span>
                 <button
                   type="button"
-                  class="grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
+                  class="press grid size-8 place-items-center rounded-full transition-colors hover:bg-card"
                   aria-label="เพิ่มจำนวน"
                   onclick={() => (quantity += 1)}
                 >
@@ -283,7 +293,7 @@
               {/if}
             </div>
             {#if appliedCoupon}
-              <p class="mt-2 flex items-center gap-1 text-xs text-foreground" transition:slide={{ duration: 200 }}>
+              <p class="mt-2 flex items-center gap-1 text-xs text-foreground" transition:softSlide={{ duration: 200 }}>
                 <CheckIcon class="size-3.5" /> ใช้โค้ด <strong>{appliedCoupon.code}</strong> ลด
                 {appliedCoupon.discountType === "percent" ? `${appliedCoupon.discountValue}%` : formatBaht(appliedCoupon.discountValue)}
               </p>
@@ -309,14 +319,14 @@
           <Button
             size="lg"
             class="mt-5 w-full"
-            disabled={buying || unavailable || !selectedTier || selectedTier.stock <= 0}
+            disabled={buying || paused || unavailable || !selectedTier || selectedTier.stock <= 0}
             onclick={buy}
           >
             {buyLabel}
           </Button>
           {#if !auth.user && !auth.loading}
             <p class="mt-3 text-center text-xs text-muted-foreground">
-              ต้อง<a href={resolve("/login")} class="text-link hover:underline">เข้าสู่ระบบ</a>ก่อนสั่งซื้อ
+              ต้อง<a href={resolve(`/login?next=${encodeURIComponent(page.url.pathname)}` as Pathname)} class="text-link hover:underline">เข้าสู่ระบบ</a>ก่อนสั่งซื้อ
             </p>
           {/if}
         </section>
@@ -332,7 +342,7 @@
             <ChevronDownIcon class={cn("size-5 transition-transform duration-300", descriptionOpen && "rotate-180")} />
           </button>
           {#if descriptionOpen}
-            <p class="pb-4 text-[15px] leading-relaxed whitespace-pre-line text-foreground/80" transition:slide={{ duration: 250 }}>
+            <p class="pb-4 text-[15px] leading-relaxed whitespace-pre-line text-foreground/80" transition:softSlide={{ duration: 250 }}>
               {product.description || "ยังไม่มีคำอธิบายสินค้า"}
             </p>
           {/if}

@@ -20,17 +20,14 @@
   import UserMenu from "./UserMenu.svelte";
 
   const { site, auth, ui, products, categories } = getStores();
-  const darkTheme = $derived(site.config.theme.mode === "dark");
+  const darkTheme = $derived(site.appearance === "dark");
 
   let menuOpen = $state(false);
   let flyout = $state(false);
   let scrollY = $state(0);
-  let hovering = $state(false);
   let adminGranted = $state(false);
   const solid = $derived(scrollY > 12);
   let lens = $state({ x: 0, width: 0, visible: false });
-  let flyoutTimer: ReturnType<typeof setTimeout> | undefined;
-
   const desktopLinks = $derived<{ href: Pathname; label: string; flyout?: boolean }[]>([
     { href: "/", label: "หน้าหลัก" },
     { href: "/store", label: "ร้านค้า", flyout: true },
@@ -81,17 +78,13 @@
     adminGranted = isAdminGranted();
   });
 
-  function openFlyout(delay = 120) {
-    clearTimeout(flyoutTimer);
-    flyoutTimer = setTimeout(() => {
-      products.ensureLoaded();
-      categories.ensureLoaded();
-      flyout = true;
-    }, delay);
+  function openFlyout() {
+    products.ensureLoaded();
+    categories.ensureLoaded();
+    flyout = true;
   }
 
   function closeFlyout() {
-    clearTimeout(flyoutTimer);
     flyout = false;
   }
 
@@ -145,9 +138,7 @@
   <div
     role="presentation"
     class="pointer-events-auto mx-auto max-w-[1100px]"
-    onmouseenter={() => (hovering = true)}
     onmouseleave={() => {
-      hovering = false;
       lens = { ...lens, visible: false };
       closeFlyout();
     }}
@@ -156,7 +147,6 @@
       class={cn(
         "nav-bar flex h-12 items-center justify-between gap-4 rounded-full pr-1.5 pl-4",
         solid && "is-solid",
-        (hovering || flyout) && "is-hover",
       )}
       aria-label="Primary navigation"
     >
@@ -179,7 +169,7 @@
           <a
             href={resolve(link.href)}
             class={cn(
-              "relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground",
+              "press relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground",
               isActive(page.url.pathname, link.href) && "font-medium text-foreground",
             )}
             aria-haspopup={link.flyout ? "true" : undefined}
@@ -191,7 +181,7 @@
             }}
             onfocus={(event) => {
               moveLens(event);
-              if (link.flyout) openFlyout(0);
+              if (link.flyout) openFlyout();
             }}
           >
             {link.label}
@@ -199,7 +189,7 @@
         {/each}
         <button
           type="button"
-          class="relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground"
+          class="press relative rounded-full px-3.5 py-1.5 text-foreground/70 transition-colors hover:text-foreground"
           onmouseenter={(event) => {
             moveLens(event);
             closeFlyout();
@@ -232,7 +222,10 @@
           type="button"
           class="grid size-9 place-items-center rounded-full text-foreground/75 transition-[background-color,color,transform] duration-100 ease-out hover:bg-foreground/[0.07] hover:text-foreground active:scale-[0.97]"
           aria-label="ค้นหา"
-          onclick={ui.openSearch}
+          onpointerdown={(event) => {
+            if (event.button !== 0) return;
+            ui.openSearch();
+          }}
         >
           <SearchIcon class="size-[17px]" strokeWidth={1.75} />
         </button>
@@ -243,7 +236,7 @@
           {:else if !auth.loading}
             <a
               href={resolve("/login")}
-              class="rounded-full px-3 py-1.5 text-[13px] text-foreground/75 transition-colors hover:bg-foreground/[0.07] hover:text-foreground"
+              class="press rounded-full px-3 py-1.5 text-[13px] text-foreground/75 transition-colors hover:bg-foreground/[0.07] hover:text-foreground"
             >
               เข้าสู่ระบบ
             </a>
@@ -258,7 +251,7 @@
 
         <button
           type="button"
-          class="relative grid size-9 place-items-center rounded-full transition-colors hover:bg-foreground/[0.07] md:hidden"
+          class="press relative grid size-9 place-items-center rounded-full transition-colors hover:bg-foreground/[0.07] md:hidden"
           aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"}
           aria-expanded={menuOpen}
           onclick={() => (menuOpen = !menuOpen)}
@@ -289,7 +282,7 @@
             <p class="mb-3 text-xs text-muted-foreground">เลือกซื้อ</p>
             <ul class="stagger-in space-y-1">
               <li style="--i: 0">
-                <a href={resolve("/store")} class="group inline-flex items-center gap-1 text-[17px] font-semibold">
+                <a href={resolve("/store")} class="press group inline-flex items-center gap-1 text-[17px] font-semibold">
                   ดูทั้งหมด
                   <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                 </a>
@@ -298,7 +291,7 @@
                 <li style="--i: {i + 1}">
                   <a
                     href={resolve(`/category/${encodeURIComponent(category.name)}`)}
-                    class="group inline-flex items-center gap-1 text-[17px] font-semibold text-foreground/85 hover:text-foreground"
+                    class="press group inline-flex items-center gap-1 text-[17px] font-semibold text-foreground/85 hover:text-foreground"
                   >
                     {category.name}
                     <ArrowUpRightIcon class="size-5 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />

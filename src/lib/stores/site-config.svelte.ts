@@ -1,3 +1,4 @@
+import { untrack } from "svelte";
 import { api, errorMessage } from "$lib/api";
 import { broadcast, onSync } from "$lib/sync";
 import { isAdminGranted } from "$lib/admin-access";
@@ -6,6 +7,13 @@ import { isDarkColor } from "$lib/utils";
 
 const STORAGE_KEY = "syncx-site-config-v1";
 const MODE_KEY = "syncx-theme-mode";
+
+function storedAppearance(): "light" | "dark" {
+  const fallback = loadLocal().theme.mode === "light" ? "light" : "dark";
+  if (typeof localStorage === "undefined") return fallback;
+  const pref = localStorage.getItem(MODE_KEY);
+  return pref === "light" || pref === "dark" ? pref : fallback;
+}
 
 export const appleTheme: SiteConfig["theme"] = {
   mode: "light",
@@ -312,6 +320,8 @@ function applyTheme(theme: SiteConfig["theme"]) {
  */
 export class SiteConfigStore {
   config = $state<SiteConfig>(loadLocal());
+  /** Theme on this browser. The nav toggle writes this, not the shared site default. */
+  appearance = $state<"light" | "dark">(storedAppearance());
   saveState = $state<"idle" | "pending" | "saving" | "saved" | "error">("idle");
   saveError = $state<string | null>(null);
   savedAt = $state<Date | null>(null);
@@ -338,7 +348,7 @@ export class SiteConfigStore {
       this.#skipNextSave = true;
       this.config = server;
       const pref = localStorage.getItem(MODE_KEY);
-      if (pref === "light" || pref === "dark") this.config.theme.mode = pref;
+      this.appearance = pref === "light" || pref === "dark" ? pref : server.theme.mode;
     } else if (isAdminGranted()) {
       void this.#save();
     }
@@ -346,7 +356,8 @@ export class SiteConfigStore {
 
   sync() {
     const snapshot = $state.snapshot(this.config) as SiteConfig;
-    applyTheme(snapshot.theme);
+    const mode = untrack(() => this.appearance);
+    applyTheme({ ...snapshot.theme, mode });
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
     document.title = snapshot.siteName || defaultSiteConfig.siteName;
     const favicon = snapshot.logoImageUrl || "/favicon.png";
@@ -391,6 +402,7 @@ export class SiteConfigStore {
 
   reset() {
     this.config = mergeConfig(null);
+    this.setMode(this.config.theme.mode);
   }
 
   /** Dashboard choice. Fills the public status page and the store banner. */
@@ -420,13 +432,21 @@ export class SiteConfigStore {
     }
   }
 
+  /** This browser only. Does not rewrite the saved site default. */
   setMode(mode: SiteConfig["theme"]["mode"]) {
-    this.config.theme.mode = mode;
+    this.appearance = mode;
     localStorage.setItem(MODE_KEY, mode);
+    applyTheme({ ...$state.snapshot(this.config).theme, mode });
+  }
+
+  /** First-visit default, stored with the rest of the site config. */
+  setDefaultMode(mode: SiteConfig["theme"]["mode"]) {
+    this.config.theme.mode = mode;
+    this.setMode(mode);
   }
 
   toggleMode() {
-    this.setMode(this.config.theme.mode === "dark" ? "light" : "dark");
+    this.setMode(this.appearance === "dark" ? "light" : "dark");
   }
 
   resetTheme() {
@@ -440,6 +460,7 @@ export class SiteConfigStore {
   import(json: string) {
     try {
       this.config = mergeConfig(JSON.parse(json));
+      this.setMode(this.config.theme.mode);
       return true;
     } catch (error) {
       console.warn("Config import failed.", error);

@@ -43,13 +43,20 @@
 </script>
 
 <section class="container-wide pt-8 pb-2 sm:pt-10">
-  <h1 class={cn("display tracking-tight", titleType)}>{site.config.store.headline}</h1>
+  <h1 class={cn("display", titleType)}>{site.config.store.headline}</h1>
   <p class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[17px] text-muted-foreground sm:text-[19px]">
     {#if site.config.store.headlineAccent.trim()}
       <span>{site.config.store.headlineAccent}</span>
     {/if}
     <a href="#categories" class="link">เลือกซื้อ<ChevronRightIcon class="size-4" /></a>
   </p>
+  {#if products.error}
+    <button type="button" class="press mt-4 text-[15px] text-destructive" onclick={() => products.refresh()}>
+      โหลดสินค้าไม่สำเร็จ ลองอีกครั้ง
+    </button>
+  {:else if !products.loading && !products.databaseMode}
+    <p class="mt-3 text-[13px] tracking-[0.01em] text-muted-foreground">กำลังแสดงข้อมูลที่บันทึกไว้</p>
+  {/if}
 </section>
 
 {#if latest.length}
@@ -84,7 +91,7 @@
       {#each visibleTiles as tile, i (tile.name)}
         <a
           href={resolve(`/category/${encodeURIComponent(tile.name)}`)}
-          class="group relative flex aspect-[5/4] flex-col overflow-hidden rounded-[28px] bg-card p-7 shadow-float transition-transform duration-500 ease-apple hover:-translate-y-1"
+          class="press group relative flex aspect-[5/4] flex-col overflow-hidden rounded-[28px] bg-card p-7 shadow-float transition-transform duration-500 ease-apple hover:-translate-y-1"
           {@attach reveal(i * 60)}
         >
           <div class="relative z-10">

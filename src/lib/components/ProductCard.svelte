@@ -49,7 +49,7 @@
     {/if}
   </div>
   <span
-    class="mt-4 inline-flex h-9 w-fit items-center rounded-full bg-[var(--syncx-action)] px-4 text-[15px] font-medium text-white"
+    class="mt-4 inline-flex h-9 w-fit items-center rounded-full bg-[var(--syncx-action)] px-4 text-[15px] font-medium text-[var(--on-fill)]"
   >
     {buttonText}
   </span>

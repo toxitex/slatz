@@ -167,7 +167,7 @@
           <a
             href={resolve(`/product/${product.id}`)}
             class={cn(
-              "group float-y relative -mx-6 mb-[-4%] block overflow-hidden rounded-[28px] bg-card shadow-float transition-transform duration-700 ease-apple hover:-translate-y-2 sm:-mx-10",
+              "press group float-y relative -mx-6 mb-[-4%] block overflow-hidden rounded-[28px] bg-card shadow-float transition-transform duration-700 ease-apple hover:-translate-y-2 sm:-mx-10",
               center ? "z-10 w-[58%] max-w-[420px] sm:w-[38%]" : "w-[42%] max-w-[300px] sm:w-[28%]",
               i === 0 && showcase.length > 1 && "-rotate-6",
               i === 2 && "rotate-6",
@@ -235,7 +235,7 @@
       {#each shelf as category, i (category.id)}
         <a
           href={resolve(`/category/${encodeURIComponent(category.name)}`)}
-          class="group flex w-24 shrink-0 flex-col items-center gap-3 text-center"
+          class="press group flex w-24 shrink-0 flex-col items-center gap-3 text-center"
           {@attach reveal(i * 40)}
         >
           <span class="grid size-20 place-items-center overflow-hidden rounded-2xl bg-card transition-transform duration-500 ease-apple group-hover:scale-105">
@@ -245,7 +245,7 @@
               <span class="display text-2xl text-muted-foreground">{category.name.charAt(0)}</span>
             {/if}
           </span>
-          <span class="line-clamp-2 text-xs font-medium">{category.name}</span>
+          <span class="line-clamp-2 text-[13px] font-medium tracking-[0.01em]">{category.name}</span>
         </a>
       {/each}
     </div>

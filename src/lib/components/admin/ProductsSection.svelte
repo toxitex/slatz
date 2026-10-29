@@ -83,7 +83,7 @@
 
 <div class="flex items-start gap-3 overflow-x-auto pb-2">
   {#each columns as column (column.key)}
-    <section class="flex w-[280px] shrink-0 flex-col rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)] {column.active ? '' : 'opacity-60'}">
+    <section class="flex w-[280px] shrink-0 flex-col rounded-2xl bg-card shadow-float {column.active ? '' : 'opacity-60'}">
       <header class="flex items-center gap-2 px-3 pt-3 pb-2">
         <div class="min-w-0 flex-1">
           <h3 class="truncate text-[14px] font-bold">{column.name || "ไม่มีหมวด"}</h3>
@@ -112,7 +112,7 @@
             class="flex w-full items-center gap-2.5 rounded-xl bg-secondary px-2.5 py-2 text-left"
             onclick={() => (editing = product)}
           >
-            <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-secondary">
+            <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-background">
               {#if product.imageUrl}
                 <img src={product.imageUrl} alt="" class="size-full object-cover" />
               {:else}

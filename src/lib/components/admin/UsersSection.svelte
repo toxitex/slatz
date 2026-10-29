@@ -57,7 +57,7 @@
 {#if loading && !users.length}
   <div class="h-64 animate-pulse rounded-2xl bg-card"></div>
 {:else if users.length}
-  <div class="overflow-x-auto rounded-2xl bg-card shadow-[0_0_0_0.5px_var(--syncx-border)]">
+  <div class="overflow-x-auto rounded-2xl bg-card shadow-float">
     <table class="w-full min-w-[720px] text-[13px]">
       <thead class="border-b border-border text-left text-[11px] text-muted-foreground">
         <tr>
@@ -102,7 +102,7 @@
     </table>
   </div>
 {:else}
-  <div class="flex flex-col items-center gap-2 rounded-2xl bg-card px-6 py-14 text-center text-[13px] text-muted-foreground">
+  <div class="flex flex-col items-center gap-2 rounded-2xl bg-card px-6 py-14 text-center text-[13px] text-muted-foreground shadow-float">
     <UsersIcon class="size-6" strokeWidth={1.5} />
     ยังไม่มีผู้ใช้ในระบบ
   </div>

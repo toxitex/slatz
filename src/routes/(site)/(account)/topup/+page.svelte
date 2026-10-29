@@ -6,7 +6,8 @@
   import { getStores } from "$lib/stores";
   import { formatBaht } from "$lib/utils";
 
-  const { auth } = getStores();
+  const { auth, site } = getStores();
+  const paused = $derived(site.config.status.mode === "maintenance");
 
   let code = $state("");
   let submitting = $state(false);
@@ -20,6 +21,7 @@
 
   async function onsubmit(event: SubmitEvent) {
     event.preventDefault();
+    if (paused) return;
     const trimmed = code.trim();
     if (!trimmed) {
       toast.error("กรุณากรอกรหัสคูปอง");
@@ -41,14 +43,17 @@
 
 <div class="grid gap-5 md:grid-cols-[1.2fr_1fr]">
   <section class="tile p-8 sm:p-10">
-    <h2 class="text-[22px] font-semibold">เติมเงินด้วยคูปอง</h2>
+    <h2 class="section-title">เติมเงินด้วยคูปอง</h2>
     <p class="mt-1 text-[15px] text-muted-foreground">
       ยอดคงเหลือปัจจุบัน <strong class="text-foreground tabular-nums">{formatBaht(auth.user?.balance ?? 0)}</strong>
     </p>
     <form class="mt-8 flex flex-col gap-4" {onsubmit}>
-      <FloatingField label="รหัสคูปอง" bind:value={code} disabled={submitting} autocomplete="off" class="[&_input]:uppercase" />
-      <Button type="submit" size="lg" class="w-full" disabled={submitting}>
-        {submitting ? "กำลังตรวจสอบ..." : "ยืนยันเติมเงิน"}
+      {#if paused}
+        <p class="rounded-2xl bg-secondary px-4 py-3 text-[15px]" role="status">{site.config.status.headline}</p>
+      {/if}
+      <FloatingField label="รหัสคูปอง" bind:value={code} disabled={submitting || paused} autocomplete="off" class="[&_input]:uppercase" />
+      <Button type="submit" size="lg" class="w-full" disabled={submitting || paused}>
+        {paused ? site.config.status.headline : submitting ? "กำลังตรวจสอบ..." : "ยืนยันเติมเงิน"}
       </Button>
     </form>
   </section>

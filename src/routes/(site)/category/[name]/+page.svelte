@@ -36,7 +36,7 @@
 </script>
 
 <section class="container-wide pt-8 sm:pt-10">
-  <nav class="mb-4 flex items-center gap-1 text-xs text-muted-foreground" aria-label="Breadcrumb">
+  <nav class="mb-4 flex items-center gap-1 text-[13px] tracking-[0.01em] text-muted-foreground" aria-label="Breadcrumb">
     <a href={resolve("/store")} class="hover:text-foreground">ร้านค้า</a>
     <ChevronRightIcon class="size-3" />
     <span class="text-foreground">{name}</span>
@@ -45,6 +45,9 @@
     <div>
       <h1 class={cn("reveal display", titleType)}>{name}</h1>
       <p class="mt-1 text-[17px] text-muted-foreground">{inCategory.length} สินค้าในหมวดหมู่นี้</p>
+      {#if !products.loading && !products.databaseMode}
+        <p class="mt-1 text-[13px] tracking-[0.01em] text-muted-foreground">กำลังแสดงข้อมูลที่บันทึกไว้</p>
+      {/if}
     </div>
     <label class="flex h-11 w-full items-center gap-2 rounded-full bg-secondary px-4 text-sm shadow-float md:max-w-xs">
       <SearchIcon class="size-4 text-muted-foreground" />
@@ -67,7 +70,7 @@
   {#if products.error}
     <button
       type="button"
-      class="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-card p-4 text-sm text-destructive"
+      class="press mb-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-card p-4 text-[15px] text-destructive"
       onclick={() => products.refresh()}
     >
       โหลดสินค้าไม่สำเร็จ: {products.error} <RefreshCwIcon class="size-4" />
