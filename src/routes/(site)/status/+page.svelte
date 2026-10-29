@@ -1,7 +1,6 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { getStores } from "$lib/stores";
-  import LogoIcon from "$lib/components/LogoIcon.svelte";
 
   const { site } = getStores();
   const status = $derived(site.config.status);
@@ -14,13 +13,11 @@
 
 <section class="mx-auto w-full max-w-[680px] px-5 pt-10 pb-20 sm:pt-14">
   <a href={resolve("/")} class="inline-flex items-center gap-2 text-[15px] font-semibold tracking-tight">
-    <span class="grid size-7 place-items-center overflow-hidden rounded-[8px] bg-foreground text-background">
-      {#if site.config.logoImageUrl}
+    {#if site.config.logoImageUrl}
+      <span class="grid size-7 place-items-center overflow-hidden rounded-[8px] bg-foreground">
         <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
-      {:else}
-        <LogoIcon size={15} />
-      {/if}
-    </span>
+      </span>
+    {/if}
     สถานะระบบ
   </a>
 

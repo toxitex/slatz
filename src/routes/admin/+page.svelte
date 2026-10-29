@@ -34,7 +34,6 @@
   import VouchersSection from "$lib/components/admin/VouchersSection.svelte";
   import StatusModePicker from "$lib/components/admin/StatusModePicker.svelte";
   import FloatingField from "$lib/components/FloatingField.svelte";
-  import LogoIcon from "$lib/components/LogoIcon.svelte";
   import { Button } from "$lib/components/ui/button";
   import { getStores } from "$lib/stores";
   import { cn } from "$lib/utils";
@@ -210,13 +209,11 @@
       )}
     >
       <div class="flex items-center gap-2.5 px-5 pt-5 pb-3">
-        <span class="grid size-8 place-items-center overflow-hidden rounded-[9px] bg-foreground text-background">
-          {#if site.config.logoImageUrl}
+        {#if site.config.logoImageUrl}
+          <span class="grid size-8 place-items-center overflow-hidden rounded-[9px] bg-foreground">
             <img src={site.config.logoImageUrl} alt="" class="size-full object-cover" />
-          {:else}
-            <LogoIcon size={15} />
-          {/if}
-        </span>
+          </span>
+        {/if}
         <div class="min-w-0">
           <p class="truncate text-[14px] font-semibold">{site.config.siteName}</p>
           <p class="flex items-center gap-1.5 text-[11px] text-muted-foreground">

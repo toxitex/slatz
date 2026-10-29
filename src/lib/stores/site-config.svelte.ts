@@ -286,6 +286,18 @@ function loadLocal(): SiteConfig {
   }
 }
 
+function applyFavicon(url: string) {
+  const links = [...document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]')];
+  if (!url) {
+    links.forEach((link) => link.remove());
+    return;
+  }
+  const icon = links[0] ?? document.head.appendChild(document.createElement("link"));
+  icon.rel = "icon";
+  icon.href = url;
+  links.slice(1).forEach((link) => link.remove());
+}
+
 function applyTheme(theme: SiteConfig["theme"]) {
   const root = document.documentElement;
   const dark = theme.mode === "dark";
@@ -360,10 +372,7 @@ export class SiteConfigStore {
     applyTheme({ ...snapshot.theme, mode });
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
     document.title = snapshot.siteName || defaultSiteConfig.siteName;
-    const favicon = snapshot.logoImageUrl || "/favicon.png";
-    document
-      .querySelectorAll<HTMLLinkElement>('link[rel="icon"]')
-      .forEach(link => (link.href = favicon));
+    applyFavicon(snapshot.logoImageUrl);
 
     if (this.#skipNextSave) {
       this.#skipNextSave = false;
